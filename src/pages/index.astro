@@ -1,6 +1,7 @@
 ---
 import MainLayout from "@layouts/MainLayout.astro";
 import Hamburger from "@components/Hamburger.astro";
+import Earth from "@components/svelte/Earth.svelte";
 import { Icon } from "astro-icon/components";
 ---
 
@@ -27,23 +28,33 @@ import { Icon } from "astro-icon/components";
             <Hamburger />
         </div>
     </nav>
-    <main class="mt-16 px-main">
+    <main class="mt-16 px-main relative">
         <div class="space-y-8">
-            <b class="text-xl">Je suis...</b>
-            <ul class="list-disc list-inside space-y-4 text-lg">
+            <b class="text-2xl">Je suis...</b>
+            <ul class="list-disc list-inside space-y-4 text-xl">
                 <li class="flex items-center space-x-2"><span class="text-2xl">&bull;</span><strong>Développeur web</strong><Icon name="globe" /></li>
                 <li class="flex items-center space-x-2"><span class="text-2xl">&bull;</span><strong>Développeur d'applications</strong><Icon name="smartphone" /></li>
                 <li class="flex items-center space-x-2"><span class="text-2xl">&bull;</span><strong>UI/UX Designer</strong><Icon name="flower-2" /></li>
             </ul>
             <div class="flex items-center space-x-6">
                 <a class="bg-[#062451] rounded-md block text-white text-lg py-4 px-8" href="/projects">En savoir plus</a>
-                <a class="text-[#062451] text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte GitHub" title="Mon compte GitHub" href="https://github.com/ThomasGysemans"><Icon name="github" /></a>
-                <a class="text-[#062451] text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte LinkedIn" title="Mon compte LinkedIn" href="https://fr.linkedin.com/in/thomas-gysemans-950536268"><Icon name="linkedin" /></a>
+                <a class="text-[#062451] text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte GitHub" title="Mon compte GitHub" href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
+                <a class="text-[#062451] text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte LinkedIn" title="Mon compte LinkedIn" href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
             </div>
+        </div>
+        <div class="absolute top-12 right-0">
+            <div class="bg-[#062451] max-w-96 py-2 px-3 rounded-md absolute -top-[16%] -left-[15%]">
+                <div class="absolute -bottom-[20px] right-12 w-0 h-0 border-l-[15px] border-l-transparent border-t-[20px] border-t-[#062451] border-r-[15px] border-r-transparent" />
+                <p class="text-white font-light">
+                    Je suis passionné d’informatique, mais aussi d’astronomie, j’ai ainsi combiné mes passions pour réaliser ce modèle 3D en utilisant
+                    <a href="https://threejs.org/" target="_blank" class="underline">ThreeJS</a> et <a href="https://threlte.xyz/" target="_blank" class="underline">Threlte</a> !
+                </p>
+            </div>
+            <Earth client:idle />
         </div>
     </main>
     <div class="relative">
-        <img src="/space-background.svg" class="select-none pointer-events-none w-full absolute top-0 left-0 -z-10" alt="" />
+        <img src="/space-background.svg" class="select-none pointer-events-none w-full absolute top-0 left-0 -z-10" alt="">
     </div>
 </MainLayout>
 
