@@ -1,0 +1,25 @@
+---
+
+---
+
+<div class="relative aspect-video h-full video-gradient">
+    <video
+        class="block w-full h-full object-fill aspect-video"
+        src="/trailer/spacevisitor-extract-1.mp4"
+        preload="metadata"
+        autoplay
+        muted
+    />
+</div>
+
+<style lang="scss">
+    .video-gradient:after {
+        position: absolute;
+        content: "";
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        background: linear-gradient(to right, #030F20ff 0%, #030F2000 100%); /* W3C */
+    }
+</style>
