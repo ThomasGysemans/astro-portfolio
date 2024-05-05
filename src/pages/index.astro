@@ -3,6 +3,7 @@ import MainLayout from "@layouts/MainLayout.astro";
 import Hamburger from "@components/Hamburger.astro";
 import Earth from "@components/svelte/Earth.svelte";
 import { Icon } from "astro-icon/components";
+import SpaceSection from "../components/SpaceSection.astro";
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans">
@@ -53,9 +54,7 @@ import { Icon } from "astro-icon/components";
             <Earth client:idle />
         </div>
     </main>
-    <div class="relative">
-        <img src="/space-background.svg" class="select-none pointer-events-none w-full absolute top-0 left-0 -z-10" alt="">
-    </div>
+    <SpaceSection />
 </MainLayout>
 
 <style lang="scss">

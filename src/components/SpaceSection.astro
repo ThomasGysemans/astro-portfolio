@@ -1,0 +1,30 @@
+---
+
+---
+
+<div class="relative" id="space-section">
+    <img src="/space-background.svg" class="select-none pointer-events-none w-full absolute top-0 left-0 -z-10" alt="" id="space-section-bg">
+</div>
+
+<script type="module">
+    const space_section = document.querySelector("#space-section");
+    const space_section_bg = space_section.querySelector("#space-section-bg");
+    const max_height = space_section_bg.clientHeight;
+    const sparkles = [];
+
+    for (let i = 0; i < (max_height > 1500 ? 40 : 25); i++) {
+        const sparkle = document.createElement("img");
+        sparkle.src = "/sparkle.svg";
+        sparkle.width = 20;
+        sparkle.height = 20;
+        sparkle.style.position = "absolute";
+        sparkle.style.left = (Math.floor(Math.random() * space_section.clientWidth)) + "px";
+        sparkle.style.top = (Math.floor(Math.random() * max_height)) + "px";
+        sparkle.style.transform = `rotate(${Math.floor(Math.random() * 180)}deg)`;
+        sparkles.push(sparkle);
+    }
+
+    const sparkle_container = document.createElement("div");
+    sparkles.forEach(s => sparkle_container.appendChild(s));
+    space_section.appendChild(sparkle_container);
+</script>
