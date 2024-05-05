@@ -1,9 +1,6 @@
----
-
----
-
 <div class="relative aspect-video h-full video-gradient">
     <video
+        id="spacevisitor-trailer"
         class="block w-full h-full object-fill aspect-video"
         src="/trailer/spacevisitor-extract-1.mp4"
         preload="metadata"
@@ -11,6 +8,39 @@
         muted
     />
 </div>
+
+<script type="module">
+    const video = document.querySelector("#spacevisitor-trailer");
+    const container = document.querySelector(".video-gradient");
+    const trailers = [
+        "/trailer/spacevisitor-extract-1.mp4",
+        "/trailer/spacevisitor-extract-2.mp4",
+        "/trailer/spacevisitor-extract-3.mp4"
+    ];
+
+    let video_index = 0;
+
+    function resume() {
+        video.play();
+    }
+
+    function next() {
+        video.src = trailers[video_index];
+        video.load();
+        video.pause();
+    }
+
+    video.addEventListener("canplay", () => {
+        container.classList.remove("changing-video-trailer");
+        container.ontransitionend = resume;
+    });
+
+    video.addEventListener("ended", e => {
+        video_index = (video_index + 1) % trailers.length;
+        container.classList.add("changing-video-trailer");
+        container.ontransitionend = next;
+    });
+</script>
 
 <style lang="scss">
     .video-gradient:after {
@@ -20,6 +50,14 @@
         width: 100%;
         top: 0;
         left: 0;
-        background: linear-gradient(to right, #030F20ff 0%, #030F2000 100%); /* W3C */
+        background: linear-gradient(to right, #030F20ff 0%, #030F2000 50%);
+    }
+
+    .video-gradient {
+        transition: opacity 400ms ease;
+    }
+
+    .video-gradient.changing-video-trailer {
+        opacity: 0;
     }
 </style>
