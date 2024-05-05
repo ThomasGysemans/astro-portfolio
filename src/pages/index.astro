@@ -1,8 +1,58 @@
 ---
-import MainLayout from "../layouts/MainLayout.astro";
-
+import MainLayout from "@layouts/MainLayout.astro";
+import Hamburger from "@components/Hamburger.astro";
+import { Icon } from "astro-icon/components";
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans">
-    <h1>This is going to be the best portfolio!</h1>
+    <nav class="flex justify-between px-main">
+        <div class="flex items-center space-x-7">
+            <a href="/">
+                <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-32">
+            </a>
+            <h1 class="font-extrabold text-4xl leading-normal">Thomas<br>Gysemans</h1>
+        </div>
+        <div class="flex items-center space-x-8">
+            <div class="flex items-center space-x-5">
+                <a href="#" class="lang-link active">
+                    <Icon name="french-flag" class="text-3xl" />
+                    <span class="font-bold">FR</span>
+                </a>
+                <a href="#" class="lang-link">
+                    <Icon name="uk-flag" class="text-3xl" />
+                    <span class="font-bold">EN</span>
+                </a>
+            </div>
+            <span class="font-bold text-xl">MENU</span>
+            <Hamburger />
+        </div>
+    </nav>
+    <main class="mt-16 px-main">
+        <div class="space-y-8">
+            <b class="text-xl">Je suis...</b>
+            <ul class="list-disc list-inside space-y-4 text-lg">
+                <li class="flex items-center space-x-2"><span class="text-2xl">&bull;</span><strong>Développeur web</strong><Icon name="globe" /></li>
+                <li class="flex items-center space-x-2"><span class="text-2xl">&bull;</span><strong>Développeur d'applications</strong><Icon name="smartphone" /></li>
+                <li class="flex items-center space-x-2"><span class="text-2xl">&bull;</span><strong>UI/UX Designer</strong><Icon name="flower-2" /></li>
+            </ul>
+            <div class="flex items-center space-x-6">
+                <a class="bg-[#062451] rounded-md block text-white text-lg py-4 px-8" href="/projects">En savoir plus</a>
+                <a class="text-[#062451] text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte GitHub" title="Mon compte GitHub" href="https://github.com/ThomasGysemans"><Icon name="github" /></a>
+                <a class="text-[#062451] text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte LinkedIn" title="Mon compte LinkedIn" href="https://fr.linkedin.com/in/thomas-gysemans-950536268"><Icon name="linkedin" /></a>
+            </div>
+        </div>
+    </main>
+    <div class="relative">
+        <img src="/space-background.svg" class="select-none pointer-events-none w-full absolute top-0 left-0 -z-10" alt="" />
+    </div>
 </MainLayout>
+
+<style lang="scss">
+    .lang-link {
+        @apply flex items-center space-x-2 opacity-40 hover:opacity-100 transition-opacity;
+
+        &.active {
+            @apply opacity-100;
+        }
+    }
+</style>
