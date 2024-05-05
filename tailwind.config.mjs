@@ -5,6 +5,12 @@ export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
 	theme: {
 		extend: {
+			colors: {
+				primary: {
+					DEFAULT: '#062451',
+					dark: '#051d41'
+				},
+			},
 			fontFamily: {
 				sans: ['"Comfortaa"', ...defaultTheme.fontFamily.sans],
 			}
