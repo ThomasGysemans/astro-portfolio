@@ -1,15 +1,39 @@
 ---
+import { ProjectNature } from "@lib/ProjectNature";
+import { Icon } from "astro-icon/components";
 import MainLayout from "@layouts/MainLayout.astro";
 import Hamburger from "@components/Hamburger.astro";
 import Earth from "@components/svelte/Earth.svelte";
 import SpaceSection from "../components/SpaceSection.astro";
 import Button from "../components/Button.astro";
-import { Icon } from "astro-icon/components";
+import Project from "../components/Project.astro";
+
+const example_project: ProjectType = {
+    name: "Space Visitor",
+    slug: "space-visitor",
+    description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
+    summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
+    presentation_picture: 0,
+    pictures: ["/exemple-space-visitor.png"],
+    technologies: [{
+        name: "ThreeJS",
+        logo: "/logos/ThreeJS.svg",
+    }, {
+        name: "ThreeJS",
+        logo: "/logos/ThreeJS.svg",
+    }, {
+        name: "ThreeJS",
+        logo: "/logos/ThreeJS.svg",
+    }],
+    team_members: 20,
+    nature: ProjectNature.SCHOOL,
+    date: "2023",
+};
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans">
     <nav class="flex justify-between px-main">
-        <div class="flex items-center space-x-7">
+        <div class="flex items-center space-x-6">
             <a href="/">
                 <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-32">
             </a>
@@ -56,6 +80,17 @@ import { Icon } from "astro-icon/components";
         </div>
     </main>
     <SpaceSection />
+    <section class="flex flex-col justify-center space-y-20 pb-40">
+        <h2 class="text-primary text-3xl text-center">Mes projets récents</h2>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 place-content-center place-items-center px-main">
+            <Project project={example_project} />
+            <Project project={example_project} />
+            <Project project={example_project} />
+        </div>
+        <div class="flex justify-center">
+            <Button as="a" href="/projects">En savoir plus</Button>
+        </div>
+    </section>
 </MainLayout>
 
 <style lang="scss">

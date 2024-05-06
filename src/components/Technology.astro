@@ -1,0 +1,13 @@
+---
+interface Props {
+    logo: string;
+    name: string;
+}
+
+const { logo, name } = Astro.props;
+---
+
+<div class="rounded-md px-3 py-2 flex items-center space-x-2 bg-[#EFEFEF]">
+    <img src={logo} alt=`Logo de ${name}` class="w-5 h-auto object-cover">
+    <em class="font-light not-italic text-primary whitespace-nowrap text-sm">{name}</em>
+</div>

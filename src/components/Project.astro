@@ -1,0 +1,40 @@
+---
+import Technology from "./Technology.astro";
+import { Icon } from "astro-icon/components";
+import { getProjectNature, getProjectNatureIcon } from "@lib/ProjectNature";
+
+interface Props {
+    project: ProjectType;
+}
+
+const { project } = Astro.props;
+---
+
+<div class="bg-white rounded-md border-2 border-primary/50">
+    <div class="w-full h-[40%] *:rounded-[4px_4px_0_0]">
+        <img src={project.pictures[project.presentation_picture]} alt=`Présentation du projet ${project.name}` />
+    </div>
+    <div class="py-4 px-6 space-y-6">
+        <strong><a href=`/projects/${project.slug}` class="underline text-primary text-2xl font-bold">{project.name}</a></strong>
+        <p class="text-primary text-sm leading-8 font-light">{project.summary}</p>
+        <div class="flex flex-wrap *:mb-4 *:mr-4">
+            {project.technologies.map(techno => (
+                <Technology logo={techno.logo} name={techno.name} />
+            ))}
+        </div>
+        <div class="flex justify-between">
+            <span class="text-primary/50 flex items-center space-x-2 text-sm">
+                <Icon name=`${project.team_members === 1 ? "circle-user-round" : "users"}` />
+                <span class="relative top-[1px]">{project.team_members === 1 ? "Solo" : project.team_members}</span>
+            </span>
+            <span class="text-primary/50 flex items-center space-x-2 text-sm">
+                <Icon name=`${getProjectNatureIcon(project.nature)}` />
+                <span class="relative top-[1px]">{getProjectNature(project.nature)}</span>
+            </span>
+            <span class="text-primary/50 flex items-center space-x-2 text-sm">
+                <Icon name="calendar" />
+                <span class="relative top-[1px]">{project.date}</span>
+            </span>
+        </div>
+    </div>
+</div>
