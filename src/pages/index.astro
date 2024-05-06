@@ -7,6 +7,7 @@ import Earth from "@components/svelte/Earth.svelte";
 import SpaceSection from "../components/SpaceSection.astro";
 import Button from "../components/Button.astro";
 import Project from "../components/Project.astro";
+import AboutMe from "../components/AboutMe.astro";
 
 const example_project: ProjectType = {
     name: "Space Visitor",
@@ -81,7 +82,7 @@ const example_project: ProjectType = {
     </main>
     <SpaceSection />
     <section class="flex flex-col justify-center space-y-20 pb-40">
-        <h2 class="text-primary text-3xl text-center">Mes projets récents</h2>
+        <h2 class="font-bold text-primary text-3xl text-center">Mes projets récents</h2>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 place-content-center place-items-center px-main">
             <Project project={example_project} />
             <Project project={example_project} />
@@ -89,6 +90,23 @@ const example_project: ProjectType = {
         </div>
         <div class="flex justify-center">
             <Button as="a" href="/projects">En savoir plus</Button>
+        </div>
+    </section>
+    <section class="px-main space-y-20">
+        <h2 class="font-bold text-primary text-center text-3xl">Quelques infos de<br>plus sur moi...</h2>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,450px))] gap-20 place-content-center place-items-center">
+            <AboutMe title="Mes études" icon="graduation-cap">
+                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+            </AboutMe>
+            <AboutMe title="Mon expérience professionnelle" icon="briefcase">
+                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+            </AboutMe>
+            <AboutMe title="Ma freelance" icon="hard-hat">
+                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+            </AboutMe>
+            <AboutMe title="Mes compétences d'équipe" icon="team">
+                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+            </AboutMe>
         </div>
     </section>
 </MainLayout>
