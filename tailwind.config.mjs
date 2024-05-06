@@ -8,7 +8,8 @@ export default {
 			colors: {
 				primary: {
 					DEFAULT: '#062451',
-					dark: '#051d41'
+					dark: '#051d41',
+					darker: '#030F20'
 				},
 			},
 			fontFamily: {

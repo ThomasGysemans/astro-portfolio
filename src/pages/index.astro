@@ -92,23 +92,48 @@ const example_project: ProjectType = {
             <Button as="a" href="/projects">En savoir plus</Button>
         </div>
     </section>
-    <section class="px-main space-y-20">
+    <section class="px-main space-y-20 pb-40">
         <h2 class="font-bold text-primary text-center text-3xl">Quelques infos de<br>plus sur moi...</h2>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,450px))] gap-20 place-content-center place-items-center">
             <AboutMe title="Mes études" icon="graduation-cap">
-                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et <a href="https://sql.sh/" target="_blank" class="underline">SQL</a>.
             </AboutMe>
             <AboutMe title="Mon expérience professionnelle" icon="briefcase">
-                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+                J’ai suivi un stage d’une semaine à <a href="https://www.kimpleapp.com/" target="_blank" class="underline">Kimple</a> lors de mon année de Seconde durant laquelle j’ai re-créé “Flappy Bird” pour le web. J’ai également suivi un stage de 3 mois chez <a href="https://www.tabuleo.com/" target="_blank" class="underline">Tabuléo</a> où j’ai contribué au re-design de leur projet “Quizéo”.
             </AboutMe>
             <AboutMe title="Ma freelance" icon="hard-hat">
-                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+                Grâce au bouche-à-oreille, des entrepreneurs m’ont contacté pour que je leur crée un site web d’entreprise. Cela m’a appris beaucoup car j’ai dû réaliser des projets clients de A à Z, seul et en respectant des délais précis.
             </AboutMe>
             <AboutMe title="Mes compétences d'équipe" icon="team">
-                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les base de données et SQL.
+                J’ai suivi une formation sur la méthode Agile durant mes études et je suis capable de travailler dans une grande équipe. Mon stage chez Tabuléo m’a également appris à travailler dans une petite équipe avec une méthode plus adaptée.
             </AboutMe>
         </div>
     </section>
+    <footer class="min-h-96 bg-primary-darker text-white py-20 px-main grid grid-cols-[repeat(auto-fit,minmax(250px,400px))] gap-40 place-content-center">
+        <div>
+            <h3 class="font-bold text-2xl pb-4">Contact</h3>
+            <table class="w-min [&_td]:pr-4 [&_td]:pb-4">
+                <tbody>
+                    <tr>
+                        <td><a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" class="underline">LinkedIn</a></td>
+                        <td><Icon name="linkedin" class="text-xl" /></td>
+                    </tr>
+                    <tr>
+                        <td><a href="https://github.com/ThomasGysemans/" target="_blank" class="underline">GitHub</a></td>
+                        <td><Icon name="github" class="text-xl" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h3 class="font-bold text-2xl pb-4">Statut</h3>
+            <p>Actuellement en stage chez Tabuléo, et également disponible pour des projets de freelance.</p>
+        </div>
+        <div class="[&_a]:underline">
+            <h3 class="font-bold text-2xl pb-4">Concernant ce site</h3>
+            <p>Ce site a été réalisé avec <a href="https://astro.build/" target="_blank">Astro</a>, <a href="https://svelte.dev/" target="_blane">Svelte</a> et <a href="https://tailwindcss.com/" target="_blank">Tailwind</a> (pour le frontend) ainsi que <a href="https://astro.build/db/" target="_blank">AstroDB</a> pour le backend (qui est une base de données <a href="https://github.com/tursodatabase/libsql" target="_blank">LibSQL</a>). Il y a un “backoffice” privé qui me permet de contrôler le contenu de mon portfolio à tout moment. Il respecte également les <a href="https://www.accede-web.com/notices/interface-riche/" target="_blank">normes d’accessibilité</a>.</p>
+        </div>
+    </footer>
 </MainLayout>
 
 <style lang="scss">
