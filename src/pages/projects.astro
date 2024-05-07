@@ -2,29 +2,87 @@
 import MainLayout from "@/layouts/MainLayout.astro";
 import ShowCaseCanvas from "@/components/svelte/ShowCaseCanvas.svelte";
 import { Icon } from "astro-icon/components";
+
+const number_of_projects = 3;
 ---
 
 <MainLayout title="Projects">
     <div class="relative">
         <ShowCaseCanvas client:idle />
         <div class="absolute-center text-white text-center space-y-8">
-            <h2 class="text-4xl">ScienceSky v5</h2>
-            <p class="max-w-[600px] leading-6">ScienceSky est la raison pour laquelle j’ai débuté la programmation. Chaque année je travaille dessus pour le perfectionner au fur et à mesure que mes compétences s’élargissent. Il permet à chacun de rédiger ses propres articles de vulgarisation scientifique et de les publier librement.</p>
-            <p><a href="/projects/sciencesky" class="underline">En savoir plus</a></p>
-            <div class="flex justify-center items-center space-x-4">
-                <button type="button">
-                    <Icon name="chevron-left" />
-                </button>
-                <button type="button" class="piece active" />
-                <button type="button" class="piece" />
-                <button type="button" class="piece" />
-                <button type="button">
-                    <Icon name="chevron-right" />
-                </button>
+            <div role="tabpanel" id="project-1" aria-roledescription="diapositive" aria-label=`1 sur ${number_of_projects}` class="space-y-8">
+                <h2 class="text-4xl">ScienceSky v5</h2>
+                <p class="max-w-[600px] leading-6">ScienceSky est la raison pour laquelle j’ai débuté la programmation. Chaque année je travaille dessus pour le perfectionner au fur et à mesure que mes compétences s’élargissent. Il permet à chacun de rédiger ses propres articles de vulgarisation scientifique et de les publier librement.</p>
+                <p><a href="/projects/sciencesky" class="underline">En savoir plus</a></p>
             </div>
+            <div role="tabpanel" id="project-2" aria-roledescription="diapositive" aria-label=`2 sur ${number_of_projects}` tabindex="-1" class="space-y-8">
+                <h2 class="text-4xl">Projet 2</h2>
+                <p class="max-w-[600px] leading-6">ScienceSky est la raison pour laquelle j’ai débuté la programmation. Chaque année je travaille dessus pour le perfectionner au fur et à mesure que mes compétences s’élargissent. Il permet à chacun de rédiger ses propres articles de vulgarisation scientifique et de les publier librement.</p>
+                <p><a href="/projects/sciencesky" class="underline">En savoir plus</a></p>
+            </div>
+            <div role="tabpanel" id="project-3" aria-roledescription="diapositive" aria-label=`3 sur ${number_of_projects}` tabindex="-1" class="space-y-8">
+                <h2 class="text-4xl">Projet 3</h2>
+                <p class="max-w-[600px] leading-6">ScienceSky est la raison pour laquelle j’ai débuté la programmation. Chaque année je travaille dessus pour le perfectionner au fur et à mesure que mes compétences s’élargissent. Il permet à chacun de rédiger ses propres articles de vulgarisation scientifique et de les publier librement.</p>
+                <p><a href="/projects/sciencesky" class="underline">En savoir plus</a></p>
+            </div>
+        </div>
+        <div class="flex justify-center items-center space-x-4 text-white absolute left-[50%] -translate-x-[50%] bottom-10">
+            <button type="button" title="Projet précédent" aria-label="Projet précédent" id="previous">
+                <Icon name="chevron-left" />
+            </button>
+            <div role="tablist" class="space-x-4">
+                <button type="button" class="piece active" role="tab" aria-selected="true" aria-controls="project-1" />
+                <button type="button" class="piece" role="tab" aria-selected="false" aria-controls="project-2" />
+                <button type="button" class="piece" role="tab" aria-selected="false" aria-controls="project-3" />
+            </div>
+            <button type="button" title="Projet suivant" aria-label="Projet suivant" id="next">
+                <Icon name="chevron-right" />
+            </button>
         </div>
     </div>
 </MainLayout>
+
+<script type="module" define:vars={{ number_of_projects }}>
+    const panels = Array.from(document.querySelectorAll("[role='tabpanel']"));
+    const tablist = Array.from(document.querySelectorAll("[role='tablist'] > button"));
+    const prev = document.querySelector("#previous");
+    const next = document.querySelector("#next");
+    let idx = 0;
+
+    function show_previous() {
+        idx -= 1;
+        if (idx < 0) {
+            idx = number_of_projects - 1;
+        }
+        applyState();
+    }
+
+    function show_next() {
+        idx = (idx + 1) % number_of_projects;
+        applyState();
+    }
+
+    function applyState() {
+        const currentElement = panels.find(p => !p.hasAttribute("tabindex"));
+        const currentPiece = tablist.find(b => b.getAttribute("aria-selected") === "true");
+        currentElement.setAttribute("tabindex", -1);
+        currentPiece.setAttribute("aria-selected", "false");
+        currentPiece.classList.remove("active");
+        tablist[idx].setAttribute("aria-selected", "true");
+        tablist[idx].classList.add("active");
+        panels[idx].removeAttribute("tabindex");
+    }
+
+    prev.addEventListener("click", show_previous);
+    next.addEventListener("click", show_next);
+
+    for (let i = 0; i < tablist.length; i++) {
+        tablist[i].addEventListener("click", () => {
+            idx = i;
+            applyState();
+        });
+    }
+</script>
 
 <style lang="scss">
     .piece {
@@ -33,5 +91,9 @@ import { Icon } from "astro-icon/components";
         &.active {
             @apply bg-white;
         }
+    }
+
+    [tabindex='-1'] {
+        @apply hidden;
     }
 </style>
