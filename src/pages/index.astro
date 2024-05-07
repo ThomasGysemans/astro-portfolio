@@ -2,7 +2,6 @@
 import { ProjectNature } from "@lib/ProjectNature";
 import { Icon } from "astro-icon/components";
 import MainLayout from "@layouts/MainLayout.astro";
-import Hamburger from "@components/Hamburger.astro";
 import Earth from "@components/svelte/Earth.svelte";
 import SpaceSection from "../components/SpaceSection.astro";
 import Button from "../components/Button.astro";
@@ -33,28 +32,6 @@ const example_project: ProjectType = {
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans">
-    <nav class="flex justify-between px-main">
-        <div class="flex items-center space-x-6">
-            <a href="/">
-                <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-32">
-            </a>
-            <h1 class="font-extrabold text-4xl leading-normal">Thomas<br>Gysemans</h1>
-        </div>
-        <div class="flex items-center space-x-8">
-            <div class="flex items-center space-x-5">
-                <a href="#" class="lang-link active">
-                    <Icon name="french-flag" class="text-3xl" />
-                    <span class="font-bold">FR</span>
-                </a>
-                <a href="#" class="lang-link">
-                    <Icon name="uk-flag" class="text-3xl" />
-                    <span class="font-bold">EN</span>
-                </a>
-            </div>
-            <span class="font-bold text-xl">MENU</span>
-            <Hamburger />
-        </div>
-    </nav>
     <main class="mt-16 px-main relative">
         <div class="space-y-8">
             <b class="text-2xl">Je suis...</b>
@@ -135,13 +112,3 @@ const example_project: ProjectType = {
         </div>
     </footer>
 </MainLayout>
-
-<style lang="scss">
-    .lang-link {
-        @apply flex items-center space-x-2 opacity-40 hover:opacity-100 transition-opacity;
-
-        &.active {
-            @apply opacity-100;
-        }
-    }
-</style>

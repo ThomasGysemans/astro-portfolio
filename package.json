@@ -18,6 +18,7 @@
     "@threlte/extras": "^8.11.2",
     "astro": "^4.7.1",
     "astro-icon": "^1.1.0",
+    "postprocessing": "^6.35.4",
     "svelte": "^4.2.15",
     "tailwindcss": "^3.4.3",
     "three": "^0.164.1",
