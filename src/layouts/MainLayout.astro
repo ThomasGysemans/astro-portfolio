@@ -23,13 +23,13 @@ const { title } = Astro.props;
         <title>{title}</title>
     </head>
     <body class="pt-16">
-        <img src="/polygon-background.svg" class="fixed top-0 left-0 w-full h-dvh -z-20 object-cover" alt="">
+        <img src="/polygon-background.svg" class="fixed top-0 left-0 w-full h-dvh -z-20 object-cover pointer-events-none" alt="">
         <nav class="flex justify-between px-main">
             <div class="flex items-center space-x-6">
                 <a href="/">
                     <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-32">
                 </a>
-                <h1 class="font-extrabold text-4xl leading-normal">Thomas<br>Gysemans</h1>
+            <h1 class="font-extrabold text-4xl leading-normal">Thomas<br>Gysemans</h1>
             </div>
             <div class="flex items-center space-x-8">
                 <div class="flex items-center space-x-5">
