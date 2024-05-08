@@ -9,7 +9,7 @@ const number_of_projects = 3;
 <MainLayout title="Projects">
     <div class="relative">
         <ShowCaseCanvas client:idle />
-        <div class="absolute-center text-white text-center space-y-8">
+        <div class="absolute-center text-white text-center space-y-8 z-10">
             <div role="tabpanel" id="project-1" aria-roledescription="diapositive" aria-label=`1 sur ${number_of_projects}` class="space-y-8">
                 <h2 class="text-4xl">ScienceSky v5</h2>
                 <p class="max-w-[600px] leading-6">ScienceSky est la raison pour laquelle j’ai débuté la programmation. Chaque année je travaille dessus pour le perfectionner au fur et à mesure que mes compétences s’élargissent. Il permet à chacun de rédiger ses propres articles de vulgarisation scientifique et de les publier librement.</p>
@@ -26,7 +26,7 @@ const number_of_projects = 3;
                 <p><a href="/projects/sciencesky" class="underline">En savoir plus</a></p>
             </div>
         </div>
-        <div class="flex justify-center items-center space-x-4 text-white absolute left-[50%] -translate-x-[50%] bottom-10">
+        <div class="flex justify-center items-center space-x-4 text-white absolute z-10 left-[50%] -translate-x-[50%] bottom-10">
             <button type="button" title="Projet précédent" aria-label="Projet précédent" id="previous">
                 <Icon name="chevron-left" />
             </button>
@@ -39,6 +39,7 @@ const number_of_projects = 3;
                 <Icon name="chevron-right" />
             </button>
         </div>
+        <div class="absolute z-20 top-0 left-O w-full h-full custom-bg pointer-events-none" />
     </div>
 </MainLayout>
 
@@ -95,5 +96,10 @@ const number_of_projects = 3;
 
     [tabindex='-1'] {
         @apply hidden;
+    }
+
+    .custom-bg {
+        /*background: linear-gradient(90deg, rgba(#000, 1) 0%, rgba(#000, 0) 50%, rgba(#000,1) 100%);*/
+        background: radial-gradient(circle, rgba(#000,0) 0%, rgba(#000,1) 50%, rgba(#000,1) 100%);
     }
 </style>

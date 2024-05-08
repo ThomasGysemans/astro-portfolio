@@ -1,12 +1,11 @@
 <script>
     import { T, Canvas } from "@threlte/core";
     import { OrbitControls } from "@threlte/extras";
+    import Grabbable from "@components/svelte/Grabbable.svelte";
     import Planet from "./Planet.svelte";
-
-    let grabbing = false;
 </script>
 
-<div class="{grabbing ? 'cursor-grabbing' : 'cursor-grab'}" role="presentation" on:mousedown={() => grabbing = true} on:mouseup={() => grabbing = false}>
+<Grabbable>
     <Canvas size={{width: 700, height: 500}}>
         <T.PerspectiveCamera
             makeDefault
@@ -41,4 +40,4 @@
             }}
         />
     </Canvas>
-</div>
+</Grabbable>
