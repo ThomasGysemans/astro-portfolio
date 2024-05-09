@@ -1,3 +1,4 @@
+const plugin = require("tailwindcss/plugin");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
@@ -17,5 +18,9 @@ export default {
 			}
 		},
 	},
-	plugins: [],
+	plugins: [
+		plugin(({ addVariant }) => {
+			addVariant('hocus', ['&:hover', '&:focus']);
+		})
+	],
 }
