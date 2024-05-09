@@ -20,11 +20,9 @@
         });
         textureEffect.blendMode.opacity.value = 0.2;
 
-        //bloomEffect.blendMode.opacity.value = 1.5;
         const bloomEffect = new BloomEffect({
             blendFunction: BlendFunction.COLOR_DODGE,
             kernelSize: KernelSize.SMALL,
-            // useLuminanceFilter: true,
             luminanceThreshold: 0.3,
             luminanceSmoothing: 0.75
         });
@@ -46,15 +44,15 @@
     $: {
         if (cloudParticles.length === 0 && $smoke) {
             const cloudMat = new MeshLambertMaterial({
-                map: $smoke,
                 transparent: true,
+                map: $smoke,
             });
             for (let p = 0; p < 20; p++) {
                 const cloud = new Mesh(cloudGeo, cloudMat);
                 cloud.position.set(
-                    Math.random()*800 -400,
+                    Math.random() * 800 - 400,
                     500,
-                    Math.random()*500-500
+                    Math.random() * 500 - 500
                 );
                 cloud.rotation.x = 1.16;
                 cloud.rotation.y = -0.12;
@@ -79,3 +77,4 @@
 
 <T.AmbientLight args={[0x081b2a]} intensity={1.2} />
 <T.DirectionalLight args={[0x2672ba]} position={[0, 0, 1]} />
+<T.PointLight args={[0x000000, 10, 0, 0]} position={[0, 0, 100]} />

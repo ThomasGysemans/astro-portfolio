@@ -38,8 +38,11 @@ const number_of_projects = 6;
                 </div>
             </div>
             <div class="absolute bottom-32 left-[50%] -translate-x-[50%] z-30 flex items-center justify-center space-x-6">
-                <button type="button" id="previous-button" class="common-btn">Précédent</button>
-                <button type="button" id="next-button" class="common-btn">Suivant</button>
+                <button type="button" id="previous-button" class="common-btn w-32">Précédent</button>
+                <button type="button" id="next-button" class="common-btn w-32">Suivant</button>
+            </div>
+            <div class="absolute bottom-16 left-[50%] -translate-x-[50%] z-30">
+                <a href="/projects" class="common-btn">Voir tous mes projets</a>
             </div>
         </div>
     </body>
@@ -209,6 +212,6 @@ const number_of_projects = 6;
     }
 
     .common-btn {
-       @apply bg-primary-darker hocus:bg-black transition-colors py-2 rounded-md block text-white w-32 text-sm;
+       @apply bg-primary-darker hocus:bg-black transition-colors py-2 px-5 rounded-md block text-white text-sm;
     }
 </style>
