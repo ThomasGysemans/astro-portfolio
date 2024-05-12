@@ -1,7 +1,7 @@
 <div class="relative aspect-video h-full video-gradient">
     <video
         id="spacevisitor-trailer"
-        class="block w-full h-full object-fill aspect-video"
+        class="block w-full h-full max-h-[600px] object-fill aspect-video"
         src="/trailer/spacevisitor-extract-1.mp4"
         preload="metadata"
         autoplay
@@ -10,7 +10,7 @@
 </div>
 
 <script type="module">
-    const video = document.querySelector("#spacevisitor-trailer");
+    const video = (document.querySelector("#spacevisitor-trailer"));
     const container = document.querySelector(".video-gradient");
     const trailers = [
         "/trailer/spacevisitor-extract-1.mp4",
@@ -18,6 +18,11 @@
         "/trailer/spacevisitor-extract-3.mp4"
     ];
 
+    // When `video.load` is called, the video is removed from the DOM.
+    // As a consequence the height becomes 0, and it creates a layout shift.
+    // To fix this, when a video ends the current height is saved and the container
+    // is forced to keep this exact size until the next video can be played.
+    let saved_height = 0;
     let video_index = 0;
 
     function resume() {
@@ -26,6 +31,7 @@
 
     function next() {
         video.src = trailers[video_index];
+        container.style.height = saved_height + "px";
         video.load();
         video.pause();
     }
@@ -33,12 +39,15 @@
     video.addEventListener("canplay", () => {
         container.classList.remove("changing-video-trailer");
         container.ontransitionend = resume;
+        container.style.height = "100%";
+        saved_height = 0;
     });
 
     video.addEventListener("ended", e => {
         video_index = (video_index + 1) % trailers.length;
         container.classList.add("changing-video-trailer");
         container.ontransitionend = next;
+        saved_height = container.getBoundingClientRect().height;
     });
 </script>
 
