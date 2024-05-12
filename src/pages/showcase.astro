@@ -10,7 +10,21 @@ const number_of_projects = 6;
 <PageLayout title="Vitrine de mes projets principaux">
     <body>
         <div class="relative">
-            <ShowCaseCanvas client:idle />
+            <ShowCaseCanvas client:idle {number_of_projects}>
+                {Array(number_of_projects).fill(0).map((_, i) => (
+                    <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label=`${i + 1} sur ${number_of_projects}`>
+                        <div class="px-4 w-full h-full py-16 space-y-4">
+                            <h2 class="text-2xl text-center w-full">ScienceSky v5</h2>
+                            <div class="cell-details flex flex-col items-center space-y-4">
+                                <p class="text-sm w-full inline-block">Une plateforme de vulgarisation scientifique française ouverte à tous !</p>
+                                <button type="button" class="common-btn">
+                                    En savoir plus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </ShowCaseCanvas>
             <div class="absolute z-20 top-0 left-O w-full h-dvh custom-bg pointer-events-none" />
             <nav class="absolute z-30 top-20 left-[50%] -translate-x-[50%] w-full grid grid-cols-3 place-items-center place-content-center">
                 <p class="text-white text-lg flex items-center space-x-4">
@@ -20,27 +34,6 @@ const number_of_projects = 6;
                 <h1 class="text-white text-center text-3xl">Vitrine de mes<br/>meilleurs projets</h1>
                 <Hamburger white />
             </nav>
-            <div class="scene">
-                <div class="carousel" aria-live="polite">
-                    {Array(number_of_projects).fill(0).map((_, i) => (
-                        <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label=`${i + 1} sur ${number_of_projects}`>
-                            <div class="px-4 w-full h-full py-16 space-y-4">
-                                <h2 class="text-2xl text-center w-full">ScienceSky v5</h2>
-                                <div class="cell-details flex flex-col items-center space-y-4">
-                                    <p class="text-sm w-full inline-block">Une plateforme de vulgarisation scientifique française ouverte à tous !</p>
-                                    <button type="button" class="common-btn">
-                                        En savoir plus
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div class="absolute bottom-32 left-[50%] -translate-x-[50%] z-30 flex items-center justify-center space-x-6">
-                <button type="button" id="previous-button" class="common-btn w-32">Précédent</button>
-                <button type="button" id="next-button" class="common-btn w-32">Suivant</button>
-            </div>
             <div class="absolute bottom-16 left-[50%] -translate-x-[50%] z-30">
                 <a href="/projects" class="common-btn">Voir tous mes projets</a>
             </div>
@@ -48,170 +41,12 @@ const number_of_projects = 6;
     </body>
 </PageLayout>
 
-<script type="module" define:vars={{ number_of_projects }}>
-    const isHorizontal = true;
-    const carousel = document.querySelector(".carousel");
-    const cells = carousel.querySelectorAll(".cell");
-    const cellWidth = carousel.offsetWidth;
-    const cellHeight = carousel.offsetHeight;
-    const rotateFn = isHorizontal ? 'rotateY' : 'rotateX';
-    let selectedIndex = 0;
-    let radius, theta;
-
-    function rotateCarousel() {
-        const angle = theta * selectedIndex * -1;
-        carousel.style.transform = `translateZ(${-radius}px) ${rotateFn}(${angle}deg)`;
-        carousel.querySelectorAll(".previous-active")?.forEach(e => e.classList.remove("previous-active"));
-        carousel.querySelectorAll(".active")?.forEach(e => e.classList.remove("active"));
-        carousel.querySelectorAll(".next-active")?.forEach(e => e.classList.remove("next-active"));
-        cells[getActualCellIndex(selectedIndex - 1)]?.classList.add("previous-active");
-        cells[getActualCellIndex(selectedIndex)]?.classList.add("active");
-        cells[getActualCellIndex(selectedIndex + 1)]?.classList.add("next-active");
-    }
-
-    function getActualCellIndex(index) {
-        if (index < 0) {
-            const abs = (Math.abs(index) % number_of_projects);
-            if (abs === 0) {
-                return 0;
-            } else {
-                return number_of_projects - abs;
-            }
-        }
-        return Math.abs(index) % number_of_projects;
-    }
-
-    function next() {
-        selectedIndex++;
-        rotateCarousel();
-    }
-
-    function previous() {
-        selectedIndex--;
-        rotateCarousel();
-    }
-
-    function initCarousel() {
-        const cellSize = isHorizontal ? cellWidth : cellHeight;
-        radius = Math.round((cellSize / 2) / Math.tan(Math.PI / number_of_projects));
-        theta = 360 / number_of_projects;
-        for (let i = 0; i < cells.length; i++) {
-            let cell = cells[i];
-            if (i < number_of_projects) { // visible cell
-                cell.style.visibility = "visible";
-                cell.style.transform = `${rotateFn}(${theta * i}deg) translateZ(${radius}px)`;
-            } else { // hidden cell
-                cell.style.visibility = "hidden";
-                cell.style.transform = 'none';
-            }
-        }
-
-        rotateCarousel();
-    }
-
-    function handleKeyboard(e) {
-        if (e.key === "ArrowLeft") {
-            previous();
-        } else if (e.key === "ArrowRight") {
-            next();
-        }
-    }
-
-    document.querySelector("#next-button").addEventListener("click", next);
-    document.querySelector("#previous-button").addEventListener("click", previous);
-    window.addEventListener("keydown", handleKeyboard);
-
-    initCarousel();
-</script>
-
 <style lang="scss">
-    // https://3dtransforms.desandro.com/carousel
-
-    @use 'sass:math';
-
-    $cellWidth: 350px;
-    $cellHeight: $cellWidth * 0.75;
-    $cellGap: 20px;
-    $angle: 40;
-    $tz: math.div(math.div($cellWidth, 2), math.tan(math.div($angle, 2)));
-
-    .scene {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 30;
-        width: $cellWidth;
-        height: $cellHeight;
-        perspective: 1000px;
-    }
-
-    .cell > div {
-        transform: translateY(0);
-        transition: transform 500ms ease;
-    }
-
-    .carousel {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        transform: translateZ(-#{$tz}px);
-        transform-style: preserve-3d;
-        transition: transform 1s;
-
-        .cell {
-            position: absolute;
-            width: calc($cellWidth - $cellGap);
-            height: calc($cellHeight - $cellGap);
-            left: calc($cellGap / 2);
-            top: calc($cellGap / 2);
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            font-size: 4rem;
-            color: white;
-            transition: transform 1s, opacity 1s;
-
-            @for $i from 1 through 9 {
-                &:nth-child(#{$i}) {
-                    transform: rotateY(#{($i - 1) * $angle}deg) translateZ($tz);
-                }
-            }
-
-            &:not(.active) {
-                opacity: 0.03;
-
-                & > div {
-                    transform: translateY(10%);
-                }
-
-                .cell-details {
-                    opacity: 0;
-                }
-            }
-
-            &.active {
-                opacity: 1;
-            }
-
-            &.previous-active,
-            &.next-active {
-                opacity: .5;
-            }
-        }
-    }
-
     .cell-details {
         transition: opacity 200ms ease;
     }
 
     .custom-bg {
         background: radial-gradient(circle, rgba(#000,0) 0%, rgba(#000,.6) 99%, rgba(#000,0) 100%);
-    }
-
-    .common-btn {
-       @apply bg-primary-darker hocus:bg-black transition-colors py-2 px-5 rounded-md block text-white text-sm;
     }
 </style>

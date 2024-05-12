@@ -63,7 +63,7 @@
             }
         }
         if ($stars) {
-            setupEffectComposer($camera as PerspectiveCamera, $stars!);
+            setupEffectComposer($camera as PerspectiveCamera, $stars);
         }
     }
 
@@ -77,4 +77,3 @@
 
 <T.AmbientLight args={[0x081b2a]} intensity={1.2} />
 <T.DirectionalLight args={[0x2672ba]} position={[0, 0, 1]} />
-<T.PointLight args={[0x000000, 10, 0, 0]} position={[0, 0, 100]} />
