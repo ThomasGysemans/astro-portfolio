@@ -1,7 +1,6 @@
 ---
-import ShowCaseCanvas from "@/components/svelte/ShowCaseCanvas.svelte";
+import ShowCaseCarousel from "../components/svelte/ShowCaseCarousel.svelte";
 import PageLayout from "@/layouts/PageLayout.astro";
-import Hamburger from "@/components/Hamburger.astro";
 import { Icon } from "astro-icon/components";
 
 const number_of_projects = 6;
@@ -9,7 +8,7 @@ const number_of_projects = 6;
 
 <PageLayout title="Vitrine de mes projets principaux">
     <div class="relative">
-        <ShowCaseCanvas client:idle {number_of_projects}>
+        <ShowCaseCarousel client:idle {number_of_projects}>
             {Array(number_of_projects).fill(undefined).map((_, i) => (
                 <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label=`${i + 1} sur ${number_of_projects}`>
                     <div class="px-4 w-full h-full py-16 space-y-4">
@@ -23,7 +22,7 @@ const number_of_projects = 6;
                     </div>
                 </div>
             ))}
-        </ShowCaseCanvas>
+        </ShowCaseCarousel>
         <div class="absolute z-20 top-0 left-O w-full h-dvh custom-bg pointer-events-none" />
         <nav class="absolute z-30 top-20 left-[50%] -translate-x-[50%] w-full grid grid-cols-3 place-items-center place-content-center">
             <p class="text-white text-lg flex items-center space-x-4">
