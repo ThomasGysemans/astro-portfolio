@@ -11,7 +11,7 @@ const { title } = Astro.props;
 ---
 
 <PageLayout title={title}>
-    <body class="pt-16 text-primary">
+    <div class="pt-16 text-primary">
         <img src="/polygon-background.svg" class="fixed top-0 left-0 w-full h-dvh -z-20 object-cover pointer-events-none" alt="">
         <nav class="flex justify-between px-main">
             <div class="flex items-center space-x-6">
@@ -38,7 +38,7 @@ const { title } = Astro.props;
         <div>
             <slot />
         </div>
-    </body>
+    </div>
 </PageLayout>
 
 <style lang="scss">
