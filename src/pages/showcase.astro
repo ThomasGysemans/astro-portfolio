@@ -10,7 +10,7 @@ const number_of_projects = 6;
 <PageLayout title="Vitrine de mes projets principaux">
     <div class="relative">
         <ShowCaseCanvas client:idle {number_of_projects}>
-            {Array(number_of_projects).fill(0).map((_, i) => (
+            {Array(number_of_projects).fill(undefined).map((_, i) => (
                 <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label=`${i + 1} sur ${number_of_projects}`>
                     <div class="px-4 w-full h-full py-16 space-y-4">
                         <h2 class="text-2xl text-center w-full">ScienceSky v5</h2>
@@ -28,10 +28,13 @@ const number_of_projects = 6;
         <nav class="absolute z-30 top-20 left-[50%] -translate-x-[50%] w-full grid grid-cols-3 place-items-center place-content-center">
             <p class="text-white text-lg flex items-center space-x-4">
                 <Icon name="chevron-left" />
-                <a href="/">Quitter</a>
+                <a href="/" class="hover:underline">Quitter</a>
             </p>
             <h1 class="text-white text-center text-3xl">Vitrine de mes<br/>meilleurs projets</h1>
-            <Hamburger white />
+            <p class="text-white text-lg flex items-center space-x-4">
+                <a href="/projects" class="hover:underline">Tous mes projets</a>
+                <Icon name="chevron-right" />
+            </p>
         </nav>
         <div class="absolute bottom-16 left-[50%] -translate-x-[50%] z-30">
             <a href="/projects" class="common-btn">Voir tous mes projets</a>
