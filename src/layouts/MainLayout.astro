@@ -1,5 +1,4 @@
 ---
-import Hamburger from "../components/Hamburger.astro";
 import PageLayout from "./PageLayout.astro";
 import { Icon } from "astro-icon/components";
 
@@ -26,13 +25,14 @@ const { title } = Astro.props;
                         <Icon name="french-flag" class="text-3xl" />
                         <span class="font-bold">FR</span>
                     </a>
-                    <a href="#" class="lang-link">
-                        <Icon name="uk-flag" class="text-3xl" />
+                    <a href="#" class="lang-link group">
+                        <Icon name="uk-flag" class="text-3xl grayscale group-hover:grayscale-0" />
                         <span class="font-bold">EN</span>
                     </a>
                 </div>
-                <span class="font-bold text-xl">MENU</span>
-                <Hamburger />
+                <a href="/projects" class="py-2 px-2 rounded-md text-primary font-bold text-lg work-btn">
+                    VOIR MON TRAVAIL
+                </a>
             </div>
         </nav>
         <div>
@@ -47,6 +47,32 @@ const { title } = Astro.props;
 
         &.active {
             @apply opacity-100;
+        }
+    }
+
+    .work-btn {
+        display: inline-block;
+        position: relative;
+        text-decoration: none;
+        z-index: 1;
+
+        &::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            left: 0;
+            bottom: .07em;
+            height: .2em;
+            width: 100%;
+            border-radius: 10px;
+            transition: background-size 300ms ease;
+            background-size: 100% 100%;
+
+            @apply bg-gradient-to-r from-primary via-primary-light to-primary;
+        }
+
+        &:hover::after {
+            background-size: 200% 200%;
         }
     }
 </style>

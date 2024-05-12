@@ -124,8 +124,8 @@
     </div>
 
     <div class="absolute bottom-32 left-[50%] -translate-x-[50%] z-30 flex items-center justify-center space-x-6">
-        <button type="button" id="previous-button" class="common-btn w-32" on:click={previous}>Précédent</button>
-        <button type="button" id="next-button" class="common-btn w-32" on:click={next}>Suivant</button>
+        <button type="button" id="previous-button" class="carousel-btn w-32" on:click={previous}>Précédent</button>
+        <button type="button" id="next-button" class="carousel-btn w-32" on:click={next}>Suivant</button>
     </div>
 </div>
 
