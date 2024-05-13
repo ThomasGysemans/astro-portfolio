@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
     import { T, Canvas } from "@threlte/core";
     import { OrbitControls } from "@threlte/extras";
     import Grabbable from "@components/svelte/Grabbable.svelte";
     import Planet from "./Planet.svelte";
+
+    const res = "2k";
 </script>
 
 <Grabbable>
@@ -18,7 +20,7 @@
                 enableDamping
                 enableZoom={false}
                 rotateSpeed={0.5}
-                autoRotate
+                autoRotate={false}
             />
         </T.PerspectiveCamera>
 
@@ -28,15 +30,14 @@
         <Planet
             atmosphere
             radius={6}
-            rotationSpeed={0.01}
+            rotationSpeed={0.1}
             cloudsRotationSpeed={-0.05}
             tiltRadians={0.409}
             texturesPaths={{
-                map: "/earth/2k_earth_daymap.jpg",
-                lights: "/earth/2k_earth_nightmap.jpg",
-                clouds: "/earth/2k_earth_clouds.jpg",
-                normalMap: "/earth/2k_earth_normal_map.jpg",
-                specularMap: "/earth/2k_earth_specular_map.jpg"
+                map: `/earth/${res}_earth_daymap.jpg`,
+                clouds: `/earth/${res}_earth_clouds.jpg`,
+                normalMap: `/earth/${res}_earth_normal_map.jpg`,
+                specularMap: `/earth/${res}_earth_specular_map.jpg`,
             }}
         />
     </Canvas>
