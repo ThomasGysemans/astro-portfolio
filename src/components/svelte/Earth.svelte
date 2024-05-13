@@ -19,8 +19,8 @@
             <OrbitControls
                 enableDamping
                 enableZoom={false}
-                rotateSpeed={0.5}
                 autoRotate={false}
+                rotateSpeed={0.5}
             />
         </T.PerspectiveCamera>
 
@@ -31,7 +31,7 @@
             atmosphere
             radius={6}
             rotationSpeed={0.1}
-            cloudsRotationSpeed={-0.05}
+            cloudsRotationSpeed={-0.07}
             tiltRadians={0.409}
             texturesPaths={{
                 map: `/earth/${res}_earth_daymap.jpg`,

@@ -4,7 +4,7 @@ import { AdditiveBlending, Color, ShaderMaterial } from "three";
 export default function({
     rimHex = 0x0088ff,
     facingHex = 0x000000,
-    scale = 2.0
+    scale = 1.75
 } = {}) {
     const uniforms = {
         color1: { value: new Color(rimHex) },
