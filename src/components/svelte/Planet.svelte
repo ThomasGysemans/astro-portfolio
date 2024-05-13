@@ -1,6 +1,7 @@
 <script lang="ts">
     import { T, useLoader, useTask } from '@threlte/core';
     import { AdditiveBlending, IcosahedronGeometry, Mesh, MeshPhongMaterial, MeshStandardMaterial, Texture, TextureLoader } from 'three';
+    import { onMount } from "svelte";
     import fresnel from '@/fresnel.ts';
 
     interface PlanetTextures {
@@ -27,6 +28,13 @@
 
     let planetMesh: Mesh;
     let cloudsMesh: Mesh;
+    let browser = false;
+
+    $: {
+        if ($textures && browser) {
+            document.querySelector("#earth-loading-replacement")?.remove();
+        }
+    }
 
     function createPlanetMat(map: Texture, normalMap?: Texture, specularMap?: Texture) {
         if (normalMap) {
@@ -49,6 +57,10 @@
         // The clouds have a different rotation so that it looks more dynamic.
         if (planetMesh) planetMesh.rotation.y += rotationSpeed * delta;
         if (cloudsMesh && cloudsRotationSpeed != undefined) cloudsMesh.rotation.y += cloudsRotationSpeed * delta;
+    });
+
+    onMount(() => {
+        browser = true;
     });
 </script>
 
