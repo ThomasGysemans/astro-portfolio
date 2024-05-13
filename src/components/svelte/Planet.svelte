@@ -31,8 +31,15 @@
     let browser = false;
 
     $: {
-        if ($textures && browser) {
-            document.querySelector("#earth-loading-replacement")?.remove();
+        if (browser) {
+            const loadingReplacement = document.querySelector("#earth-loading-replacement") as HTMLElement | undefined;
+            if (loadingReplacement) {
+                if ($textures) {
+                    loadingReplacement.style.display = "none";
+                } else {
+                    loadingReplacement.style.display = "block";
+                }
+            }
         }
     }
 
