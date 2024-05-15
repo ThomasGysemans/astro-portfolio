@@ -1,0 +1,110 @@
+---
+import { Icon } from "astro-icon/components"
+import { ProjectNature } from "@/lib/ProjectNature";
+import MainLayout from "@/layouts/MainLayout.astro";
+import Project from "@/components/Project.astro";
+import Skill from "../components/Skill.astro";
+
+const example_project: ProjectType = {
+    name: "Space Visitor",
+    slug: "space-visitor",
+    description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
+    summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
+    presentation_picture: 0,
+    pictures: ["/exemple-space-visitor.png"],
+    technologies: [{
+        name: "ThreeJS",
+        logo: "/logos/ThreeJS.svg",
+    }, {
+        name: "ThreeJS",
+        logo: "/logos/ThreeJS.svg",
+    }, {
+        name: "ThreeJS",
+        logo: "/logos/ThreeJS.svg",
+    }],
+    team_members: 20,
+    nature: ProjectNature.SCHOOL,
+    date: "2023",
+};
+
+const projects = [example_project];
+---
+
+<MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
+    <h1 class="text-4xl text-center mt-32 mb-14">Mes projets</h1>
+    <div class="w-full px-main grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20">
+        <div>
+            <label for="filter-type">Trier selon le type</label>
+            <select id="filter-type" name="filter-type">
+                <option value="all" selected>Tous</option>
+                <option value="web">Web</option>
+                <option value="language">Language</option>
+            </select>
+        </div>
+        <div>
+            <label for="filter-date">Trier selon le type</label>
+            <select id="filter-date" name="filter-date">
+                <option value="recent" selected>Plus récents</option>
+                <option value="oldest" selected>Plus anciens</option>
+            </select>
+        </div>
+        <div>
+            <label for="filter-techno">Trier selon les technologies</label>
+            <select id="filter-techno" name="filter-techno">
+                <option value="all" selected>Tous</option>
+                <option value="web" selected>Web</option>
+                <option value="language" selected>Language</option>
+            </select>
+        </div>
+        <div class="relative flex items-end">
+            <Icon name="search" class="absolute bottom-4 left-3.5 text-primary/50" />
+            <input
+                type="search"
+                placeholder="Rechercher un projet"
+                aria-label="Rechercher un projet"
+                class="text-primary bg-white border-2 border-primary/50 rounded-md pr-4 pl-9 py-3 w-full text-sm"
+            />
+        </div>
+    </div>
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 px-main my-12">
+        <Project project={example_project} />
+        <Project project={example_project} />
+        <Project project={example_project} />
+        <Project project={example_project} />
+        <Project project={example_project} />
+        <Project project={example_project} />
+        <Project project={example_project} />
+        <Project project={example_project} />
+    </div>
+    <section class="px-main my-40 space-y-14">
+        <h1 class="text-4xl text-center">Mes compétences techniques</h1>
+        <div class="flex justify-center items-center w-full">
+            <p class="text-center font-light leading-9 max-w-[600px]">Même si lister des technologies de cette manière n’a pas beaucoup de sens, je vous les présente comme les technologies que j’ai utilisées dans le passé et pour lesquelles j’ai un minimum d’expérience.</p>
+        </div>
+        <div class="grid grid-cols-[repeat(auto-fit,200px)] gap-8">
+            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved />
+            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved />
+            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved={false} />
+            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved={false} />
+            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved={false} />
+            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved />
+        </div>
+    </section>
+</MainLayout>
+
+<script define:vars={{ projects }}>window.projects = projects;</script>
+<script src="../lib/pages/projects.ts"></script>
+
+<style lang="scss">
+    label {
+        @apply block mb-3 font-light opacity-60;
+    }
+
+    select {
+        @apply w-full text-primary border-b-[1px] border-b-primary/10 bg-transparent;
+    }
+
+    :global([data-hidden="true"]) {
+        display: none;
+    }
+</style>

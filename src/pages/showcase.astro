@@ -6,7 +6,7 @@ import { Icon } from "astro-icon/components";
 const number_of_projects = 6;
 ---
 
-<PageLayout title="Vitrine de mes projets principaux">
+<PageLayout title="Portfolio de Thomas Gysemans - Vitrine de mes projets principaux">
     <div class="relative">
         <ShowCaseCarousel client:idle {number_of_projects}>
             {Array(number_of_projects).fill(undefined).map((_, i) => (

@@ -10,16 +10,16 @@ interface Props {
 const { project } = Astro.props;
 ---
 
-<div class="bg-white rounded-md border-2 border-primary/50">
-    <div class="w-full h-[40%] *:rounded-[4px_4px_0_0]">
-        <img src={project.pictures[project.presentation_picture]} alt=`Présentation du projet ${project.name}` />
+<div class="bg-white rounded-md border-2 border-primary/50" data-slug={project.slug}>
+    <div class="w-full h-60 *:rounded-[4px_4px_0_0]">
+        <img src={project.pictures[project.presentation_picture]} alt=`Présentation du projet ${project.name}` class="h-full w-full" />
     </div>
-    <div class="py-4 px-6 space-y-6">
+    <div class="py-4 px-6 space-y-6 h-[60%]">
         <strong><a href=`/projects/${project.slug}` class="underline text-primary text-2xl font-bold">{project.name}</a></strong>
         <p class="text-primary text-sm leading-8 font-light">{project.summary}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
             {project.technologies.map(techno => (
-                <Technology logo={techno.logo} name={techno.name} />
+                <Technology logo={techno.logo} name={techno.name}/>
             ))}
         </div>
         <div class="flex justify-between">
