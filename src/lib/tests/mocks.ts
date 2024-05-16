@@ -28,6 +28,19 @@ function getRandomSkills(): Technology[] {
     });
 }
 
+function getRandomProjectType(): ProjectType {
+    const types = [
+        ProjectType.WEB,
+        ProjectType.APPLICATION,
+        ProjectType.SOFTWARE,
+        ProjectType.LANGUAGE,
+        ProjectType.GAME,
+        ProjectType.CHALLENGE,
+        ProjectType.OTHER,
+    ];
+    return types[Math.floor(Math.random() * types.length)];
+}
+
 export function mockProject(): Project {
     return {
         name: getRandomName(),
@@ -39,7 +52,7 @@ export function mockProject(): Project {
         technologies: getRandomSkills(),
         team_members: Math.ceil(Math.random() * 20 + 1),
         nature: ProjectNature.SCHOOL,
-        type: ProjectType.GAME,
+        type: getRandomProjectType(),
         date: "202" + Math.ceil(Math.random() * 4 + 1),
     };
 }

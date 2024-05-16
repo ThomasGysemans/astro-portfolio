@@ -1,7 +1,8 @@
 ---
-import Technology from "./Technology.astro";
-import { Icon } from "astro-icon/components";
 import { getProjectNature, getProjectNatureIcon } from "@lib/ProjectNature";
+import { getProjectIcon, getProjectFrenchName } from "@/lib/ProjectType";
+import { Icon } from "astro-icon/components";
+import Technology from "./Technology.astro";
 
 interface Props {
     project: Project;
@@ -15,11 +16,14 @@ const { project } = Astro.props;
         <img src={project.pictures[project.presentation_picture]} alt=`Présentation du projet ${project.name}` class="h-full w-full" />
     </div>
     <div class="py-4 px-6 space-y-6 h-[60%]">
-        <strong><a href=`/projects/${project.slug}` class="underline text-primary text-2xl font-bold">{project.name}</a></strong>
+        <strong class="inline-flex items-center space-x-4">
+            <a href=`/projects/${project.slug}` class="underline text-primary text-2xl font-bold max-w-[80%] truncate">{project.name}</a>
+            <Icon name={getProjectIcon(project.type)} class="text-2xl" title={getProjectFrenchName(project.type)} />
+        </strong>
         <p class="text-primary text-sm leading-8 font-light">{project.summary}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
             {project.technologies.map(techno => (
-                <Technology logo={techno.logo} name={techno.name}/>
+                <Technology logo={techno.logo} name={techno.name} />
             ))}
         </div>
         <div class="flex justify-between">

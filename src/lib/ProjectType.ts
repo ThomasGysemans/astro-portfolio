@@ -20,3 +20,29 @@ export function getProjectType(name: string): ProjectType {
             return ProjectType.OTHER;
     }
 }
+
+export function getProjectIcon(type: ProjectType): string {
+    switch (type) {
+        case ProjectType.WEB: return "globe";
+        case ProjectType.APPLICATION: return "smartphone";
+        case ProjectType.SOFTWARE: return "laptop";
+        case ProjectType.LANGUAGE: return "languages";
+        case ProjectType.GAME: return "gamepad-2";
+        case ProjectType.CHALLENGE: return "swords";
+        default:
+            return "folder-dot";
+    }
+}
+
+export function getProjectFrenchName(type: ProjectType): string {
+    switch (type) {
+        case ProjectType.WEB: return "Web";
+        case ProjectType.APPLICATION: return "Application";
+        case ProjectType.SOFTWARE: return "Logiciel";
+        case ProjectType.LANGUAGE: return "Langage";
+        case ProjectType.GAME: return "Jeu vidéo";
+        case ProjectType.CHALLENGE: return "Challenge";
+        default:
+            return "Autre";
+    }
+}
