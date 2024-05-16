@@ -1,43 +1,22 @@
 ---
 import { Icon } from "astro-icon/components"
-import { ProjectNature } from "@/lib/ProjectNature";
+import { mockProjects } from "../lib/tests/mocks";
 import MainLayout from "@/layouts/MainLayout.astro";
 import Project from "@/components/Project.astro";
-import Skill from "../components/Skill.astro";
+import Skill from "@/components/Skill.astro";
 
-const example_project: ProjectType = {
-    name: "Space Visitor",
-    slug: "space-visitor",
-    description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
-    summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
-    presentation_picture: 0,
-    pictures: ["/exemple-space-visitor.png"],
-    technologies: [{
-        name: "ThreeJS",
-        logo: "/logos/ThreeJS.svg",
-    }, {
-        name: "ThreeJS",
-        logo: "/logos/ThreeJS.svg",
-    }, {
-        name: "ThreeJS",
-        logo: "/logos/ThreeJS.svg",
-    }],
-    team_members: 20,
-    nature: ProjectNature.SCHOOL,
-    date: "2023",
-};
-
-const projects = [example_project];
+const projects = mockProjects();
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
-    <h1 class="text-4xl text-center mt-32 mb-14">Mes projets</h1>
-    <div class="w-full px-main grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20">
+    <h1 class="text-4xl text-center mt-32">Mes projets</h1>
+    <div class="w-full px-main my-20 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20">
         <div>
             <label for="filter-type">Trier selon le type</label>
             <select id="filter-type" name="filter-type">
                 <option value="all" selected>Tous</option>
                 <option value="web">Web</option>
+                <option value="game">Jeu</option>
                 <option value="language">Language</option>
             </select>
         </div>
@@ -67,14 +46,9 @@ const projects = [example_project];
         </div>
     </div>
     <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 px-main my-12">
-        <Project project={example_project} />
-        <Project project={example_project} />
-        <Project project={example_project} />
-        <Project project={example_project} />
-        <Project project={example_project} />
-        <Project project={example_project} />
-        <Project project={example_project} />
-        <Project project={example_project} />
+        {projects.map(p => (
+            <Project project={p} />
+        ))}
     </div>
     <section class="px-main my-40 space-y-14">
         <h1 class="text-4xl text-center">Mes compétences techniques</h1>
