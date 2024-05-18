@@ -1,12 +1,13 @@
 ---
 import { Icon } from "astro-icon/components"
-import { mockProjects } from "@/lib/tests/mocks";
+import { mockProjects, mockSkills } from "@/lib/tests/mocks";
 import { ProjectType } from "@/lib/ProjectType";
 import MainLayout from "@/layouts/MainLayout.astro";
 import Project from "@/components/Project.astro";
 import Skill from "@/components/Skill.astro";
 
 const projects = mockProjects();
+const skills = mockSkills();
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
@@ -55,13 +56,10 @@ const projects = mockProjects();
         <div class="flex justify-center items-center w-full">
             <p class="text-center font-light leading-9 max-w-[600px]">Même si lister des technologies de cette manière n’a pas beaucoup de sens, je vous les présente comme les technologies que j’ai utilisées dans le passé et pour lesquelles j’ai un minimum d’expérience.</p>
         </div>
-        <div class="grid grid-cols-[repeat(auto-fit,200px)] gap-8">
-            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved />
-            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved />
-            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved={false} />
-            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved={false} />
-            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved={false} />
-            <Skill logo="/logos/ThreeJS.svg" name="ThreeJS" loved />
+        <div class="flex flex-wrap *:mb-8 *:mr-8">
+            {skills.map(s => (
+                <Skill logo={s.logo} name={s.name} loved={s.loved} />
+            ))}
         </div>
     </section>
 </MainLayout>

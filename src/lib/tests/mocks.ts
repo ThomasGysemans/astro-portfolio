@@ -11,12 +11,12 @@ function getRandomLetter(): string {
     return String.fromCharCode(getRandomNumber(min, max + 1));
 }
 
-function getRandomName(): string {
-    const length = Math.random() * 25 + 1;
+function getRandomName(maxlength: number, containsWhitespace = true): string {
+    const length = Math.random() * maxlength + 1;
     let expectWord = false;
     let name = "";
     for (let i = 0; i < length; i++) {
-        if (!expectWord && Math.random() < 0.2) {
+        if (containsWhitespace && !expectWord && Math.random() < 0.2) {
             name += " ";
             expectWord = true;
         } else {
@@ -27,11 +27,14 @@ function getRandomName(): string {
     return name.trim();
 }
 
-function getRandomSkills(): Technology[] {
-    return new Array(Math.ceil(Math.random() * 4)).fill({
-        name: "ThreeJS",
-        logo: "/logos/ThreeJS.svg",
-        loved: false,
+export function mockSkills(length?: number): Technology[] {
+    length ??= Math.ceil(Math.random() * 5 + 1);
+    return createMock(length, () => {
+        return {
+            name: getRandomName(15, false),
+            logo: "/logos/ThreeJS.svg",
+            loved: Math.random() < 0.1,
+        };
     });
 }
 
@@ -46,7 +49,7 @@ function getRandomProjectNature(): string {
 }
 
 export function mockProject(): Project {
-    const name = getRandomName();
+    const name = getRandomName(25);
     return {
         name: name,
         slug: name.replace(/ /g, "-"),
@@ -54,7 +57,7 @@ export function mockProject(): Project {
         summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
         presentation_picture: 0,
         pictures: ["/exemple-space-visitor.png"],
-        technologies: getRandomSkills(),
+        technologies: mockSkills(),
         team_members: Math.ceil(Math.random() * 20 + 1),
         nature: getRandomProjectNature(),
         type: getRandomProjectType(),
@@ -62,11 +65,20 @@ export function mockProject(): Project {
     };
 }
 
-export function mockProjects(length?: number): Project[] {
-    length ??= Math.ceil(Math.random() * 5 + 1);
-    const projects: Project[] = [];
+function createMock<T>(length: number, mock: () => T): T[] {
+    const projects: T[] = [];
     for (let i = 0; i < length; i++) {
-        projects.push(mockProject());
+        projects.push(mock());
     }
     return projects;
+}
+
+export function mockProjects(length?: number): Project[] {
+    length ??= Math.ceil(Math.random() * 5 + 1);
+    return createMock(length, mockProject);
+    // const projects: Project[] = [];
+    // for (let i = 0; i < length; i++) {
+    //     projects.push(mockProject());
+    // }
+    // return projects;
 }
