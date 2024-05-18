@@ -13,7 +13,7 @@ const projects = mockProjects();
     <h1 class="text-4xl text-center mt-32">Mes projets</h1>
     <div class="w-full px-main my-20 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20">
         <div>
-            <label for="filter-type">Trier selon le type</label>
+            <label for="filter-type">Filtrer selon le type</label>
             <select id="filter-type" name="filter-type">
                 <option value="all" selected>Tous</option>
                 {ProjectType.getAllTypes().map(p => (
@@ -22,14 +22,15 @@ const projects = mockProjects();
             </select>
         </div>
         <div>
-            <label for="filter-date">Trier selon le type</label>
+            <label for="filter-date">Trier selon la date</label>
             <select id="filter-date" name="filter-date">
-                <option value="recent" selected>Plus récents</option>
+                <option value="none" selected>Aucun tri</option>
+                <option value="recent">Plus récents</option>
                 <option value="oldest">Plus anciens</option>
             </select>
         </div>
         <div>
-            <label for="filter-techno">Trier selon les technologies</label>
+            <label for="filter-techno">Filtrer selon les technologies</label>
             <select id="filter-techno" name="filter-techno">
                 <option value="all" selected>Toutes</option>
             </select>
@@ -44,7 +45,7 @@ const projects = mockProjects();
             />
         </div>
     </div>
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 px-main my-12">
+    <div id="projects-container" class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 px-main my-12">
         {projects.map(p => (
             <Project project={p} />
         ))}
