@@ -13,8 +13,21 @@ export class ProjectType {
         public color: string,
     ) {}
 
+    private static getKeys(): (keyof typeof ProjectType)[] {
+        return Object.keys(ProjectType) as (keyof typeof ProjectType)[];
+    }
+
+    public static getAllTypes(): ProjectType[] {
+        const projects: ProjectType[] = [];
+        const keys = this.getKeys();
+        for (const key of keys) {
+            projects.push(ProjectType[key] as ProjectType);
+        }
+        return projects;
+    }
+
     public static getProjectType(name: string): ProjectType {
-        const keys = Object.keys(ProjectType) as (keyof typeof ProjectType)[];
+        const keys = this.getKeys();
         for (const key of keys) {
             const projectType = ProjectType[key] as ProjectType;
             if (projectType.frenchName === name) {

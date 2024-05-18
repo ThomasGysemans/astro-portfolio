@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components"
 import { mockProjects } from "@/lib/tests/mocks";
+import { ProjectType } from "../lib/ProjectType";
 import MainLayout from "@/layouts/MainLayout.astro";
 import Project from "@/components/Project.astro";
 import Skill from "@/components/Skill.astro";
@@ -15,9 +16,9 @@ const projects = mockProjects();
             <label for="filter-type">Trier selon le type</label>
             <select id="filter-type" name="filter-type">
                 <option value="all" selected>Tous</option>
-                <option value="web">Web</option>
-                <option value="game">Jeu</option>
-                <option value="language">Language</option>
+                {ProjectType.getAllTypes().map(p => (
+                    <option value={p.frenchName}>{p.frenchName}</option>
+                ))}
             </select>
         </div>
         <div>
@@ -30,9 +31,7 @@ const projects = mockProjects();
         <div>
             <label for="filter-techno">Trier selon les technologies</label>
             <select id="filter-techno" name="filter-techno">
-                <option value="all" selected>Tous</option>
-                <option value="web">Web</option>
-                <option value="language">Language</option>
+                <option value="all" selected>Toutes</option>
             </select>
         </div>
         <div class="relative flex items-end">
