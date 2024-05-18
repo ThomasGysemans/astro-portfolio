@@ -12,10 +12,14 @@ function getRandomLetter(): string {
 }
 
 function getRandomName(): string {
-    const length = Math.random() * 20 + 1;
+    const length = Math.random() * 25 + 1;
     let name = "";
     for (let i = 0; i < length; i++) {
-        name += getRandomLetter();
+        if (Math.random() < 0.2) {
+            name += " ";
+        } else {
+            name += getRandomLetter();
+        }
     }
     return name;
 }
