@@ -36,16 +36,13 @@ function getRandomSkills(): Technology[] {
 }
 
 function getRandomProjectType(): string {
-    const types = [
-        ProjectType.WEB,
-        ProjectType.APPLICATION,
-        ProjectType.SOFTWARE,
-        ProjectType.LANGUAGE,
-        ProjectType.GAME,
-        ProjectType.CHALLENGE,
-        ProjectType.OTHER,
-    ];
+    const types = ProjectType.getAllTypes();
     return types[Math.floor(Math.random() * types.length)].frenchName;
+}
+
+function getRandomProjectNature(): string {
+    const natures = ProjectNature.getAllNatures();
+    return natures[Math.floor(Math.random() * natures.length)].frenchName;
 }
 
 export function mockProject(): Project {
@@ -59,7 +56,7 @@ export function mockProject(): Project {
         pictures: ["/exemple-space-visitor.png"],
         technologies: getRandomSkills(),
         team_members: Math.ceil(Math.random() * 20 + 1),
-        nature: ProjectNature.SCHOOL,
+        nature: getRandomProjectNature(),
         type: getRandomProjectType(),
         date: "202" + Math.ceil(Math.random() * 4 + 1),
     };

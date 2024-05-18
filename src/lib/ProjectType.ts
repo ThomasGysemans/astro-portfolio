@@ -1,3 +1,5 @@
+import { EnumUtilities } from "@lib/Enum.ts";
+
 export class ProjectType {
     public static readonly WEB = new ProjectType("globe", "Web", "bg-[#566CF5]");
     public static readonly APPLICATION = new ProjectType("smartphone", "Application", "bg-[#F09953]");
@@ -13,27 +15,11 @@ export class ProjectType {
         public color: string,
     ) {}
 
-    private static getKeys(): (keyof typeof ProjectType)[] {
-        return Object.keys(ProjectType) as (keyof typeof ProjectType)[];
-    }
-
     public static getAllTypes(): ProjectType[] {
-        const projects: ProjectType[] = [];
-        const keys = this.getKeys();
-        for (const key of keys) {
-            projects.push(ProjectType[key] as ProjectType);
-        }
-        return projects;
+        return EnumUtilities.getAllStaticInstances<ProjectType>(ProjectType as any);
     }
 
     public static getProjectType(name: string): ProjectType {
-        const keys = this.getKeys();
-        for (const key of keys) {
-            const projectType = ProjectType[key] as ProjectType;
-            if (projectType.frenchName === name) {
-                return projectType;
-            }
-        }
-        return ProjectType.OTHER;
+        return EnumUtilities.getStaticInstance<ProjectType>(name, ProjectType as any) ?? ProjectType.OTHER;
     }
 }

@@ -2,6 +2,7 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
+// TypeScript is annoying as hell, I don't have a choice but to let this import otherwise the types are not detected.
 import type { ProjectNature } from "@lib/ProjectNature.ts";
 
 declare global {
@@ -20,7 +21,7 @@ declare global {
         pictures: string[];
         technologies: Technology[];
         team_members: number; // 1 for solo
-        nature: ProjectNature;
+        nature: string; // the `frenchName` property in the `ProjectNature` class
         type: string; // the `frenchName` property in the `ProjectType` class
         date: string; // "2023-2024" or "2023" etc.
     };
