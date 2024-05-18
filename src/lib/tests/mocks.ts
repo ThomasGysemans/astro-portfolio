@@ -13,15 +13,18 @@ function getRandomLetter(): string {
 
 function getRandomName(): string {
     const length = Math.random() * 25 + 1;
+    let expectWord = false;
     let name = "";
     for (let i = 0; i < length; i++) {
-        if (Math.random() < 0.2) {
+        if (!expectWord && Math.random() < 0.2) {
             name += " ";
+            expectWord = true;
         } else {
             name += getRandomLetter();
+            expectWord = false;
         }
     }
-    return name;
+    return name.trim();
 }
 
 function getRandomSkills(): Technology[] {
@@ -46,9 +49,10 @@ function getRandomProjectType(): string {
 }
 
 export function mockProject(): Project {
+    const name = getRandomName();
     return {
-        name: getRandomName(),
-        slug: "space-visitor",
+        name: name,
+        slug: name.replace(/ /g, "-"),
         description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
         summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
         presentation_picture: 0,
