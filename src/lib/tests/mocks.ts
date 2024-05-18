@@ -28,7 +28,7 @@ function getRandomSkills(): Technology[] {
     });
 }
 
-function getRandomProjectType(): ProjectType {
+function getRandomProjectType(): string {
     const types = [
         ProjectType.WEB,
         ProjectType.APPLICATION,
@@ -38,7 +38,7 @@ function getRandomProjectType(): ProjectType {
         ProjectType.CHALLENGE,
         ProjectType.OTHER,
     ];
-    return types[Math.floor(Math.random() * types.length)];
+    return types[Math.floor(Math.random() * types.length)].frenchName;
 }
 
 export function mockProject(): Project {

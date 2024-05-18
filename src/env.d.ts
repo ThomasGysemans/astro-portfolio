@@ -3,7 +3,6 @@
 /// <reference types="astro/client" />
 
 import type { ProjectNature } from "@lib/ProjectNature.ts";
-import type { ProjectType } from "@lib/ProjectType.ts";
 
 declare global {
     type Technology = {
@@ -22,7 +21,7 @@ declare global {
         technologies: Technology[];
         team_members: number; // 1 for solo
         nature: ProjectNature;
-        type: ProjectType;
+        type: string; // the `frenchName` property in the `ProjectType` class
         date: string; // "2023-2024" or "2023" etc.
     };
 }
