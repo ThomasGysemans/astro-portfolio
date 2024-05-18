@@ -1,7 +1,7 @@
 ---
 import { getProjectNature, getProjectNatureIcon } from "@lib/ProjectNature";
-import { Icon } from "astro-icon/components";
 import { ProjectType } from "@/lib/ProjectType";
+import { Icon } from "astro-icon/components";
 import Technology from "./Technology.astro";
 
 interface Props {
@@ -19,7 +19,7 @@ const projectType = ProjectType.getProjectType(project.type);
             <Icon name={projectType.icon} class="text-lg text-white" title={projectType.frenchName} />
         </div>
     </div>
-    <div class="py-4 px-6 space-y-6 h-[60%]">
+    <div class="py-4 px-6 h-[calc(100%-240px)] space-y-6 flex flex-col">
         <strong><a href=`/projects/${project.slug}` class="underline text-primary text-2xl font-bold">{project.name}</a></strong>
         <p class="text-primary text-sm leading-8 font-light">{project.summary}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
@@ -27,7 +27,7 @@ const projectType = ProjectType.getProjectType(project.type);
                 <Technology logo={techno.logo} name={techno.name} />
             ))}
         </div>
-        <div class="flex justify-between">
+        <div class="flex justify-between !mt-auto">
             <span class="text-primary/50 flex items-center space-x-2 text-sm">
                 <Icon name=`${project.team_members === 1 ? "circle-user-round" : "users"}` />
                 <span class="relative top-[1px]">{project.team_members === 1 ? "Solo" : project.team_members}</span>
