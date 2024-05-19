@@ -1,18 +1,25 @@
 ---
-import { Icon } from "astro-icon/components"
-import { mockProjects, mockSkills } from "@/lib/tests/mocks";
+import { Icon } from "astro-icon/components";
+import { mockProjects } from "@/lib/tests/mocks";
 import { ProjectType } from "@/lib/ProjectType";
 import MainLayout from "@/layouts/MainLayout.astro";
 import Project from "@/components/Project.astro";
 import Skill from "@/components/Skill.astro";
 
 const projects = mockProjects();
-const skills = mockSkills();
+const skills = projects.reduce((previous, current) => {
+    for (const techno of current.technologies) {
+        if (!previous.map(p => p.name).includes(techno.name)) {
+            previous.push(techno);
+        }
+    }
+    return previous;
+}, [] as Technology[]).sort((a, b) => a.name.localeCompare(b.name));
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
     <h1 class="text-4xl text-center mt-32">Mes projets</h1>
-    <div class="w-full px-main my-20 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20">
+    <div class="w-full px-main mt-20 mb-5 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20">
         <div>
             <label for="filter-type">Filtrer selon le type</label>
             <select id="filter-type" name="filter-type">
@@ -34,6 +41,9 @@ const skills = mockSkills();
             <label for="filter-techno">Filtrer selon les technologies</label>
             <select id="filter-techno" name="filter-techno">
                 <option value="all" selected>Toutes</option>
+                {skills.map(s => (
+                    <option value={s.name}>{s.name}</option>
+                ))}
             </select>
         </div>
         <div class="relative flex items-end">
@@ -46,10 +56,18 @@ const skills = mockSkills();
             />
         </div>
     </div>
+    <div id="technologies-filter-container" class="px-main space-y-4" style="display: none;">
+        <p class="max-w-96 text-xs">Vous êtes en train de filtrer les projets qui utilisent les technologies ci-dessous. Sélectionnez d'autres technologies pour affiner le filtre ci-dessus.</p>
+        <div class="flex flex-wrap" />
+    </div>
     <div id="projects-container" class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 px-main my-12">
         {projects.map(p => (
             <Project project={p} />
         ))}
+    </div>
+    <div id="no-project-container" class="flex flex-col items-center justify-center w-full px-main space-y-6" style="display: none;">
+        <img src="/logos/black-hole.svg" alt="Trou noir" class="w-80" />
+        <p class="text-center text-lg max-w-64">Il n'y a aucun projet qui correspond aux filtres que vous avez renseignés.</p>
     </div>
     <section class="px-main my-40 space-y-14">
         <h1 class="text-4xl text-center">Mes compétences techniques</h1>
@@ -74,6 +92,18 @@ const skills = mockSkills();
 
     select {
         @apply w-full text-primary border-b-[1px] border-b-primary/10 bg-transparent;
+    }
+
+    :global(.filtered-skill) {
+        @apply rounded-md bg-primary/75 px-4 py-2 mb-4 mr-4 flex items-center;
+
+        :global(span) {
+            @apply text-white text-xs mr-4;
+        }
+
+        :global(button) {
+            @apply text-white opacity-50 hover:opacity-100;
+        }
     }
 
     :global([data-hidden="true"]) {

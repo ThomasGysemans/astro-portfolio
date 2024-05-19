@@ -27,15 +27,17 @@ function getRandomName(maxlength: number, containsWhitespace = true): string {
     return name.trim();
 }
 
+function mockSkill(): Technology {
+    return {
+        name: getRandomName(15, false),
+        logo: "/logos/ThreeJS.svg",
+        loved: Math.random() < 0.1,
+    };
+}
+
 export function mockSkills(length?: number): Technology[] {
     length ??= Math.ceil(Math.random() * 5 + 1);
-    return createMock(length, () => {
-        return {
-            name: getRandomName(15, false),
-            logo: "/logos/ThreeJS.svg",
-            loved: Math.random() < 0.1,
-        };
-    });
+    return createMock(length, mockSkill);
 }
 
 function getRandomProjectType(): string {
@@ -48,8 +50,12 @@ function getRandomProjectNature(): string {
     return natures[Math.floor(Math.random() * natures.length)].frenchName;
 }
 
-export function mockProject(): Project {
+export function mockProject(skillsPool?: Technology[]): Project {
     const name = getRandomName(25);
+    const technologies = skillsPool?.filter(() => Math.random() < 0.2);
+    if (technologies?.length === 0) {
+        technologies.push(mockSkill());
+    }
     return {
         name: name,
         slug: name.replace(/ /g, "-"),
@@ -57,7 +63,7 @@ export function mockProject(): Project {
         summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
         presentation_picture: 0,
         pictures: ["/exemple-space-visitor.png"],
-        technologies: mockSkills(),
+        technologies: technologies ?? mockSkills(),
         team_members: Math.ceil(Math.random() * 20 + 1),
         nature: getRandomProjectNature(),
         type: getRandomProjectType(),
@@ -75,10 +81,6 @@ function createMock<T>(length: number, mock: () => T): T[] {
 
 export function mockProjects(length?: number): Project[] {
     length ??= Math.ceil(Math.random() * 5 + 1);
-    return createMock(length, mockProject);
-    // const projects: Project[] = [];
-    // for (let i = 0; i < length; i++) {
-    //     projects.push(mockProject());
-    // }
-    // return projects;
+    const skillsPool = mockSkills();
+    return createMock(length, () => mockProject(skillsPool));
 }
