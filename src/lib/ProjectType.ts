@@ -20,6 +20,6 @@ export class ProjectType {
     }
 
     public static getProjectType(name: string): ProjectType {
-        return EnumUtilities.getStaticInstance<ProjectType>(name, ProjectType as any) ?? ProjectType.OTHER;
+        return EnumUtilities.getStaticInstance<ProjectType>(name, ProjectType as any, "frenchName") ?? ProjectType.OTHER;
     }
 }

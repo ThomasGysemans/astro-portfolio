@@ -12,11 +12,11 @@ export abstract class EnumUtilities {
         return projects;
     }
 
-    public static getStaticInstance<T extends { frenchName: string }>(name: string, e: T): T | undefined {
+    public static getStaticInstance<T extends Object>(name: string, e: T, property: keyof T): T | undefined {
         const keys = EnumUtilities.getKeys<T>(e);
         for (const key of keys) {
             const projectType = e[key] as T;
-            if (projectType.frenchName === name) {
+            if (projectType[property] === name) {
                 return projectType;
             }
         }

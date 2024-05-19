@@ -1,0 +1,109 @@
+---
+import { mockProject } from "@/lib/tests/mocks";
+import { ProjectNature } from "@/lib/ProjectNature";
+import { ProjectType } from "@/lib/ProjectType";
+import { Icon } from "astro-icon/components";
+import { Language } from "@/lib/Language";
+import ProjectIllustration from "@components/ProjectIllustration.astro";
+import MainLayout from "@/layouts/MainLayout.astro";
+
+const project = mockProject();
+const projectType = ProjectType.getProjectType(project.type);
+const projectNature = ProjectNature.getNature(project.nature);
+
+// For testing purposes only
+project.pictures.push("/sciencesky-image.jpeg");
+project.pictures.push("/stars.jpg");
+project.pictures.push("/logo.png");
+
+function getLinkPresentation(): string {
+    switch (projectType) {
+        case ProjectType.WEB: return "Lien du site";
+        case ProjectType.APPLICATION: return "Lien de l'appli";
+        case ProjectType.SOFTWARE: return "Lien du logiciel";
+        case ProjectType.LANGUAGE: return "Lien vers la doc";
+        case ProjectType.GAME: return "Lien du jeu";
+        case ProjectType.CHALLENGE: return "Lien du challenge";
+        default:
+            return "Lien du projet";
+    }
+}
+---
+
+<MainLayout title=`Projet ${project.name}` nested>
+    <div class="mt-20 px-main space-y-8">
+        <h1 class="text-4xl max-w-[60%] min-w-80">{project.name}</h1>
+        <div class="flex flex-wrap items-center space-x-8">
+            <div class="flex items-center space-x-2">
+                <Icon name={projectType.icon} />
+                <span>{projectType.frenchName}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <Icon name={projectNature.icon} />
+                <span>{projectNature.frenchName}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <Icon name="calendar" />
+                <span>{project.date}</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                {project.languages.map(short => {
+                    const lang = Language.getLanguage(short);
+                    if (lang) {
+                        return (
+                            <div class="flex items-center space-x-2">
+                                <Icon name={lang.flag} class="relative bottom-0.5" />
+                                <span>{lang.short}</span>
+                            </div>
+                        );
+                    }
+                })}
+            </div>
+        </div>
+        <p class="max-w-[50%] min-w-80">{project.summary}</p>
+        {project.github && (
+            <p>Lien GitHub : <a href=`https://github.com/${project.github}` target="_blank">https://github.com/{project.github}</a></p>
+        )}
+        {project.link && (
+            <p>
+                <span>{getLinkPresentation()} :</span>
+                <a href={project.link} target="_blank">{project.link}</a>
+            </p>
+        )}
+        <div id="illustrations-container" class="grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8 pb-40">
+            {project.pictures.map(p => (
+                <ProjectIllustration src={p} alt=`Illustration du projet ${project.name}` />
+            ))}
+        </div>
+    </div>
+    <div id="carousel" class="fixed z-40 top-0 left-0 w-full h-dvh bg-black/75" aria-hidden="true">
+        {project.pictures.map((src, i) => (
+            <div role="tabpanel" id=`img-${i}` aria-hidden={i === 0 ? "false" : "true"} aria-roledescription="diapositive" aria-label=`${i + 1} sur ${project.pictures.length}` class="px-[5%] pt-10 z-40 w-full max-h-80dvh flex items-center justify-center">
+                <img src={src} alt=`Illustration ${i + 1} du projet ${project.name}` class="w-full h-auto max-h-[80dvh] object-contain" />
+            </div>
+        ))}
+        <div role="tablist" aria-label="Diapositives" class="absolute bottom-10 left-0 w-full py-6 flex items-center justify-center space-x-2">
+            {project.pictures.map((_, i) => (
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={i === 0 ? "true" : "false"}
+                    aria-controls=`diapo-${i}`
+                    class="rounded-full w-5 h-5 bg-white/10 border-2 border-white hover:bg-white [&[aria-selected='true']]:bg-white"
+                />
+            ))}
+        </div>
+    </div>
+</MainLayout>
+
+<script src="../../../lib/pages/carousel.ts"></script>
+
+<style lang="scss">
+    a {
+        @apply text-primary-light opacity-75 hover:opacity-100 transition-colors underline;
+    }
+
+    [aria-hidden="true"] {
+        display: none;
+    }
+</style>

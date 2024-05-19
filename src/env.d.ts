@@ -24,5 +24,8 @@ declare global {
         nature: string; // the `frenchName` property in the `ProjectNature` class
         type: string; // the `frenchName` property in the `ProjectType` class
         date: string; // "2023-2024" or "2023" etc.
+        languages: string[]; // the `short` property in the `Language` class
+        github?: string;
+        link?: string;
     };
 }

@@ -1,5 +1,6 @@
 import { ProjectNature } from "@lib/ProjectNature.ts";
 import { ProjectType } from "@lib/ProjectType.ts";
+import { Language } from "@lib/Language.ts";
 
 function getRandomNumber(min: number, max: number): number {
     return Math.random() * (max - min) + min;
@@ -56,6 +57,10 @@ export function mockProject(skillsPool?: Technology[]): Project {
     if (technologies?.length === 0) {
         technologies.push(mockSkill());
     }
+    const languages = [Language.FR.short];
+    if (Math.random() < 0.5) {
+        languages.push(Language.EN.short);
+    }
     return {
         name: name,
         slug: name.replace(/ /g, "-"),
@@ -68,6 +73,9 @@ export function mockProject(skillsPool?: Technology[]): Project {
         nature: getRandomProjectNature(),
         type: getRandomProjectType(),
         date: "202" + Math.ceil(Math.random() * 4 + 1),
+        github: "ThomasGysemans/SpaceVisitor",
+        link: "https://spacevisitor.sciencesky.fr/",
+        languages,
     };
 }
 

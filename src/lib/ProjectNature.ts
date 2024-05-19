@@ -15,6 +15,6 @@ export class ProjectNature {
     }
 
     public static getNature(name: string): ProjectNature {
-        return EnumUtilities.getStaticInstance<ProjectNature>(name, ProjectNature as any) ?? ProjectNature.PERSONAL;
+        return EnumUtilities.getStaticInstance<ProjectNature>(name, ProjectNature as any, "frenchName") ?? ProjectNature.PERSONAL;
     }
 }

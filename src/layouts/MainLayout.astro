@@ -4,9 +4,10 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
     title: string;
+    nested?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, nested = false } = Astro.props;
 ---
 
 <PageLayout title={title}>
@@ -14,10 +15,17 @@ const { title } = Astro.props;
         <img src="/polygon-background.svg" class="fixed top-0 left-0 w-full h-dvh -z-20 object-cover pointer-events-none" alt="">
         <nav class="flex justify-between px-main">
             <div class="flex items-center space-x-6">
-                <a href="/">
-                    <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-32">
-                </a>
-            <h1 class="font-extrabold text-4xl leading-normal">Thomas<br>Gysemans</h1>
+                {nested ? (
+                    <a href="/projects" class="flex items-center space-x-2 text-lg">
+                        <Icon name="chevron-left" />
+                        <span>Retour</span>
+                    </a>
+                ) : (
+                    <a href="/">
+                        <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-32">
+                    </a>
+                    <h1 class="font-extrabold text-4xl leading-normal">Thomas<br>Gysemans</h1>
+                )}
             </div>
             <div class="flex items-center space-x-8">
                 <div class="flex items-center space-x-5">
