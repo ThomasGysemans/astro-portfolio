@@ -1,6 +1,6 @@
 ---
-import PageLayout from "./PageLayout.astro";
 import { Icon } from "astro-icon/components";
+import PageLayout from "./PageLayout.astro";
 
 interface Props {
     title: string;
@@ -22,9 +22,9 @@ const { title, nested = false } = Astro.props;
                     </a>
                 ) : (
                     <a href="/">
-                        <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-32">
+                        <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-28">
                     </a>
-                    <h1 class="font-extrabold text-4xl leading-normal">Thomas<br>Gysemans</h1>
+                    <h1 class="font-extrabold text-3xl leading-normal">Thomas<br>Gysemans</h1>
                 )}
             </div>
             <div class="flex items-center space-x-8">

@@ -1,7 +1,7 @@
 ---
-import ShowCaseCarousel from "../components/svelte/ShowCaseCarousel.svelte";
-import PageLayout from "@/layouts/PageLayout.astro";
 import { Icon } from "astro-icon/components";
+import ShowCaseCarousel from "@/components/svelte/ShowCaseCarousel.svelte";
+import PageLayout from "@/layouts/PageLayout.astro";
 
 const number_of_projects = 6;
 ---
@@ -15,9 +15,9 @@ const number_of_projects = 6;
                         <h2 class="text-2xl text-center w-full">ScienceSky v5</h2>
                         <div class="cell-details flex flex-col items-center space-y-4">
                             <p class="text-sm w-full inline-block">Une plateforme de vulgarisation scientifique française ouverte à tous !</p>
-                            <button type="button" class="carousel-btn">
+                            <a type="button" class="carousel-btn" href=`/projects/sciencesky`>
                                 En savoir plus
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
