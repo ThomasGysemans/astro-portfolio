@@ -2,7 +2,7 @@
     import { T, useLoader, useTask } from '@threlte/core';
     import { AdditiveBlending, IcosahedronGeometry, Mesh, MeshPhongMaterial, MeshStandardMaterial, Texture, TextureLoader } from 'three';
     import { onMount } from "svelte";
-    import fresnel from '@/fresnel.ts';
+    import fresnel from '@fresnel.ts';
 
     interface PlanetTextures {
         map: string;

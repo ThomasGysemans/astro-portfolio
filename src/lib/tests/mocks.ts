@@ -75,6 +75,8 @@ export function mockProject(skillsPool?: Technology[]): Project {
         date: "202" + Math.ceil(Math.random() * 4 + 1),
         github: "ThomasGysemans/SpaceVisitor",
         link: "https://spacevisitor.sciencesky.fr/",
+        showcase: Math.random() < 0.3,
+        updatedAt: new Date(),
         languages,
     };
 }

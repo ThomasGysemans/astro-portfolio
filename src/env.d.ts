@@ -26,6 +26,8 @@ declare global {
         languages: string[]; // the `short` property in the `Language` class
         github?: string;
         link?: string;
+        updatedAt: Date;
+        showcase: boolean;
     };
 
     type FormResult = {

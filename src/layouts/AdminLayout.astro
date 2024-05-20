@@ -1,6 +1,6 @@
 ---
 import PageLayout from "./PageLayout.astro";
-import PolygonBackground from "@/components/PolygonBackground.astro";
+import PolygonBackground from "@components/PolygonBackground.astro";
 
 interface Props {
     title: string;
@@ -70,7 +70,7 @@ const { title, login = false } = Astro.props;
                         </div>
                     ))}
                 </aside>
-                <section>
+                <section class="w-full">
                     <slot />
                 </section>
             </main>
@@ -78,8 +78,12 @@ const { title, login = false } = Astro.props;
     </div>
 </PageLayout>
 
-<style lang="scss">
-    :global(body) {
+<style lang="scss" is:global>
+    body {
         @apply bg-secondary;
+    }
+
+    .admin-input {
+        @apply rounded-md border-2 border-primary/10 focus:outline-primary-light;
     }
 </style>

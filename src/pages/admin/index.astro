@@ -1,7 +1,50 @@
 ---
-import AdminLayout from "../../layouts/AdminLayout.astro";
+import { Icon } from "astro-icon/components";
+import { DAOProject } from "@db/models/DAOProject";
+import AdminLayout from "@layouts/AdminLayout.astro";
+
+const projects = await DAOProject.list();
+
+function displayDate(date: Date): string {
+    return date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+    });
+}
 ---
 
 <AdminLayout title="Portfolio - Admin">
-    <h1>Projets</h1>
+    <div class="relative w-full">
+        <Icon name="search" class="text-primary/50 absolute top-[50%] left-4 -translate-y-[50%]" />
+        <input
+            type="search"
+            aria-label="Rechercher un projet (parmi 5)"
+            placeholder="Rechercher un projet (parmi 5)"
+            class="py-3 pr-6 pl-10 text-sm max-w-80 w-full admin-input"
+        />
+    </div>
+    <table class="my-10">
+        <tbody>
+            <tr class="border-b-[1px] border-b-primary/10">
+                <th class="font-bold text-left text-sm py-3 pr-8">Nom</th>
+                <th class="font-bold text-left text-sm py-3 pr-8">Type</th>
+                <th class="font-bold text-left text-sm py-3 pr-8">En vitrine</th>
+                <th class="font-bold text-left text-sm py-3 pr-8">Date de dernière modification</th>
+            </tr>
+            {projects.map((p, i) => {
+                const isLast = i === project.length - 1;
+                return (
+                    <tr class={isLast ? "" : "border-b-[1px] border-b-primary/10"}>
+                        <td class="font-light text-sm py-3 pr-8">{p.name}</td>
+                        <td class="font-light text-sm py-3 pr-8">{p.type}</td>
+                        <td class="font-light text-sm py-3 pr-8">{p.showcase ? "Oui" : "Non"}</td>
+                        <td class="font-light text-sm py-3 pr-8">{displayDate(p.date)}</td>
+                    </tr>
+                );
+            })}
+        </tbody>
+    </table>
 </AdminLayout>

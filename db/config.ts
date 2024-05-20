@@ -13,6 +13,8 @@ const ProjectTable = defineTable({
         date: column.text(),
         github: column.text({ optional: true }),
         link: column.text({ optional: true }),
+        updatedAt: column.date(),
+        showcase: column.boolean(),
     }
 });
 
