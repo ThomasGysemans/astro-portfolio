@@ -23,8 +23,8 @@ function displayDate(date: Date): string {
         <input
             id="search"
             type="search"
-            aria-label="Rechercher un projet (parmi 5)"
-            placeholder="Rechercher un projet (parmi 5)"
+            aria-label={`Rechercher un projet (parmi ${projects.length})`}
+            placeholder={`Rechercher un projet (parmi ${projects.length})`}
             class="py-3 pr-6 pl-10 text-sm max-w-80 w-full admin-input"
         />
     </div>
@@ -38,7 +38,7 @@ function displayDate(date: Date): string {
             </tr>
         </thead>
         <tbody>
-            {projects.map((p, i) => {
+            {projects.sort((a, b) => a.name.localeCompare(b.name)).map((p, i) => {
                 const isLast = i === projects.length - 1;
                 const projectType = ProjectType.getProjectType(p.type);
                 return (
