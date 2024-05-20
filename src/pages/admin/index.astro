@@ -21,25 +21,28 @@ function displayDate(date: Date): string {
     <div class="relative w-full">
         <Icon name="search" class="text-primary/50 absolute top-[50%] left-4 -translate-y-[50%]" />
         <input
+            id="search"
             type="search"
             aria-label="Rechercher un projet (parmi 5)"
             placeholder="Rechercher un projet (parmi 5)"
             class="py-3 pr-6 pl-10 text-sm max-w-80 w-full admin-input"
         />
     </div>
-    <table class="my-10">
-        <tbody>
+    <table id="table" class="my-10">
+        <thead>
             <tr class="border-b-[1px] border-b-primary/10">
                 <th class="font-bold text-left text-sm py-3 pr-8">Nom</th>
                 <th class="font-bold text-left text-sm py-3 pr-8">Type</th>
                 <th class="font-bold text-left text-sm py-3 pr-8">En vitrine</th>
                 <th class="font-bold text-left text-sm py-3 pr-8">Date de dernière modification</th>
             </tr>
+        </thead>
+        <tbody>
             {projects.map((p, i) => {
                 const isLast = i === projects.length - 1;
                 const projectType = ProjectType.getProjectType(p.type);
                 return (
-                    <tr class={isLast ? "" : "border-b-[1px] border-b-primary/10"}>
+                    <tr data-slug={p.slug} class={isLast ? "" : "border-b-[1px] border-b-primary/10"}>
                         <td class="font-light text-sm py-3 pr-8">{p.name}</td>
                         <td class="font-light text-sm py-3 pr-8">
                             <div class="flex items-center space-x-2">
@@ -57,3 +60,12 @@ function displayDate(date: Date): string {
         </tbody>
     </table>
 </AdminLayout>
+
+<script define:vars={{ projects }}>window.projects = projects;</script>
+<script src="../../lib/pages/admin/projects.ts"></script>
+
+<style lang="scss">
+    [aria-hidden="true"] {
+        display: none;
+    }
+</style>
