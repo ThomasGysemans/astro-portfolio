@@ -2,8 +2,7 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
 
-// TypeScript is annoying as hell, I don't have a choice but to let this import otherwise the types are not detected.
-import type { ProjectNature } from "@lib/ProjectNature.ts";
+import type { IUser } from "@db/models/DAOUser.ts";
 
 declare global {
     type Technology = {
@@ -28,4 +27,11 @@ declare global {
         github?: string;
         link?: string;
     };
+
+    type FormResult = {
+        error?: FormError;
+        user: IUser;
+    };
+
+    type FormError = true | string;
 }

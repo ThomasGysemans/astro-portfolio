@@ -46,7 +46,7 @@ const LanguagesTable = defineTable({
     ]
 });
 
-const ProjectTechnologies = defineTable({
+const ProjectTechnologiesTable = defineTable({
     columns: {
         id: column.number({ primaryKey: true }),
         project: column.text({ references: () => ProjectTable.columns.slug }),
@@ -57,6 +57,14 @@ const ProjectTechnologies = defineTable({
     ],
 });
 
+const UserTable = defineTable({
+    columns: {
+        email: column.text({ primaryKey: true, }),
+        username: column.text(),
+        password: column.text(),
+    },
+});
+
 // https://astro.build/db/config
 export default defineDb({
     tables: {
@@ -64,6 +72,7 @@ export default defineDb({
         PicturesTable,
         LanguagesTable,
         TechnologyTable,
-        ProjectTechnologies,
+        ProjectTechnologies: ProjectTechnologiesTable,
+        UserTable,
     }
 });
