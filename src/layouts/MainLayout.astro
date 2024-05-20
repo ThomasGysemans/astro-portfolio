@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import PageLayout from "./PageLayout.astro";
+import PolygonBackground from "@/components/PolygonBackground.astro";
 
 interface Props {
     title: string;
@@ -12,7 +13,7 @@ const { title, nested = false } = Astro.props;
 
 <PageLayout title={title}>
     <div class="pt-16 text-primary">
-        <img src="/polygon-background.svg" class="fixed top-0 left-0 w-full h-dvh -z-20 object-cover pointer-events-none" alt="">
+        <PolygonBackground />
         <nav class="flex justify-between px-main">
             <div class="flex items-center space-x-6">
                 {nested ? (

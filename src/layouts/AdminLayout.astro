@@ -1,0 +1,76 @@
+---
+import PageLayout from "./PageLayout.astro";
+import PolygonBackground from "@/components/PolygonBackground.astro";
+
+interface Props {
+    title: string;
+}
+
+type Navigation = {
+    name: string;
+    nav: {
+        name: string;
+        href: string;
+    }[];
+};
+
+const nav: Navigation[] = [
+    {
+        name: "Projets",
+        nav: [
+            { name: "Tous les projets", href: "/admin" },
+            { name: "Créer un projet", href: "/admin/create-project" },
+            { name: "Vitrine", href: "/admin/showcase" },
+        ],
+    },
+    {
+        name: "Compétences",
+        nav: [
+            { name: "Toutes mes compétences", href: "/admin/skills" },
+            { name: "Créer une compétence", href: "/admin/create-skill" },
+        ],
+    },
+];
+
+const currentUrl = Astro.url.pathname;
+const { title } = Astro.props;
+---
+
+<PageLayout title={title}>
+    <PolygonBackground />
+    <div class="p-20 text-primary">
+        <h1 class="text-4xl mb-2 tracking-wide">Portfolio</h1>
+        <h2 class="font-light text-xl tracking-wide">DASHBOARD</h2>
+        <main class="mt-12 flex space-x-12">
+            <aside class="min-w-[250px] h-min sticky top-10 space-y-8">
+                {nav.map(n => (
+                    <div class="space-y-4">
+                        <span class="text-xl font-light">{n.name}</span>
+                        <nav>
+                            {n.nav.map(l => {
+                                const isCurrentUrl = currentUrl === l.href;
+                                return (
+                                    <div class="flex items-center space-x-4 h-[40px]">
+                                        <div class={`w-[1px] h-full ${isCurrentUrl ? 'bg-primary-light' : 'bg-primary/50'}`} />
+                                        <a href={l.href} class={`${isCurrentUrl ? 'font-bold text-primary-light' : 'font-light hover:text-primary-light'} text-sm`}>
+                                            {l.name}
+                                        </a>
+                                    </div>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                ))}
+            </aside>
+            <section>
+                <slot />
+            </section>
+        </main>
+    </div>
+</PageLayout>
+
+<style lang="scss">
+    :global(body) {
+        @apply bg-secondary;
+    }
+</style>

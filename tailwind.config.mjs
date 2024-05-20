@@ -13,6 +13,9 @@ export default {
 					dark: '#051d41',
 					darker: '#030F20'
 				},
+				secondary: {
+					DEFAULT: '#F4F7FB',
+				},
 			},
 			fontFamily: {
 				sans: ['"Comfortaa"', ...defaultTheme.fontFamily.sans],
