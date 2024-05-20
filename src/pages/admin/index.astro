@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { DAOProject } from "@db/models/DAOProject";
+import { ProjectType } from "@lib/ProjectType";
 import AdminLayout from "@layouts/AdminLayout.astro";
 
 const projects = await DAOProject.list();
@@ -35,13 +36,21 @@ function displayDate(date: Date): string {
                 <th class="font-bold text-left text-sm py-3 pr-8">Date de dernière modification</th>
             </tr>
             {projects.map((p, i) => {
-                const isLast = i === project.length - 1;
+                const isLast = i === projects.length - 1;
+                const projectType = ProjectType.getProjectType(p.type);
                 return (
                     <tr class={isLast ? "" : "border-b-[1px] border-b-primary/10"}>
                         <td class="font-light text-sm py-3 pr-8">{p.name}</td>
-                        <td class="font-light text-sm py-3 pr-8">{p.type}</td>
+                        <td class="font-light text-sm py-3 pr-8">
+                            <div class="flex items-center space-x-2">
+                                <span>{p.type}</span>
+                                <div class={`rounded-full w-6 h-6 flex items-center justify-center ${projectType.color}`}>
+                                    <Icon name={projectType.icon} class="text-sm text-white" />
+                                </div>
+                            </div>
+                        </td>
                         <td class="font-light text-sm py-3 pr-8">{p.showcase ? "Oui" : "Non"}</td>
-                        <td class="font-light text-sm py-3 pr-8">{displayDate(p.date)}</td>
+                        <td class="font-light text-sm py-3 pr-8">{displayDate(p.updatedAt)}</td>
                     </tr>
                 );
             })}

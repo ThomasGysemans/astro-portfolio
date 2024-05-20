@@ -74,7 +74,7 @@ export default defineDb({
         PicturesTable,
         LanguagesTable,
         TechnologyTable,
-        ProjectTechnologies: ProjectTechnologiesTable,
+        ProjectTechnologiesTable,
         UserTable,
     }
 });
