@@ -6,6 +6,7 @@ import { Icon } from "astro-icon/components";
 import { Language } from "@/lib/Language";
 import ProjectIllustration from "@components/ProjectIllustration.astro";
 import MainLayout from "@/layouts/MainLayout.astro";
+import Skill from "@/components/Skill.astro";
 
 const project = mockProject();
 const projectType = ProjectType.getProjectType(project.type);
@@ -70,9 +71,15 @@ function getLinkPresentation(): string {
                 <a href={project.link} target="_blank">{project.link}</a>
             </p>
         )}
-        <div id="illustrations-container" class="grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8 pb-40">
+        <div id="illustrations-container" class="grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8">
             {project.pictures.map(p => (
                 <ProjectIllustration src={p} alt=`Illustration du projet ${project.name}` />
+            ))}
+        </div>
+        <h2>Technologies utilisées dans ce projet</h2>
+        <div class="flex flex-wrap *:mb-8 *:mr-8 pb-40">
+            {project.technologies.map(t => (
+                <Skill logo={t.logo} name={t.name} loved={t.loved} />
             ))}
         </div>
     </div>
