@@ -5,10 +5,6 @@ import { DAOUser } from "@db/models/DAOUser";
 import showFormError from "@lib/showFormError";
 import AdminLayout from "@layouts/AdminLayout.astro";
 
-if (await DAOUser.isConnected(Astro.cookies)) {
-    return Astro.redirect("/admin");
-}
-
 const formResult: FormResult = {};
 if (Astro.request.method === "POST") {
     try {
