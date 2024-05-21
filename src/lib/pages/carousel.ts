@@ -3,7 +3,7 @@ const tabList = carousel.querySelector("& > div[role='tablist']") as HTMLDivElem
 const tabs = Array.from(carousel.querySelectorAll("& > div[role='tabpanel']")) as HTMLDivElement[];
 const btns = Array.from(tabList.querySelectorAll("& > button")) as HTMLButtonElement[];
 const tabMedia = Array.from(carousel.querySelectorAll("& > div[role='tabpanel'] > *")) as HTMLElement[];
-const previewImages = Array.from(document.querySelectorAll("#illustrations-container > div")) as HTMLImageElement[];
+const previewImages = Array.from(document.querySelectorAll(".illustrations-container > div")) as HTMLImageElement[];
 
 let selectedIndex = 0;
 

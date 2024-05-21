@@ -71,7 +71,7 @@ function getLinkPresentation(): string {
                 <a href={project.link} target="_blank">{project.link}</a>
             </p>
         )}
-        <div id="illustrations-container" class="grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8">
+        <div class={"illustrations-container " + (project.pictures.length <= 3 ? "space-y-8" : "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8")}>
             {project.pictures.map(p => (
                 <ProjectIllustration src={p} alt=`Illustration du projet ${project.name}` />
             ))}
