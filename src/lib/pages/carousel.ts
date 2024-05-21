@@ -1,3 +1,5 @@
+import { hideElement, showElement } from "@lib/DOMHelper.ts";
+
 const carousel = document.querySelector("#carousel")! as HTMLDivElement;
 const tabList = carousel.querySelector("& > div[role='tablist']") as HTMLDivElement;
 const tabs = Array.from(carousel.querySelectorAll("& > div[role='tabpanel']")) as HTMLDivElement[];
@@ -21,10 +23,10 @@ for (let i = 0; i < previewImages.length; i++) {
 }
 
 function goto(index: number): void {
-    tabs[selectedIndex].setAttribute("aria-hidden", "true");
+    hideElement(tabs[selectedIndex]);
+    showElement(tabs[index]);
     btns[selectedIndex].setAttribute("aria-selected", "false");
     btns[index].setAttribute("aria-selected", "true");
-    tabs[index].removeAttribute("aria-hidden");
     selectedIndex = index;
 }
 
@@ -41,11 +43,11 @@ function previous(): void {
 }
 
 function open(): void {
-    carousel.removeAttribute("aria-hidden");
+    showElement(carousel);
 }
 
 function close(): void {
-    carousel.setAttribute("aria-hidden", "true");
+    hideElement(carousel);
 }
 
 window.addEventListener("keydown", (e: KeyboardEvent) => {

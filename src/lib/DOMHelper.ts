@@ -12,3 +12,11 @@ export function createElement<T extends HTMLElement>(tagName: string, attributes
     if (textContent) element.textContent = textContent;
     return element;
 }
+
+export function hideElement(element: HTMLElement): void {
+    element.setAttribute("aria-hidden", "true");
+}
+
+export function showElement(element: HTMLElement): void {
+    element.removeAttribute("aria-hidden");
+}

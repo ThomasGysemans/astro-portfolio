@@ -11,6 +11,7 @@ import Skill from "@components/Skill.astro";
 const project = mockProject();
 const projectType = ProjectType.getProjectType(project.type);
 const projectNature = ProjectNature.getNature(project.nature);
+const useCarousel = project.pictures.length > 3;
 
 // For testing purposes only
 // project.pictures.push("/sciencesky-image.jpeg");
@@ -71,9 +72,9 @@ function getLinkPresentation(): string {
                 <a href={project.link} target="_blank">{project.link}</a>
             </p>
         )}
-        <div class={"illustrations-container " + (project.pictures.length <= 3 ? "space-y-8" : "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8")}>
+        <div class={"illustrations-container " + (useCarousel ? "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8" : "space-y-8")}>
             {project.pictures.map(p => (
-                <ProjectIllustration src={p} alt=`Illustration du projet ${project.name}` />
+                <ProjectIllustration src={p} alt=`Illustration du projet ${project.name}` interactive={useCarousel} />
             ))}
         </div>
         <h2>Technologies utilisées dans ce projet</h2>
@@ -103,7 +104,9 @@ function getLinkPresentation(): string {
     </div>
 </MainLayout>
 
-<script src="../../../lib/pages/carousel.ts"></script>
+{useCarousel && (
+    <script src="../../../lib/pages/carousel.ts"></script>
+)}
 
 <style lang="scss">
     a {

@@ -2,11 +2,12 @@
 interface Props {
     src: string;
     alt: string;
+    interactive: boolean;
 }
 
-const { src, alt } = Astro.props;
+const { src, alt, interactive } = Astro.props;
 ---
 
-<div class="w-full h-full cursor-pointer">
+<div class={"w-full h-full " + (interactive ? "cursor-pointer" : "")} data-interactive={interactive}>
     <img src={src} alt={alt} class="w-full h-full object-cover rounded-md" />
 </div>

@@ -1,4 +1,4 @@
-import { createElement } from "@lib/createElement.ts";
+import { createElement } from "@lib/DOMHelper.ts";
 
 declare const projects: Project[];
 

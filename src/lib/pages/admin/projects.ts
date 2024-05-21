@@ -1,4 +1,5 @@
 import type { ProjectListItem } from "@db/models/DAOProject.ts";
+import { hideElement, showElement } from "@lib/DOMHelper.ts";
 
 declare const projects: ProjectListItem[];
 
@@ -27,14 +28,6 @@ searchInput.addEventListener("input", () => {
 
 function matches(a: string, b: string): boolean {
     return Array.from(a).every(char => b.includes(char));
-}
-
-function showElement(element: HTMLElement): void {
-    element.removeAttribute("aria-hidden");
-}
-
-function hideElement(element: HTMLElement): void {
-    element.setAttribute("aria-hidden", "true");
 }
 
 function getRows(): HTMLTableRowElement[] {
