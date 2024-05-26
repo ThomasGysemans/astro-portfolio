@@ -77,7 +77,7 @@ const { title, login = false } = Astro.props;
                         </a>
                     </p>
                 </aside>
-                <section class="w-full">
+                <section class="w-full space-y-8">
                     <slot />
                 </section>
             </main>
@@ -90,7 +90,8 @@ const { title, login = false } = Astro.props;
         @apply bg-secondary;
     }
 
-    .admin-input {
-        @apply rounded-md border-2 border-primary/10 focus:outline-primary-light;
+    input,
+    textarea {
+        @apply focus:outline-primary-light;
     }
 </style>

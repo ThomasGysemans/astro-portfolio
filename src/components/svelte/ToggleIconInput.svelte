@@ -26,7 +26,7 @@
             autofocus
             type="number"
             min="1"
-            class="border-b-[1px] border-b-primary/20 w-8 focus:outline-primary-light"
+            class="border-b-[1px] border-b-primary/20 w-8"
             bind:value={value}
             on:blur={confirmEdit}
             on:keydown={(e) => e.key === "Enter" && confirmEdit()}

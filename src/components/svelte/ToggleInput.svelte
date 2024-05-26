@@ -31,7 +31,7 @@
     {#if textarea}
         <textarea
             autofocus
-            class="border-b-[1px] border-b-primary/20 w-full min-h-10 focus:outline-primary-light"
+            class="border-b-[1px] border-b-primary/20 w-full min-h-10"
             bind:value={value}
             on:keydown={handleEnterKey}
             on:blur={confirmEdit}
@@ -40,7 +40,7 @@
         <input
             type="text"
             autofocus
-            class="border-b-[1px] border-b-primary/20 focus:outline-primary-light {width ?? ''}"
+            class="border-b-[1px] border-b-primary/20 {width ?? ''}"
             bind:value={value}
             on:keydown={handleEnterKey}
             on:blur={confirmEdit}

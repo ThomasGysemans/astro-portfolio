@@ -59,9 +59,9 @@ async function seedProjects(): Promise<void> {
     await db
         .insert(PicturesTable)
         .values([
-            { id: 1, project: "space-visitor", picture: "http://localhost:4321/exemple-space-visitor.png" },
-            { id: 2, project: "space-visitor", picture: "http://localhost:4321/sciencesky-image.jpeg" },
-            { id: 3, project: "space-visitor", picture: "http://localhost:4321/stars.jpg" },
+            { id: 1, project: "space-visitor", filename: "exemple-space-visitor.png", lastModified: new Date(), type: "image/png", picture: "http://localhost:4321/exemple-space-visitor.png" },
+            { id: 2, project: "space-visitor", filename: "sciencesky-image.jpeg", lastModified: new Date(), type: "image/jpeg", picture: "http://localhost:4321/sciencesky-image.jpeg" },
+            { id: 3, project: "space-visitor", filename: "stars.jpg", lastModified: new Date(), type: "image/jpeg", picture: "http://localhost:4321/stars.jpg" },
         ]);
 }
 

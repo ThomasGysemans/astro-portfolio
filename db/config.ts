@@ -30,6 +30,9 @@ const PicturesTable = defineTable({
     columns: {
         id: column.number({ primaryKey: true }),
         project: column.text({ references: () => ProjectTable.columns.slug }),
+        filename: column.text({ unique: true }),
+        lastModified: column.date(),
+        type: column.text(),
         picture: column.text(),
     },
     indexes: [
@@ -61,7 +64,7 @@ const ProjectTechnologiesTable = defineTable({
 
 const UserTable = defineTable({
     columns: {
-        email: column.text({ primaryKey: true, }),
+        email: column.text({ primaryKey: true }),
         username: column.text(),
         password: column.text(),
     },

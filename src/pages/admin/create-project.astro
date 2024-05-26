@@ -3,18 +3,19 @@ import { Icon } from "astro-icon/components";
 import AdminLayout from "@layouts/AdminLayout.astro";
 import BuildProject from "@components/admin/BuildProject.astro";
 import Checkbox from "@components/svelte/Checkbox.svelte";
+import OrderedPictures from "@components/svelte/OrderedPictures.svelte";
 
 const showcaseCount = 4;
 ---
 
 <AdminLayout title="Portfolio - Ajouter un projet">
-    <div class="flex w-full h-full space-x-8">
+    <div class="flex w-full space-x-8">
         <BuildProject />
         <div class="w-full h-full max-h-64 space-y-4">
             <textarea
                 placeholder="Description du projet..."
                 aria-label="Description du projet"
-                class="border-dashed border-2 border-primary/10 p-6 rounded-md bg-transparent resize-none focus:outline-primary-light w-full h-full max-h-96"
+                class="border-dashed border-2 border-primary/10 p-6 rounded-md bg-transparent resize-none w-full h-full min-h-60"
                 name="description"
             />
             <div>
@@ -33,5 +34,16 @@ const showcaseCount = 4;
                 </Checkbox>
             </div>
         </div>
+    </div>
+    <div>
+        <label for="github">Lien GitHub: https://github.com/ThomasGysemans/</label>
+        <input id="github" type="text" name="github" class="border-b border-primary/10 bg-transparent px-1" />
+    </div>
+    <div>
+        <label for="link">Lien du projet :</label>
+        <input id="link" type="text" name="link" class="border-b border-primary/10 bg-transparent px-1" />
+    </div>
+    <div>
+        <OrderedPictures client:load />
     </div>
 </AdminLayout>

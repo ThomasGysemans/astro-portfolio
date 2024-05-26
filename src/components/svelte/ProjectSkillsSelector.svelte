@@ -36,7 +36,7 @@
     {/each}
     {#if filteredSkills.length > 0}
         <div class="rounded-md px-3 py-2 flex items-center space-x-2 border-2 border-primary/50">
-            <select on:change={handleNewSkill} class="focus:outline-primary-light max-w-24 text-sm">
+            <select on:change={handleNewSkill} class="max-w-24 text-sm">
                 <option value="none">Ajouter...</option>
                 {#each filteredSkills as skill (skill.name)}
                     <option value={skill.name}>{skill.name}</option>
