@@ -1,9 +1,13 @@
 ---
 import { Icon } from "astro-icon/components";
 import { ProjectNature } from "@lib/ProjectNature";
+import { mockSkills } from "@lib/tests/mocks";
 import ToggleInput from "@components/svelte/ToggleInput.svelte";
 import ToggleIconInput from "@components/svelte/ToggleIconInput.svelte";
 import ToggleSelect from "@components/svelte/ToggleSelect.svelte";
+import ProjectSkillsSelector from "@components/svelte/ProjectSkillsSelector.svelte";
+
+const skills = mockSkills();
 ---
 
 <div class="bg-white rounded-md border-2 border-primary/50 min-w-[300px] max-w-[360px]">
@@ -31,8 +35,7 @@ import ToggleSelect from "@components/svelte/ToggleSelect.svelte";
                 tagName="span"
             />
         </div>
-        <div class="flex flex-wrap *:mb-4 *:mr-4">
-        </div>
+        <ProjectSkillsSelector client:load skills={skills} />
         <div class="flex justify-between !mt-auto space-x-6">
             <ToggleIconInput client:load>
                 <Icon name="circle-user-round" slot="solo" />
