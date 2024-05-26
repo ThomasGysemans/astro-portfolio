@@ -1,0 +1,59 @@
+---
+import { Icon } from "astro-icon/components";
+import { ProjectNature } from "@lib/ProjectNature";
+import ToggleInput from "@components/svelte/ToggleInput.svelte";
+import ToggleIconInput from "@components/svelte/ToggleIconInput.svelte";
+import ToggleSelect from "@components/svelte/ToggleSelect.svelte";
+---
+
+<div class="bg-white rounded-md border-2 border-primary/50 min-w-[300px] max-w-[360px]">
+    <div class="w-full h-52 relative p-2">
+        <div class="flex items-center justify-center w-full h-full rounded-[4px] border-2 border-dotted border-primary">
+            <Icon name="image" class="text-5xl opacity-75" />
+        </div>
+    </div>
+    <div class="py-4 px-6 h-[calc(100%-240px)] space-y-6 flex flex-col">
+        <ToggleInput
+            client:load
+            textarea
+            name="name"
+            initialValue="Space Visitor"
+            className="underline text-primary text-xl font-bold"
+            tagName="strong"
+        />
+        <div class="w-full">
+            <ToggleInput
+                client:load
+                textarea
+                name="summary"
+                initialValue="This is a summary"
+                className="text-primary text-sm leading-8 font-light"
+                tagName="span"
+            />
+        </div>
+        <div class="flex flex-wrap *:mb-4 *:mr-4">
+        </div>
+        <div class="flex justify-between !mt-auto space-x-6">
+            <ToggleIconInput client:load>
+                <Icon name="circle-user-round" slot="solo" />
+                <Icon name="users" slot="team" />
+            </ToggleIconInput>
+            <ToggleSelect client:load>
+                <Icon name={ProjectNature.PROFESSIONAL.icon} slot="pro" />
+                <Icon name={ProjectNature.SCHOOL.icon} slot="school" />
+                <Icon name={ProjectNature.PERSONAL.icon} slot="personal" />
+            </ToggleSelect>
+            <span class="text-primary/50 flex items-center text-sm">
+                <Icon name="calendar" class="mr-2" />
+                <ToggleInput
+                    client:load
+                    name="date"
+                    initialValue={new Date().getFullYear().toString()}
+                    tagName="span"
+                    className="relative top-[2px]"
+                    width="w-12"
+                />
+            </span>
+        </div>
+    </div>
+</div>
