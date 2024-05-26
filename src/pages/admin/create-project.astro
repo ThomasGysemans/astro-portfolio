@@ -1,10 +1,37 @@
 ---
+import { Icon } from "astro-icon/components";
 import AdminLayout from "@layouts/AdminLayout.astro";
-import Project from "@components/admin/Project.astro";
+import BuildProject from "@components/admin/BuildProject.astro";
+import Checkbox from "@components/svelte/Checkbox.svelte";
+
+const showcaseCount = 4;
 ---
 
 <AdminLayout title="Portfolio - Ajouter un projet">
-    <div class="flex w-full">
-        <Project />
+    <div class="flex w-full h-full space-x-8">
+        <BuildProject />
+        <div class="w-full h-full max-h-64 space-y-4">
+            <textarea
+                placeholder="Description du projet..."
+                aria-label="Description du projet"
+                class="border-dashed border-2 border-primary/10 p-6 rounded-md bg-transparent resize-none focus:outline-primary-light w-full h-full max-h-96"
+                name="description"
+            />
+            <div>
+                <Checkbox client:load name="showcase">
+                    Inclure à la vitrine ({showcaseCount})
+                </Checkbox>
+            </div>
+            <div>
+                <Checkbox client:load name="french">
+                    <Icon name="french-flag" size={22} />
+                </Checkbox>
+            </div>
+            <div>
+                <Checkbox client:load name="english">
+                    <Icon name="uk-flag" size={22} />
+                </Checkbox>
+            </div>
+        </div>
     </div>
 </AdminLayout>
