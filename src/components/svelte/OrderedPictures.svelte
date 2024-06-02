@@ -26,9 +26,9 @@
             } else {
                 const file = files[i];
                 if (isNewImport) {
-                    if (pictures.some(p => p.file.name === file.name)) {
+                    const pic = pictures.find(p => p.file.name === file.name);
+                    if (pic) {
                         if (confirm(`File of name "${file.name}" already imported. Overwrite?`)) {
-                            const pic = pictures.find(p => p.file.name === file.name)!;
                             replacePicture(pic, file);
                         }
                     } else {
