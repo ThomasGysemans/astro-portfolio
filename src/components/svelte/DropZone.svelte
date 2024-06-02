@@ -4,6 +4,7 @@
 
     export let previewUrl: string | undefined = undefined;
     export let metadata: any = {};
+    export let name: string;
 
     const dispatch = createEventDispatcher();
     const multiple = previewUrl === undefined;
@@ -36,6 +37,7 @@
         if (files.length > 0) {
             importFiles(files);
         }
+        dragging = false;
     }
 
     function handleManualImport(): void {
@@ -56,7 +58,7 @@
 <button
     type="button"
     aria-label="Drop zone"
-    class="border-dashed border-2 border-primary/50 rounded-md w-full h-full aspect-video flex items-center justify-center"
+    class="border-dashed border-2 border-primary/50 rounded-md w-full h-full aspect-video flex items-center justify-center focus:outline-primary-light"
     on:dragover={onDragOver}
     on:dragenter={() => dragging = true}
     on:dragleave={() => dragging = false}
@@ -69,7 +71,7 @@
         {#if previewUrl === undefined}
             <slot />
         {:else}
-            <img src={previewUrl} alt="" />
+            <img src={previewUrl} alt="" class="rounded-md" />
         {/if}
     {/if}
     <input
@@ -77,7 +79,9 @@
         on:change={handleManualImport}
         type="file"
         accept={ACCEPTED_EXTENSIONS.join()}
+        tabindex="-1"
         class="sr-only pointer-events-none"
         {multiple}
+        {name}
     />
 </button>
