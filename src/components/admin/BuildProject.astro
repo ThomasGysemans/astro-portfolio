@@ -6,15 +6,16 @@ import ToggleInput from "@components/svelte/ToggleInput.svelte";
 import ToggleIconInput from "@components/svelte/ToggleIconInput.svelte";
 import ToggleSelect from "@components/svelte/ToggleSelect.svelte";
 import ProjectSkillsSelector from "@components/svelte/ProjectSkillsSelector.svelte";
+import BuildProjectPresentationPicture from "@components/svelte/BuildProjectPresentationPicture.svelte";
 
 const skills = mockSkills();
 ---
 
 <div class="bg-white rounded-md border-2 border-primary/50 min-w-[300px] max-w-[360px]">
     <div class="w-full h-52 relative p-2">
-        <div class="flex items-center justify-center w-full h-full rounded-[4px] border-2 border-dotted border-primary">
+        <BuildProjectPresentationPicture client:load>
             <Icon name="image" class="text-5xl opacity-75" />
-        </div>
+        </BuildProjectPresentationPicture>
     </div>
     <div class="py-4 px-6 h-[calc(100%-240px)] space-y-6 flex flex-col">
         <ToggleInput

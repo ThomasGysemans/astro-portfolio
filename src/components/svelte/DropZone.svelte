@@ -5,19 +5,17 @@
     export let previewUrl: string | undefined = undefined;
     export let metadata: any = {};
     export let name: string;
+    export let multiple: boolean = false;
+    export let className: string = "";
 
     const dispatch = createEventDispatcher();
-    const multiple = previewUrl === undefined;
     let fileInput: HTMLInputElement;
     let dragging = false;
 
     function importFiles(files: File[]): void {
         dispatch("drop", {
             files,
-            metadata: {
-                multiple,
-                ...metadata,
-            },
+            metadata,
         });
     }
 
@@ -71,7 +69,7 @@
         {#if previewUrl === undefined}
             <slot />
         {:else}
-            <img src={previewUrl} alt="" class="rounded-md" />
+            <img src={previewUrl} alt="" class="rounded-md {className}" />
         {/if}
     {/if}
     <input

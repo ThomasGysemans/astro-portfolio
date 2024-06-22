@@ -1,13 +1,8 @@
 <script lang="ts">
-    import { isValidFile, bytesToMiB } from "@lib/files.ts";
+    import { isValidFile, bytesToMiBStr } from "@lib/files.ts";
     import { flip } from "svelte/animate";
+    import { confirm, alert } from "@lib/popups.ts";
     import DropZone from "@components/svelte/DropZone.svelte";
-    import Swal from "sweetalert2";
-
-    type Picture = {
-        file: File
-        url: string
-    }
 
     let pictures: Picture[] = [];
 
@@ -46,24 +41,13 @@
         move(index, index+1);
     }
 
-    async function confirm(text: string): Promise<boolean> {
-        return (await Swal.fire({
-            text,
-            title: "Confirmation",
-            icon: "warning",
-            showCancelButton: true,
-            cancelButtonText: "Annuler",
-            confirmButtonText: "Confirmer",
-        })).isConfirmed;
-    }
-
     async function handleImport(e: CustomEvent<{files: File[], metadata: {multiple: boolean, index: number}}>): Promise<void> {
         const isNewImport = e.detail.metadata.index === pictures.length;
         const isReplacement = e.detail.metadata.multiple === false;
         const files = e.detail.files;
         for (let i = 0; i < files.length; i++) {
             if (!isValidFile(files[i])) {
-                alert(`File ${files[i].name} (${bytesToMiB(files[i].size)} MiB, of type ${files[i].type}) is not valid`);
+                await alert(`File ${files[i].name} (${bytesToMiBStr(files[i].size)} MiB, of type ${files[i].type}) is not valid`);
             } else {
                 const file = files[i];
                 if (isNewImport) {
@@ -113,7 +97,7 @@
                         </div>
                     </div>
                 {/if}
-                <DropZone on:drop={handleImport} previewUrl={picture?.url} metadata={{index}} name="picture-{index}">
+                <DropZone on:drop={handleImport} previewUrl={picture?.url} metadata={{index}} name="picture-{index}" multiple={picture?.url === undefined}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                         <circle cx="9" cy="9" r="2" />

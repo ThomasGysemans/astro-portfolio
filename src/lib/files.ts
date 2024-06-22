@@ -5,6 +5,10 @@ export function bytesToMiB(bytes: number): number {
     return bytes / 1_048_576;
 }
 
+export function bytesToMiBStr(bytes: number): string {
+    return bytesToMiB(bytes).toPrecision(4);
+}
+
 export function isValidFile(file: File): boolean {
     return file.size > 0 &&
         bytesToMiB(file.size) <= MAXIMUM_IMAGE_SIZE &&

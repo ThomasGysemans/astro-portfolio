@@ -36,4 +36,9 @@ declare global {
     };
 
     type FormError = true | string;
+
+    type Picture = {
+        file: File
+        url: string
+    }
 }
