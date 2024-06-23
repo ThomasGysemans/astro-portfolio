@@ -4,7 +4,7 @@ import { hideElement, showElement } from "@lib/DOMHelper.ts";
 declare const projects: ProjectListItem[];
 
 const searchInput = document.querySelector("#search") as HTMLInputElement;
-const table = document.querySelector("#table") as HTMLTableElement;
+const table = document.querySelector("#table-projects") as HTMLTableElement;
 
 searchInput.addEventListener("input", () => {
     const search = searchInput.value.trim().toLowerCase();

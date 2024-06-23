@@ -12,4 +12,7 @@ export default defineConfig({
   security: {
     checkOrigin: true,
   },
+  experimental: {
+    actions: true,
+  },
 });

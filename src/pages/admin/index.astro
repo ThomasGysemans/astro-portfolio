@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 import { DAOProject } from "@db/models/DAOProject";
 import { ProjectType } from "@lib/ProjectType";
 import AdminLayout from "@layouts/AdminLayout.astro";
+import DeleteProjectFromList from "@components/svelte/DeleteProjectFromList.svelte";
 
 const projects = await DAOProject.list();
 
@@ -28,13 +29,14 @@ function displayDate(date: Date): string {
             class="py-3 pr-6 pl-10 text-sm max-w-80 w-full rounded-md border-2 border-primary/10"
         />
     </div>
-    <table id="table" class="my-10">
+    <table id="table-projects" class="my-10">
         <thead>
             <tr class="border-b-[1px] border-b-primary/10">
                 <th class="font-bold text-left text-sm py-3 pr-8">Nom</th>
                 <th class="font-bold text-left text-sm py-3 pr-8">Type</th>
                 <th class="font-bold text-left text-sm py-3 pr-8">En vitrine</th>
                 <th class="font-bold text-left text-sm py-3 pr-8">Date de dernière modification</th>
+                <th class="font-bold text-left text-sm py-3 pr-8">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -54,6 +56,11 @@ function displayDate(date: Date): string {
                         </td>
                         <td class="font-light text-sm py-3 pr-8">{p.showcase ? "Oui" : "Non"}</td>
                         <td class="font-light text-sm py-3 pr-8">{displayDate(p.updatedAt)}</td>
+                        <td class="font-light text-sm py-3 pr-8 text-center">
+                            <DeleteProjectFromList client:visible slug={p.slug}>
+                                <Icon name="trash" />
+                            </DeleteProjectFromList>
+                        </td>
                     </tr>
                 );
             })}

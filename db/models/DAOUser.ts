@@ -37,4 +37,8 @@ export class DAOUser {
         }
         return connected;
     }
+
+    public static async isAdmin(cookies: AstroCookies): Promise<boolean> {
+        return await this.isConnected(cookies) && cookies.get("user")!.value === "gysemansthomas@gmail.com";
+    }
 }
