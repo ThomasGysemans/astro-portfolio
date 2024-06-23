@@ -17,7 +17,7 @@ declare global {
         slug: string;
         description: string;
         summary: string;
-        presentation_picture?: number;
+        presentation_picture?: number | null;
         pictures: string[];
         technologies: Technology[];
         team_members: number; // 1 for solo
@@ -25,8 +25,8 @@ declare global {
         type: string; // the `frenchName` property in the `ProjectType` class
         date: string; // "2023-2024" or "2023" etc.
         languages: string[]; // the `short` property in the `Language` class
-        github?: string;
-        link?: string;
+        github?: string | null;
+        link?: string | null;
         updatedAt: Date;
         showcase: boolean;
     };
@@ -37,9 +37,4 @@ declare global {
     };
 
     type FormError = true | string;
-
-    type Picture = {
-        file: File
-        url: string
-    }
 }

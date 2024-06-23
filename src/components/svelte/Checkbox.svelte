@@ -1,7 +1,8 @@
 <script lang="ts">
     export let name: string;
+    export let initialValue: boolean = false;
 
-    let checked = false;
+    let checked = initialValue;
 
     function toggle() {
         checked = !checked;

@@ -4,7 +4,17 @@
     import { confirm, alert } from "@lib/popups.ts";
     import DropZone from "@components/svelte/DropZone.svelte";
 
-    let pictures: Picture[] = [];
+    export let existingPreviews: string[] = [];
+
+    type Picture = {
+        file?: File
+        url: string
+    }
+
+    let pictures: Picture[] = existingPreviews.map(p => ({
+        file: undefined,
+        url: p,
+    }));
 
     function removePicture(index: number): void {
         const picture = pictures[index];
@@ -51,7 +61,7 @@
             } else {
                 const file = files[i];
                 if (isNewImport) {
-                    const pic = pictures.find(p => p.file.name === file.name);
+                    const pic = pictures.find(p => p.file?.name === file.name);
                     if (pic) {
                         if (await confirm(`File of name "${file.name}" already imported. Overwrite?`)) {
                             replacePicture(pic, file);
@@ -68,6 +78,9 @@
             }
         }
     }
+
+    // TODO: create an hidden input that contains the existing pictures (those with 'file' set to undefined)
+    // on the server side you can detect which are missing or been replaced
 </script>
 
 <div class="space-y-8">

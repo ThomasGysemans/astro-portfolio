@@ -1,35 +1,41 @@
 ---
 import { Icon } from "astro-icon/components";
+import { DAOProject } from "@db/models/DAOProject";
+import { Language } from "@lib/Language";
 import AdminLayout from "@layouts/AdminLayout.astro";
 import BuildProject from "@components/admin/BuildProject.astro";
 import Checkbox from "@components/svelte/Checkbox.svelte";
 import OrderedPictures from "@components/svelte/OrderedPictures.svelte";
+
+const slug = Astro.url.searchParams.get("slug");
+const project = slug === null ? null : await DAOProject.find(slug);
+console.log("project =", project);
 
 const showcaseCount = 4;
 ---
 
 <AdminLayout title="Portfolio - Ajouter un projet">
     <div class="flex w-full space-x-8">
-        <BuildProject />
+        <BuildProject project={project} />
         <div class="w-full h-full max-h-64 space-y-4">
             <textarea
                 placeholder="Description du projet..."
                 aria-label="Description du projet"
                 class="border-dashed border-2 border-primary/10 p-6 rounded-md bg-transparent resize-none w-full h-full min-h-60"
                 name="description"
-            />
+            >{project?.description.trim()}</textarea>
             <div>
-                <Checkbox client:load name="showcase">
+                <Checkbox client:load name="showcase" initialValue={project?.showcase}>
                     Inclure à la vitrine ({showcaseCount})
                 </Checkbox>
             </div>
             <div>
-                <Checkbox client:load name="french">
+                <Checkbox client:load name="french" initialValue={project?.languages?.includes(Language.FR.short)}>
                     <Icon name="french-flag" size={22} />
                 </Checkbox>
             </div>
             <div>
-                <Checkbox client:load name="english">
+                <Checkbox client:load name="english" initialValue={project?.languages?.includes(Language.EN.short)}>
                     <Icon name="uk-flag" size={22} />
                 </Checkbox>
             </div>
@@ -37,13 +43,13 @@ const showcaseCount = 4;
     </div>
     <div>
         <label for="github">Lien GitHub: https://github.com/</label>
-        <input id="github" type="text" name="github" class="border-b border-primary/10 bg-transparent px-1 max-w-80 w-full" />
+        <input id="github" type="text" name="github" class="border-b border-primary/10 bg-transparent px-1 max-w-80 w-full" value={project?.github ?? ""} />
     </div>
     <div>
         <label for="link">Lien du projet :</label>
-        <input id="link" type="text" name="link" class="border-b border-primary/10 bg-transparent px-1 max-w-80 w-full" />
+        <input id="link" type="text" name="link" class="border-b border-primary/10 bg-transparent px-1 max-w-80 w-full" value={project?.link ?? ""} />
     </div>
     <div>
-        <OrderedPictures client:load />
+        <OrderedPictures client:load existingPreviews={project.pictures} />
     </div>
 </AdminLayout>

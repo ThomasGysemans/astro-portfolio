@@ -35,7 +35,7 @@ async function seedProjects(): Promise<void> {
                 description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
                 summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
                 presentation_picture: 0,
-                team_members: 1,
+                team_members: 2,
                 nature: "Personnel",
                 type: "Jeu vidéo",
                 date: "2024",

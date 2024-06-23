@@ -1,6 +1,8 @@
 <script lang="ts">
+    export let initialValue: number = 1;
+
     let editing = false;
-    let value = 1;
+    let value = initialValue;
 
     function edit() {
         editing = true;

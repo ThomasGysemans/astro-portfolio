@@ -1,8 +1,10 @@
 <script lang="ts">
     import { ProjectNature } from "@lib/ProjectNature.ts";
 
+    export let initialValue: string = ProjectNature.PROFESSIONAL.frenchName;
+
     const options = ProjectNature.getAllNatures();
-    let value = ProjectNature.PERSONAL.frenchName;
+    let value = initialValue;
 </script>
 
 <input type="hidden" {value} name="nature" />
