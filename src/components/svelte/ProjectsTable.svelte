@@ -76,7 +76,7 @@
             <th class="font-bold text-left text-sm py-3 pr-8">Type</th>
             <th class="font-bold text-left text-sm py-3 pr-8">En vitrine</th>
             <th class="font-bold text-left text-sm py-3 pr-8">Date de dernière modification</th>
-            <th class="font-bold text-left text-sm py-3 pr-8">Action</th>
+            <th class="font-bold text-left text-sm py-3 pr-8">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -95,13 +95,18 @@
                 </td>
                 <td class="font-light text-sm py-3 pr-8">{p.showcase ? "Oui" : "Non"}</td>
                 <td class="font-light text-sm py-3 pr-8">{displayDate(p.updatedAt)}</td>
-                <td class="font-light text-sm py-3 pr-8 text-center">
-                    <form method="POST" on:submit|preventDefault={(e) => handleSubmit(e, p.name, p.slug)}>
-                        <input type="hidden" name="slug" value={p.slug} />
-                        <button type="submit" class="text-red-500 text-base opacity-50 hover:opacity-100">
-                            <Icon icon="lucide:trash" />
-                        </button>
-                    </form>
+                <td class="font-light text-sm py-3 pr-8">
+                    <div class="flex justify-center space-x-4">
+                        <a href="/admin/project?slug={p.slug}" class="block opacity-50 hover:opacity-100 relative top-[2px]">
+                            <Icon icon="lucide:pen" />
+                        </a>
+                        <form method="POST" on:submit|preventDefault={(e) => handleSubmit(e, p.name, p.slug)}>
+                            <input type="hidden" name="slug" value={p.slug} />
+                            <button type="submit" class="text-red-500 text-base opacity-50 hover:opacity-100">
+                                <Icon icon="lucide:trash" />
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         {/each}

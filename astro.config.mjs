@@ -8,7 +8,7 @@ import db from "@astrojs/db";
 export default defineConfig({
   output: "server",
   site: "https://sciencesky.fr",
-  integrations: [tailwind(), icon(), svelte(), db()],
+  integrations: [tailwind(), icon({ iconDir: "./public/icons" }), svelte(), db()],
   security: {
     checkOrigin: true,
   },

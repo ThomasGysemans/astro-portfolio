@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { ACCEPTED_EXTENSIONS } from "@lib/files.ts";
+    import { actions } from "astro:actions";
 
     export let previewUrl: string | undefined = undefined;
     export let metadata: any = {};
@@ -51,6 +52,10 @@
     function onDragOver(e: Event): void {
         e.preventDefault();
     }
+
+    function isGeneratedUrl(url: string): boolean {
+        return url.startsWith("blob:");
+    }
 </script>
 
 <button
@@ -69,7 +74,13 @@
         {#if previewUrl === undefined}
             <slot />
         {:else}
-            <img src={previewUrl} alt="" class="rounded-md {className}" />
+            {#if isGeneratedUrl(previewUrl)}
+                <img src={previewUrl} alt="" class="rounded-md {className}" />
+            {:else}
+                {#await actions.getPicture({ path: previewUrl }) then src}
+            	    <img {src} alt="" class="rounded-md {className}" />
+                {/await}
+            {/if}
         {/if}
     {/if}
     <input

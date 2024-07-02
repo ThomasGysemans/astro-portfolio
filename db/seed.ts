@@ -34,15 +34,15 @@ async function seedProjects(): Promise<void> {
                 slug: "space-visitor",
                 description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
                 summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
-                presentation_picture: 0,
-                team_members: 2,
+                presentationPicture: 0,
+                teamMembers: 2,
                 nature: "Personnel",
                 type: "Jeu vidéo",
                 date: "2024",
                 github: "ThomasGysemans/SpaceVisitor",
                 link: "https://spacevisitor.sciencesky.fr",
                 updatedAt: new Date(),
-                showcase: true,
+                showcase: true
             }
         ]);
     await db

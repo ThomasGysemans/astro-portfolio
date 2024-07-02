@@ -1,20 +1,19 @@
 ---
-import { Icon } from "astro-icon/components";
-import { mockProjects } from "@lib/tests/mocks";
+import type { Technology } from "@db/models/DAOSkills";
+import { DAOProject, type FullProject } from "@db/models/DAOProject";
+import { DAOSkills } from "@db/models/DAOSkills";
 import { ProjectType } from "@lib/ProjectType";
+import { Icon } from "astro-icon/components";
 import MainLayout from "@layouts/MainLayout.astro";
 import Project from "@components/Project.astro";
 import Skill from "@components/Skill.astro";
 
-const projects = mockProjects();
-const skills = projects.reduce((previous, current) => {
-    for (const techno of current.technologies) {
-        if (!previous.map(p => p.name).includes(techno.name)) {
-            previous.push(techno);
-        }
-    }
-    return previous;
-}, [] as Technology[]).sort((a, b) => a.name.localeCompare(b.name));
+const [projects, skills] = await Promise.all([
+    DAOProject.present(),
+    DAOSkills.list(),
+] as [FullProject[], Technology[]]);
+
+console.log("projects =", projects);
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">

@@ -1,21 +1,24 @@
 ---
+import { FullProject } from "@db/models/DAOProject";
 import { ProjectType } from "@lib/ProjectType";
 import { ProjectNature } from "@lib/ProjectNature";
+import { Storage } from "@db/storage";
 import { Icon } from "astro-icon/components";
 import Technology from "./Technology.astro";
 
 interface Props {
-    project: Project;
+    project: FullProject;
 }
 
 const { project } = Astro.props;
 const projectType = ProjectType.getProjectType(project.type);
 const projectNature = ProjectNature.getNature(project.nature);
+const presentationPic = await Storage.getImageUrl(project.pictures[project.presentationPicture]);
 ---
 
 <div class="bg-white rounded-md border-2 border-primary/50" data-slug={project.slug}>
     <div class="w-full h-60 relative">
-        <img src={project.pictures[project.presentation_picture]} alt=`Présentation du projet ${project.name}` class="h-full w-full rounded-[4px_4px_0_0]" />
+        <img src={presentationPic} alt=`Présentation du projet ${project.name}` class="h-full w-full rounded-[4px_4px_0_0]" />
         <div class=`absolute top-5 right-5 rounded-full w-8 h-8 flex justify-center items-center ${projectType.color}`>
             <Icon name={projectType.icon} class="text-lg text-white" title={projectType.frenchName} />
         </div>
@@ -30,8 +33,8 @@ const projectNature = ProjectNature.getNature(project.nature);
         </div>
         <div class="flex justify-between !mt-auto">
             <span class="text-primary/50 flex items-center space-x-2 text-sm">
-                <Icon name=`${project.team_members === 1 ? "circle-user-round" : "users"}` />
-                <span class="relative top-[1px]">{project.team_members === 1 ? "Solo" : project.team_members}</span>
+                <Icon name=`${project.teamMembers === 1 ? "circle-user-round" : "users"}` />
+                <span class="relative top-[1px]">{project.teamMembers === 1 ? "Solo" : project.teamMembers}</span>
             </span>
             <span class="text-primary/50 flex items-center space-x-2 text-sm">
                 <Icon name=`${projectNature.icon}` />

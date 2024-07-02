@@ -1,5 +1,6 @@
 <script lang="ts">
     export let initialValue: number = 1;
+    export let name: string;
 
     let editing = false;
     let value = initialValue;
@@ -13,7 +14,7 @@
     }
 </script>
 
-<input type="hidden" name="team_members" {value} />
+<input type="hidden" {name} {value} />
 
 <div class="text-primary/50 flex items-center space-x-2 text-sm">
     <div>

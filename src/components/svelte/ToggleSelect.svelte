@@ -2,12 +2,13 @@
     import { ProjectNature } from "@lib/ProjectNature.ts";
 
     export let initialValue: string = ProjectNature.PROFESSIONAL.frenchName;
+    export let name: string;
 
     const options = ProjectNature.getAllNatures();
     let value = initialValue;
 </script>
 
-<input type="hidden" {value} name="nature" />
+<input type="hidden" {value} {name} />
 
 <span class="text-primary/50 flex items-center space-x-2 text-sm">
     <span>

@@ -6,8 +6,8 @@ const ProjectTable = defineTable({
         slug: column.text({ primaryKey: true }),
         description: column.text(),
         summary: column.text(),
-        presentation_picture: column.number({ default: 0, optional: true }),
-        team_members: column.number(),
+        presentationPicture: column.number({ default: 0, optional: true }),
+        teamMembers: column.number(),
         nature: column.text(),
         type: column.text(),
         date: column.text(),
@@ -15,6 +15,7 @@ const ProjectTable = defineTable({
         link: column.text({ optional: true }),
         updatedAt: column.date(),
         showcase: column.boolean(),
+        showcaseDescription: column.text({ optional: true }),
     }
 });
 

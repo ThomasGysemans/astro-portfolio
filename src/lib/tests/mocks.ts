@@ -1,3 +1,4 @@
+import type { Technology } from "@db/models/DAOSkills.ts";
 import { ProjectNature } from "@lib/ProjectNature.ts";
 import { ProjectType } from "@lib/ProjectType.ts";
 import { Language } from "@lib/Language.ts";
@@ -66,10 +67,10 @@ export function mockProject(skillsPool?: Technology[]): Project {
         slug: name.replace(/ /g, "-"),
         description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
         summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
-        presentation_picture: 0,
+        presentationPicture: 0,
         pictures: ["/exemple-space-visitor.png"],
         technologies: technologies ?? mockSkills(),
-        team_members: Math.ceil(Math.random() * 20 + 1),
+        teamMembers: Math.ceil(Math.random() * 20 + 1),
         nature: getRandomProjectNature(),
         type: getRandomProjectType(),
         date: "202" + Math.ceil(Math.random() * 4 + 1),
