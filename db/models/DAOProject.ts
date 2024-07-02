@@ -59,23 +59,22 @@ export class DAOProject {
         return rawResults.reduce<FullProject[]>((previous, current) => {
             const sameOne = previous.find(p => p.slug === current.ProjectTable.slug);
             const currentSlug = current.ProjectTable.slug;
+            const picturePath = Storage.toPath(currentSlug, current.PicturesTable.filename)
             if (sameOne) {
                 const previousProject = previous.find(p => p.slug === currentSlug)!;
-                const picturePath = Storage.toPath(currentSlug, current.PicturesTable.filename)
-                if (!previous.some(p => p.technologies.map(t => t.name).includes(current.TechnologyTable.name))) {
-                    previousProject.technologies.push(current.TechnologyTable);
-                } else if (!previousProject.pictures.includes(picturePath)) {
-                    previousProject.pictures.push(picturePath);
-                } else if (!previousProject.languages.includes(current.LanguagesTable.language)) {
-                    previousProject.languages.push(current.LanguagesTable.language);
-                }
+                const isNewTechnology = !previous.some(p => p.technologies.map(t => t.name).includes(current.TechnologyTable.name));
+                const isNewLanguage = !previousProject.languages.includes(current.LanguagesTable.language);
+                const isNewPicture = !previousProject.pictures.includes(picturePath);
+                if (isNewTechnology) previousProject.technologies.push(current.TechnologyTable);
+                if (isNewLanguage) previousProject.languages.push(current.LanguagesTable.language);
+                if (isNewPicture) previousProject.pictures.push(picturePath);
                 return previous;
             } else {
                 return [...previous, {
                     ...current.ProjectTable,
-                    technologies: [],
-                    languages: [],
-                    pictures: [],
+                    technologies: [current.TechnologyTable],
+                    languages: [current.LanguagesTable.language],
+                    pictures: [picturePath],
                 }];
             }
         }, []);

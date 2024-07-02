@@ -1,22 +1,19 @@
 ---
-import { mockProject } from "@lib/tests/mocks";
 import { ProjectNature } from "@lib/ProjectNature";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
 import { Language } from "@lib/Language";
+import { DAOProject } from "@db/models/DAOProject";
+import { actions } from "astro:actions";
 import ProjectIllustration from "@components/ProjectIllustration.astro";
 import MainLayout from "@layouts/MainLayout.astro";
 import Skill from "@components/Skill.astro";
 
-const project = mockProject();
+const { slug } = Astro.params;
+const project = await DAOProject.find(slug);
 const projectType = ProjectType.getProjectType(project.type);
 const projectNature = ProjectNature.getNature(project.nature);
 const useCarousel = project.pictures.length > 3;
-
-// For testing purposes only
-// project.pictures.push("/sciencesky-image.jpeg");
-// project.pictures.push("/stars.jpg");
-// project.pictures.push("/logo.png");
 
 function getLinkPresentation(): string {
     switch (projectType) {
@@ -73,8 +70,8 @@ function getLinkPresentation(): string {
             </p>
         )}
         <div class={"illustrations-container " + (useCarousel ? "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8" : "space-y-8")}>
-            {project.pictures.map(p => (
-                <ProjectIllustration src={p} alt=`Illustration du projet ${project.name}` interactive={useCarousel} />
+            {project.pictures.map(async p => (
+                <ProjectIllustration src={await actions.getPicture({ path: p })} alt=`Illustration du projet ${project.name}` interactive={useCarousel} />
             ))}
         </div>
         <h2>Technologies utilisées dans ce projet</h2>
