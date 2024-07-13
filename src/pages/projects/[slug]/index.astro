@@ -10,10 +10,10 @@ import MainLayout from "@layouts/MainLayout.astro";
 import Skill from "@components/Skill.astro";
 
 const { slug } = Astro.params;
-const project = await DAOProject.find(slug);
-const projectType = ProjectType.getProjectType(project.type);
-const projectNature = ProjectNature.getNature(project.nature);
-const useCarousel = project.pictures.length > 3;
+const project = !!slug ? await DAOProject.find(slug) : undefined;
+const projectType = project && ProjectType.getProjectType(project.type);
+const projectNature = project && ProjectNature.getNature(project.nature);
+const useCarousel = !!project && project.pictures.length > 3;
 
 function getLinkPresentation(): string {
     switch (projectType) {

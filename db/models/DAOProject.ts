@@ -11,7 +11,6 @@ import {
     TechnologyTable
 } from "astro:db";
 
-// TODO: move "Project" here (from env.d.ts)
 export type FullProject = {
     name: string;
     slug: string;
@@ -48,6 +47,13 @@ export type RawProject = Omit<
     "technologies" |
     "updatedAt"
 > & { skills: string[], pictures: File[], existingPictures?: string }
+
+export type ShowcaseProject = Pick<
+    FullProject,
+    "slug" |
+    "name" |
+    "showcaseDescription"
+>;
 
 type JoinedProject = {
     ProjectTable: typeof ProjectTable.$inferSelect,
@@ -110,6 +116,16 @@ export class DAOProject {
         return this.aggregateProjects(slug == undefined
             ? (await selectClause.execute())
             : (await selectClause.where(eq(ProjectTable.slug, slug)).execute()));
+    }
+
+    public static async getShowcase(): Promise<ShowcaseProject[]> {
+        return db
+            .select({
+                name: ProjectTable.name,
+                slug: ProjectTable.slug,
+                showcaseDescription: ProjectTable.showcaseDescription,
+            })
+            .from(ProjectTable);
     }
 
     public static async find(slug: string): Promise<FullProject | undefined> {

@@ -18,7 +18,7 @@
         bi.set(getRandomIntensity());
     }
 
-    export let number_of_projects: number;
+    export let numberOfProjects: number;
 
     const rotateFn = 'rotateY'; // rotateX for horizontal
     let carousel: HTMLElement;
@@ -44,14 +44,14 @@
 
     function getActualCellIndex(index: number): number {
         if (index < 0) {
-            const abs = (Math.abs(index) % number_of_projects);
+            const abs = (Math.abs(index) % numberOfProjects);
             if (abs === 0) {
                 return 0;
             } else {
-                return number_of_projects - abs;
+                return numberOfProjects - abs;
             }
         }
-        return Math.abs(index) % number_of_projects;
+        return Math.abs(index) % numberOfProjects;
     }
 
     function next() {
@@ -69,11 +69,11 @@
     function initCarousel() {
         const cells = getCells();
         const cellSize = carousel.offsetWidth; // "offsetHeight" for horizontal
-        radius = Math.round((cellSize / 2) / Math.tan(Math.PI / number_of_projects));
-        theta = 360 / number_of_projects;
+        radius = Math.round((cellSize / 2) / Math.tan(Math.PI / numberOfProjects));
+        theta = 360 / numberOfProjects;
         for (let i = 0; i < cells.length; i++) {
             const cell = cells[i];
-            if (i < number_of_projects) { // visible cell
+            if (i < numberOfProjects) { // visible cell
                 cell.style.visibility = "visible";
                 cell.style.transform = `${rotateFn}(${theta * i}deg) translateZ(${radius}px)`;
             } else { // hidden cell

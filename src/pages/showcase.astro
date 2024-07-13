@@ -1,21 +1,22 @@
 ---
 import { Icon } from "astro-icon/components";
+import { DAOProject } from "@db/models/DAOProject";
 import ShowCaseCarousel from "@components/svelte/ShowCaseCarousel.svelte";
 import PageLayout from "@layouts/PageLayout.astro";
 
-const number_of_projects = 6;
+const projects = await DAOProject.getShowcase();
 ---
 
 <PageLayout title="Portfolio de Thomas Gysemans - Vitrine de mes projets principaux">
     <div class="relative">
-        <ShowCaseCarousel client:idle {number_of_projects}>
-            {Array(number_of_projects).fill(undefined).map((_, i) => (
-                <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label=`${i + 1} sur ${number_of_projects}`>
+        <ShowCaseCarousel client:idle numberOfProjects={projects.length}>
+            {projects.map((project, i) => (
+                <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label=`${i + 1} sur ${projects.length}`>
                     <div class="px-4 w-full h-full py-16 space-y-4">
-                        <h2 class="text-2xl text-center w-full">ScienceSky v5</h2>
+                        <h2 class="text-2xl text-center w-full">{project.name}</h2>
                         <div class="cell-details flex flex-col items-center space-y-4">
-                            <p class="text-sm w-full inline-block">Une plateforme de vulgarisation scientifique française ouverte à tous !</p>
-                            <a type="button" class="carousel-btn" href=`/projects/sciencesky`>
+                            <p class="text-sm w-full inline-block">{project.showcaseDescription}</p>
+                            <a type="button" class="carousel-btn" href={`/projects/${project.slug}`}>
                                 En savoir plus
                             </a>
                         </div>
