@@ -1,5 +1,7 @@
 ---
+import type { FullProject } from "@db/models/DAOProject";
 import { ProjectNature } from "@lib/ProjectNature";
+import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
 import MainLayout from "@layouts/MainLayout.astro";
 import Earth from "@components/svelte/Earth.svelte";
@@ -8,7 +10,7 @@ import Button from "@components/Button.astro";
 import Project from "@components/Project.astro";
 import AboutMe from "@components/AboutMe.astro";
 
-const example_project: Project = {
+const example_project: FullProject = {
     name: "Space Visitor",
     slug: "space-visitor",
     description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
@@ -18,15 +20,22 @@ const example_project: Project = {
     technologies: [{
         name: "ThreeJS",
         logo: "/logos/ThreeJS.svg",
+        loved: false,
     }, {
         name: "ThreeJS",
         logo: "/logos/ThreeJS.svg",
+        loved: false,
     }, {
         name: "ThreeJS",
         logo: "/logos/ThreeJS.svg",
+        loved: false,
     }],
     teamMembers: 20,
-    nature: ProjectNature.SCHOOL,
+    nature: ProjectNature.SCHOOL.frenchName,
+    type: ProjectType.APPLICATION.frenchName,
+    showcase: true,
+    updatedAt: new Date(),
+    languages: [],
     date: "2023",
 };
 ---

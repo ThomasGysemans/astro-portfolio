@@ -1,3 +1,4 @@
+import type { Technology } from "./DAOSkills";
 import { Storage } from "@db/storage.ts";
 import {
     count,
@@ -11,7 +12,25 @@ import {
 } from "astro:db";
 
 // TODO: move "Project" here (from env.d.ts)
-export type FullProject = Project;
+export type FullProject = {
+    name: string;
+    slug: string;
+    description: string;
+    summary: string;
+    presentationPicture?: number | null;
+    pictures: string[];
+    technologies: Technology[];
+    teamMembers: number; // 1 for solo
+    nature: string; // the `frenchName` property in the `ProjectNature` class
+    type: string; // the `frenchName` property in the `ProjectType` class
+    date: string; // "2023-2024" or "2023" etc.
+    languages: string[]; // the `short` property in the `Language` class
+    github?: string | null;
+    link?: string | null;
+    updatedAt: Date;
+    showcase: boolean;
+    showcaseDescription?: string | null;
+};
 
 export type ProjectListItem = Pick<
     FullProject,
@@ -93,7 +112,7 @@ export class DAOProject {
             : (await selectClause.where(eq(ProjectTable.slug, slug)).execute()));
     }
 
-    public static async find(slug: string): Promise<FullProject|undefined> {
+    public static async find(slug: string): Promise<FullProject | undefined> {
         const results = (await db
             .select()
             .from(ProjectTable)

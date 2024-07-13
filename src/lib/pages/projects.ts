@@ -1,6 +1,7 @@
+import type { FullProject } from "@db/models/DAOProject";
 import { createElement } from "@lib/DOMHelper.ts";
 
-declare const projects: Project[];
+declare const projects: FullProject[];
 
 type Filter = {
     name?: string;
@@ -113,7 +114,7 @@ function displayFilteredSkills(): void {
     }
 }
 
-function getProjectTimestamp(project: Project): number {
+function getProjectTimestamp(project: FullProject): number {
     return project.date.includes("-")
         ? new Date(project.date.substring(project.date.indexOf("-") + 1)).getTime()
         : new Date(project.date).getTime();

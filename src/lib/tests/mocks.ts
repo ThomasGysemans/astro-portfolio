@@ -2,6 +2,7 @@ import type { Technology } from "@db/models/DAOSkills.ts";
 import { ProjectNature } from "@lib/ProjectNature.ts";
 import { ProjectType } from "@lib/ProjectType.ts";
 import { Language } from "@lib/Language.ts";
+import type { FullProject } from "@db/models/DAOProject";
 
 function getRandomNumber(min: number, max: number): number {
     return Math.random() * (max - min) + min;
@@ -52,7 +53,7 @@ function getRandomProjectNature(): string {
     return natures[Math.floor(Math.random() * natures.length)].frenchName;
 }
 
-export function mockProject(skillsPool?: Technology[]): Project {
+export function mockProject(skillsPool?: Technology[]): FullProject {
     const name = getRandomName(25);
     const technologies = skillsPool?.filter(() => Math.random() < 0.2);
     if (technologies?.length === 0) {
@@ -90,7 +91,7 @@ function createMock<T>(length: number, mock: () => T): T[] {
     return projects;
 }
 
-export function mockProjects(length?: number): Project[] {
+export function mockProjects(length?: number): FullProject[] {
     length ??= Math.ceil(Math.random() * 5 + 1);
     const skillsPool = mockSkills();
     return createMock(length, () => mockProject(skillsPool));

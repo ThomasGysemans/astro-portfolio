@@ -1,5 +1,5 @@
 ---
-import { FullProject } from "@db/models/DAOProject";
+import type { FullProject } from "@db/models/DAOProject";
 import { ProjectType } from "@lib/ProjectType";
 import { ProjectNature } from "@lib/ProjectNature";
 import { Storage } from "@db/storage";
@@ -13,7 +13,7 @@ interface Props {
 const { project } = Astro.props;
 const projectType = ProjectType.getProjectType(project.type);
 const projectNature = ProjectNature.getNature(project.nature);
-const presentationPic = await Storage.getImageUrl(project.pictures[project.presentationPicture]);
+const presentationPic = await Storage.getImageUrl(project.pictures[project.presentationPicture ?? 0]);
 ---
 
 <div class="bg-white rounded-md border-2 border-primary/50" data-slug={project.slug}>

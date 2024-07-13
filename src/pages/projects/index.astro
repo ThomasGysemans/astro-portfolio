@@ -11,9 +11,7 @@ import Skill from "@components/Skill.astro";
 const [projects, skills] = await Promise.all([
     DAOProject.present(),
     DAOSkills.list(),
-] as [FullProject[], Technology[]]);
-
-console.log("projects =", projects);
+] as any as [FullProject[], Technology[]]);
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
