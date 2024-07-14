@@ -42,7 +42,8 @@ async function seedProjects(): Promise<void> {
                 github: "ThomasGysemans/SpaceVisitor",
                 link: "https://spacevisitor.sciencesky.fr",
                 updatedAt: new Date(),
-                showcase: true
+                showcase: true,
+                showcaseDescription: "Voila une description de Space Visitor",
             }
         ]);
     await db

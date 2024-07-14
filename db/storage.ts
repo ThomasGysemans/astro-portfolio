@@ -44,4 +44,11 @@ export abstract class Storage {
             .getPublicUrl(path)
             .data.publicUrl;
     }
+
+    public static async deleteImage(path: string): Promise<boolean> {
+        return !!!(await this.getClient()
+            .storage
+            .from(import.meta.env.SUPABASE_STORAGE_BUCKET)
+            .remove([path])).error;
+    }
 }

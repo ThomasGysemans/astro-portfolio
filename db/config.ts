@@ -31,7 +31,7 @@ const PicturesTable = defineTable({
     columns: {
         id: column.number({ primaryKey: true }),
         project: column.text({ references: () => ProjectTable.columns.slug }),
-        filename: column.text({ unique: true }),
+        filename: column.text(),
         lastModified: column.date(),
         type: column.text(),
         picture: column.text(),

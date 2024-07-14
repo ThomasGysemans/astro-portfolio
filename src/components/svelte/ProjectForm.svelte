@@ -171,6 +171,7 @@
                 });
             }
         } catch (e) {
+            console.warn(e);
             Swal.fire({
                 title: `Erreur !`,
                 text: "Une erreur inattendue s'est produite.",

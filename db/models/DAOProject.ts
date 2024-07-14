@@ -153,12 +153,16 @@ export class DAOProject {
     }
 
     public static async remove(slug: string): Promise<boolean> {
-        return (await db.batch([
+        const images = (await db.select().from(PicturesTable).where(eq(PicturesTable.project, slug)).execute()).reduce<string[]>((p, c) => [...p, Storage.toPath(slug, c.filename)], [])
+        const success = (await db.batch([
             db.delete(PicturesTable).where(eq(PicturesTable.project, slug)),
             db.delete(LanguagesTable).where(eq(LanguagesTable.project, slug)),
             db.delete(ProjectTechnologiesTable).where(eq(ProjectTechnologiesTable.project, slug)),
             db.delete(ProjectTable).where(eq(ProjectTable.slug, slug)),
         ]))[3].rowsAffected > 0;
+        const promises: Promise<boolean>[] = images.map(i => Storage.deleteImage(i));
+        const deletion = (await Promise.all(promises)).every(d => d);
+        return success && deletion;
     }
 
     public static async exists(slug: string): Promise<boolean> {
@@ -174,8 +178,8 @@ export class DAOProject {
         if (await Storage.storeImages(project.pictures, slug)) {
             return (await db.batch([
                 db.insert(ProjectTable).values([{
+                    slug,
                     name: project.name,
-                    slug: slug,
                     description: project.description,
                     summary: project.summary,
                     presentationPicture: project.presentationPicture,
@@ -192,10 +196,10 @@ export class DAOProject {
                 db.insert(ProjectTechnologiesTable).values(project.skills.map(s => ({ project: slug, technology: s }))),
                 db.insert(LanguagesTable).values(project.languages.map(l => ({ project: slug, language: l }))),
                 db.insert(PicturesTable).values(project.pictures.map(p => ({
+                    type: p.type,
                     project: slug,
                     filename: p.name,
                     lastModified: new Date(p.lastModified),
-                    type: p.type,
                     picture: Storage.toPath(slug, p.name),
                 }))),
             ]))[0].rowsAffected > 0;
