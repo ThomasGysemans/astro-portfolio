@@ -1,16 +1,16 @@
 ---
-import type { Technology } from "@db/models/DAOSkills";
-import { DAOProject, type FullProject } from "@db/models/DAOProject";
-import { DAOSkills } from "@db/models/DAOSkills";
+import type { Technology, FullProject } from "@db/models";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
+import { presentProjects } from "@db/projects";
+import { listSkills } from "@db/skills";
 import MainLayout from "@layouts/MainLayout.astro";
 import Project from "@components/Project.astro";
 import Skill from "@components/Skill.astro";
 
 const [projects, skills] = await Promise.all([
-    DAOProject.present(),
-    DAOSkills.list(),
+    presentProjects(),
+    listSkills(),
 ] as any as [FullProject[], Technology[]]);
 ---
 

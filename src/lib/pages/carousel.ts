@@ -1,4 +1,4 @@
-import { hideElement, showElement } from "@lib/DOMHelper.ts";
+import { hideElement, showElement } from "../DOMHelper.ts";
 
 const carousel = document.querySelector("#carousel")! as HTMLDivElement;
 const tabList = carousel.querySelector("& > div[role='tablist']") as HTMLDivElement;

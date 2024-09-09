@@ -3,14 +3,14 @@ import { ProjectNature } from "@lib/ProjectNature";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
 import { Language } from "@lib/Language";
-import { DAOProject } from "@db/models/DAOProject";
 import { actions } from "astro:actions";
+import { findProject } from "@db/projects";
 import ProjectIllustration from "@components/ProjectIllustration.astro";
 import MainLayout from "@layouts/MainLayout.astro";
 import Skill from "@components/Skill.astro";
 
 const { slug } = Astro.params;
-const project = !!slug ? await DAOProject.find(slug) : undefined;
+const project = (!!slug ? await findProject(slug) : undefined)!; // TODO: handle undefined case
 const projectType = project && ProjectType.getProjectType(project.type);
 const projectNature = project && ProjectNature.getNature(project.nature);
 const useCarousel = !!project && project.pictures.length > 3;
