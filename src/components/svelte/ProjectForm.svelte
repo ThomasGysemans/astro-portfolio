@@ -216,7 +216,7 @@
             </div>
         </div>
         <div class={includeInShowcase ? "" : "hidden"}>
-            <textarea placeholder="Description de la vitrine" aria-label="Description de la vitrine" name="showcaseDescription"></textarea>
+            <textarea placeholder="Description de la vitrine" aria-label="Description de la vitrine" name="showcaseDescription">{project?.showcaseDescription ?? ""}</textarea>
         </div>
         <div>
             <label for="github">Lien GitHub: https://github.com/</label>

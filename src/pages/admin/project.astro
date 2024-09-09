@@ -9,6 +9,7 @@ const project = slug === null ? null : await DAOProject.find(slug);
 const projectDoesNotExist = project === undefined;
 const showcaseCount = await DAOProject.countShowcase();
 const skills = await DAOSkills.list();
+console.log(project)
 ---
 
 <AdminLayout title="Portfolio - Ajouter un projet">

@@ -67,6 +67,7 @@ export const server = {
                 return invalid(`Le projet de slug "${slug}" existe déjà.`);
             }
             const allLanguages = Language.getAllLanguages().map(l => l.short);
+            return ok();
             const result = await DAOProject.create({
                 ...obj,
                 type: obj.projectType,
