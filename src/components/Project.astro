@@ -1,23 +1,23 @@
 ---
-import type { FullProject } from "@db/models";
+import type { PBFullProject } from "@db/models";
 import { ProjectType } from "@lib/ProjectType";
 import { ProjectNature } from "@lib/ProjectNature";
 import { Icon } from "astro-icon/components";
+import { getImageUrl } from "@db/projects";
 import Technology from "./Technology.astro";
 
 interface Props {
-    project: FullProject;
+    project: PBFullProject;
 }
 
 const { project } = Astro.props;
 const projectType = ProjectType.getProjectType(project.type);
 const projectNature = ProjectNature.getNature(project.nature);
-const presentationPic = "https://sciencesky.fr/logo.png";
 ---
 
 <div class="bg-white rounded-md border-2 border-primary/50" data-slug={project.slug}>
     <div class="w-full h-60 relative">
-        <img src={presentationPic} alt=`Présentation du projet ${project.name}` class="h-full w-full rounded-[4px_4px_0_0]" />
+        <img src={getImageUrl(project, project.presentationPicture)} alt=`Présentation du projet ${project.name}` class="h-full w-full rounded-[4px_4px_0_0] object-cover" />
         <div class=`absolute top-5 right-5 rounded-full w-8 h-8 flex justify-center items-center ${projectType.color}`>
             <Icon name={projectType.icon} class="text-lg text-white" title={projectType.frenchName} />
         </div>
@@ -26,8 +26,8 @@ const presentationPic = "https://sciencesky.fr/logo.png";
         <strong><a href=`/projects/${project.slug}` class="underline text-primary text-2xl font-bold">{project.name}</a></strong>
         <p class="text-primary text-sm leading-8 font-light">{project.summary}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
-            {project.technologies.map(techno => (
-                <Technology logo={techno.logo} name={techno.name} />
+            {project.expand!.technologies!.map(techno => (
+                <Technology logo={getImageUrl(techno, techno.logo)} name={techno.name} />
             ))}
         </div>
         <div class="flex justify-between !mt-auto">

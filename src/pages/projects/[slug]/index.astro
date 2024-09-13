@@ -3,14 +3,18 @@ import { ProjectNature } from "@lib/ProjectNature";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
 import { Language } from "@lib/Language";
-import { actions } from "astro:actions";
-import { findProject } from "@db/projects";
+import { findProject, getImageUrl } from "@db/projects";
 import ProjectIllustration from "@components/ProjectIllustration.astro";
 import MainLayout from "@layouts/MainLayout.astro";
 import Skill from "@components/Skill.astro";
 
 const { slug } = Astro.params;
 const project = (!!slug ? await findProject(slug) : undefined)!; // TODO: handle undefined case
+
+if (project === undefined) {
+    return Astro.rewrite("/404");
+}
+
 const projectType = project && ProjectType.getProjectType(project.type);
 const projectNature = project && ProjectNature.getNature(project.nature);
 const useCarousel = !!project && project.pictures.length > 3;
@@ -70,21 +74,21 @@ function getLinkPresentation(): string {
             </p>
         )}
         <div class={"illustrations-container " + (useCarousel ? "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8" : "space-y-8")}>
-            {project.pictures.map(async p => (
-                <ProjectIllustration src={await actions.getPicture({ path: p })} alt=`Illustration du projet ${project.name}` interactive={useCarousel} />
+            {project.pictures.map(p => (
+                <ProjectIllustration src={getImageUrl(project, p)} alt=`Illustration du projet ${project.name}` interactive={useCarousel} />
             ))}
         </div>
         <h2>Technologies utilisées dans ce projet</h2>
         <div class="flex flex-wrap *:mb-8 *:mr-8 pb-40">
             {project.technologies.map(t => (
-                <Skill logo={t.logo} name={t.name} loved={t.loved} />
+                <Skill logo={getImageUrl(t, t.logo)} name={t.name} loved={t.loved} />
             ))}
         </div>
     </div>
     <div id="carousel" class="fixed z-40 top-0 left-0 w-full h-dvh bg-black/75" aria-hidden="true">
         {project.pictures.map((src, i) => (
             <div role="tabpanel" id=`img-${i}` aria-hidden={i === 0 ? "false" : "true"} aria-roledescription="diapositive" aria-label=`${i + 1} sur ${project.pictures.length}` class="px-[5%] pt-10 z-40 w-full max-h-80dvh flex items-center justify-center">
-                <img src={src} alt=`Illustration ${i + 1} du projet ${project.name}` class="w-full h-auto max-h-[80dvh] object-contain" />
+                <img src={getImageUrl(project, src)} alt=`Illustration ${i + 1} du projet ${project.name}` class="w-full h-auto max-h-[80dvh] object-contain" />
             </div>
         ))}
         <div role="tablist" aria-label="Diapositives" class="absolute bottom-10 left-0 w-full py-6 flex items-center justify-center space-x-2">

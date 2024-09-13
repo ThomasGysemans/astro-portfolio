@@ -1,8 +1,7 @@
 ---
-import type { Technology, FullProject } from "@db/models";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
-import { presentProjects } from "@db/projects";
+import { presentProjects, getImageUrl } from "@db/projects";
 import { listSkills } from "@db/skills";
 import MainLayout from "@layouts/MainLayout.astro";
 import Project from "@components/Project.astro";
@@ -10,8 +9,8 @@ import Skill from "@components/Skill.astro";
 
 const [projects, skills] = await Promise.all([
     presentProjects(),
-    listSkills(),
-] as any as [FullProject[], Technology[]]);
+    listSkills()
+]);
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
@@ -73,7 +72,7 @@ const [projects, skills] = await Promise.all([
         </div>
         <div class="flex flex-wrap *:mb-8 *:mr-8">
             {skills.map(s => (
-                <Skill logo={s.logo} name={s.name} loved={s.loved} />
+                <Skill logo={getImageUrl(s, s.logo)} name={s.name} loved={s.loved} />
             ))}
         </div>
     </section>
