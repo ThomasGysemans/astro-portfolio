@@ -1,5 +1,5 @@
-import type { FullProject } from "@db/models/DAOProject";
-import { createElement } from "@lib/DOMHelper.ts";
+import type { FullProject } from "../../../db/models";
+import { createElement } from "../DOMHelper.ts";
 
 declare const projects: FullProject[];
 

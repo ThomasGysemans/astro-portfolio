@@ -1,4 +1,4 @@
-import { EnumUtilities } from "@lib/Enum.ts";
+import { EnumUtilities } from "./Enum.ts";
 
 export class ProjectType {
     public static readonly WEB = new ProjectType("globe", "Web", "bg-[#566CF5]");

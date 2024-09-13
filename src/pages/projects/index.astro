@@ -1,17 +1,16 @@
 ---
-import type { Technology } from "@db/models/DAOSkills";
-import { DAOProject, type FullProject } from "@db/models/DAOProject";
-import { DAOSkills } from "@db/models/DAOSkills";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
+import { presentProjects, getImageUrl } from "@db/projects";
+import { listSkills } from "@db/skills";
 import MainLayout from "@layouts/MainLayout.astro";
 import Project from "@components/Project.astro";
 import Skill from "@components/Skill.astro";
 
 const [projects, skills] = await Promise.all([
-    DAOProject.present(),
-    DAOSkills.list(),
-] as any as [FullProject[], Technology[]]);
+    presentProjects(),
+    listSkills()
+]);
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
@@ -73,7 +72,7 @@ const [projects, skills] = await Promise.all([
         </div>
         <div class="flex flex-wrap *:mb-8 *:mr-8">
             {skills.map(s => (
-                <Skill logo={s.logo} name={s.name} loved={s.loved} />
+                <Skill logo={getImageUrl(s, s.logo)} name={s.name} loved={s.loved} />
             ))}
         </div>
     </section>

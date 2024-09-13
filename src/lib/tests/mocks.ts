@@ -1,8 +1,7 @@
-import type { Technology } from "@db/models/DAOSkills.ts";
-import { ProjectNature } from "@lib/ProjectNature.ts";
-import { ProjectType } from "@lib/ProjectType.ts";
-import { Language } from "@lib/Language.ts";
-import type { FullProject } from "@db/models/DAOProject";
+import { FullProject, Technology } from "../../../db/models";
+import { ProjectNature } from "../ProjectNature.ts";
+import { ProjectType } from "../ProjectType.ts";
+import { Language } from "../Language.ts";
 
 function getRandomNumber(min: number, max: number): number {
     return Math.random() * (max - min) + min;

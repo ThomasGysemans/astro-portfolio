@@ -1,10 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
-import { DAOProject } from "@db/models/DAOProject";
+import { getShowcase } from "@db/projects";
 import ShowCaseCarousel from "@components/svelte/ShowCaseCarousel.svelte";
 import PageLayout from "@layouts/PageLayout.astro";
 
-const projects = await DAOProject.getShowcase();
+const projects = await getShowcase();
 ---
 
 <PageLayout title="Portfolio de Thomas Gysemans - Vitrine de mes projets principaux">

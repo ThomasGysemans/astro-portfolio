@@ -4,9 +4,7 @@
 /// <reference types="astro/client" />
 
 interface ImportMetaEnv {
-    readonly SUPABASE_KEY: string;
-    readonly SUPABASE_STORAGE_URL: string;
-    readonly SUPABASE_STORAGE_BUCKET: string;
+    readonly POCKETBASE_URL: string
 }
 
 interface ImportEnv {

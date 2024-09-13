@@ -1,4 +1,4 @@
-import { EnumUtilities } from "@lib/Enum.ts";
+import { EnumUtilities } from "./Enum";
 
 export class Language {
     public static readonly FR = new Language("FR", "french-flag");

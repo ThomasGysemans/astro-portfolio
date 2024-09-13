@@ -1,4 +1,4 @@
-import { EnumUtilities } from "@lib/Enum.ts";
+import { EnumUtilities } from "./Enum.ts";
 
 export class ProjectNature {
     public static readonly SCHOOL = new ProjectNature("graduation-cap", "École");
