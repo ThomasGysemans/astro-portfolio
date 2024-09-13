@@ -6,6 +6,7 @@ import { listSkills } from "@db/skills";
 import MainLayout from "@layouts/MainLayout.astro";
 import Project from "@components/Project.astro";
 import Skill from "@components/Skill.astro";
+import Medal from "../../components/Medal.astro";
 
 const [projects, skills] = await Promise.all([
     presentProjects(),
@@ -69,6 +70,13 @@ const [projects, skills] = await Promise.all([
         <h1 class="text-4xl text-center">Mes compétences techniques</h1>
         <div class="flex justify-center items-center w-full">
             <p class="text-center font-light leading-9 max-w-[600px]">Même si lister des technologies de cette manière n’a pas beaucoup de sens, je vous les présente comme les technologies que j’ai utilisées dans le passé et pour lesquelles j’ai un minimum d’expérience.</p>
+        </div>
+        <div class="flex flex-wrap justify-center items-start *:mb-8 *:mr-8">
+            <Medal>Autonomie dans la réalisation d'un programme</Medal>
+            <Medal>Maîtrise des frameworks web</Medal>
+            <Medal>Programmation orientée objet (POO)</Medal>
+            <Medal>Web scraping (Puppeteer)</Medal>
+            <Medal>Créer et gérer une base de données relationnelle et orientée documents</Medal>
         </div>
         <div class="flex flex-wrap *:mb-8 *:mr-8">
             {skills.map(s => (
