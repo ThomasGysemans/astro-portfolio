@@ -68,7 +68,7 @@ const [projects, skills] = await Promise.all([
     </div>
     <section class="px-main my-40">
         <h1 class="text-4xl text-center">Mes compétences techniques</h1>
-        <div class="flex flex-wrap justify-center items-start *:mb-8 *:mr-8 mt-20">
+        <div class="mt-20 flex flex-wrap justify-center *:ml-4 *:mr-4 *:mb-12">
             <Medal>Maîtrise des frameworks web (frontend & backend)</Medal>
             <Medal>Programmation orientée objet (POO)</Medal>
             <Medal>Web scraping (Puppeteer)</Medal>
@@ -78,7 +78,7 @@ const [projects, skills] = await Promise.all([
         <div class="flex justify-center items-center w-full mt-8 mb-20">
             <p class="text-center font-light leading-9 max-w-[600px]">Même si lister des technologies de cette manière n’a pas beaucoup de sens, je vous les présente comme les technologies que j’ai utilisées dans le passé et pour lesquelles j’ai un minimum d’expérience.</p>
         </div>
-        <div class="flex flex-wrap *:mb-8 *:mr-8">
+        <div class="flex flex-wrap justify-center *:mb-8 *:mr-8">
             {skills.map(s => (
                 <Skill logo={getImageUrl(s, s.logo)} name={s.name} loved={s.loved} />
             ))}
@@ -89,15 +89,11 @@ const [projects, skills] = await Promise.all([
         <div class="flex justify-center items-center w-full">
             <p class="text-center font-light leading-9 max-w-[600px]"></p>
         </div>
-        <div class="flex flex-wrap justify-center items-start *:mb-8 *:mr-8">
+        <div class="flex flex-wrap justify-center *:ml-4 *:mr-4 *:mb-12">
             <Medal>Autonomie dans la réalisation d'un programme</Medal>
             <Medal>Management d'équipe et travail en autonomie</Medal>
             <Medal>Coopérer dans une équipe selon la méthodologie Agile</Medal>
             <Medal>Répartition des tâches dans une équipe</Medal>
-        </div>
-        <div class="flex flex-col justify-center items-center space-y-14">
-            <p class="text-center font-light leading-9 max-w-[700px] text-sm">95% de mes compétences sont dues à mon travail personnel et autodidacte. J'ai la ferme conviction qu'en informatique le seul moyen d'être au top de son domaine est de s'autoformer. Ce domaine évolue très rapidement dans une ère où l'accès à l'information n'a jamais été aussi simple, c'est pourquoi il est incroyablement facile d'échapper aux des contraintes inhérentes au système pédagogique axé sur une seule et unique ligne directive.</p>
-            <button id="diploma" class="bg-white rounded-lg font-light text-sm border border-primary-light text-primary-light p-4">Voir mes diplômes quand même</button>
         </div>
     </section>
 </MainLayout>
@@ -128,28 +124,5 @@ const [projects, skills] = await Promise.all([
 
     :global([data-hidden="true"]) {
         display: none;
-    }
-
-    #diploma {
-        animation: pulse-animation 1.5s infinite;
-        background: linear-gradient(90deg, rgba(97, 156, 243, .2) 0%, rgba(255, 255, 255, 0) 60%) 100% 0;
-        background-size: 200%;
-        box-shadow: 0 0 1px 1px rgba(#619cf3, .5);
-        transition: background 400ms ease;
-
-        &:hover,
-        &:focus {
-            background-position: 0 0;
-        }
-
-        @keyframes pulse-animation {
-            from {
-                box-shadow: 0 0 0 0 rgba(#619cf3, 1);
-            }
-
-            to {
-                box-shadow: 0 0 0 5px rgba(#619cf3, 0);
-            }
-        }
     }
 </style>

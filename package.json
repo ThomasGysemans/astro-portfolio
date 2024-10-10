@@ -16,7 +16,7 @@
     "@threlte/core": "^7.3.1",
     "@threlte/extras": "^8.11.4",
     "@threlte/flex": "^1.0.3",
-    "astro": "^4.15.4",
+    "astro": "^4.15.12",
     "astro-icon": "^1.1.1",
     "iconify-icon": "^2.1.0",
     "pocketbase": "^0.21.5",
@@ -25,11 +25,11 @@
     "sweetalert2": "^11.14.0",
     "tailwindcss": "^3.4.10",
     "three": "^0.166.1",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "devDependencies": {
     "@iconify/svelte": "^4.0.2",
     "@types/three": "^0.168.0",
-    "sass": "^1.78.0"
+    "sass": "^1.79.4"
   }
 }
