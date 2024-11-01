@@ -23,9 +23,6 @@ importers:
       '@threlte/extras':
         specifier: ^8.12.0
         version: 8.12.0(@types/three@0.169.0)(svelte@4.2.19)(three@0.170.0)
-      '@threlte/flex':
-        specifier: ^1.0.3
-        version: 1.0.3(svelte@4.2.19)(three@0.170.0)
       astro:
         specifier: ^4.16.8
         version: 4.16.8(@types/node@22.8.6)(rollup@4.24.3)(sass@1.80.5)(typescript@5.6.3)
@@ -758,12 +755,6 @@ packages:
 
   '@threlte/extras@8.12.0':
     resolution: {integrity: sha512-rWlY9xWCcr5+KkPFcV5K2lHxshM9QjpfJK98Vhsm+VnL7/tLq4FEnghalrz2289cY9ZiiD0soO34WGqFYu7ZyA==}
-    peerDependencies:
-      svelte: '>=4'
-      three: '>=0.152'
-
-  '@threlte/flex@1.0.3':
-    resolution: {integrity: sha512-PEkHBMAgVk6MUXwNX2R29JtD5do9f8c+mTYLiPR9iYGwoRVzvcYrHqUisAdFD8K+joGysOPz9grM4LlStpyzaA==}
     peerDependencies:
       svelte: '>=4'
       three: '>=0.152'
@@ -2670,9 +2661,6 @@ packages:
     resolution: {integrity: sha512-b4JR1PFR10y1mKjhHY9LaGo6tmrgjit7hxVIeAmyMw3jegXR4dhYqLaQF5zMXZxY7tLpMyJeLjr1C4rLmkVe8g==}
     engines: {node: '>=12.20'}
 
-  yoga-layout@2.0.1:
-    resolution: {integrity: sha512-tT/oChyDXelLo2A+UVnlW9GU7CsvFMaEnd9kVFsaiCQonFAXd3xrHhkLYu+suwwosrAEQ746xBU+HvYtm1Zs2Q==}
-
   zod-to-json-schema@3.23.5:
     resolution: {integrity: sha512-5wlSS0bXfF/BrL4jPAbz9da5hDlDptdEppYfe+x4eIJ7jioqKG9uUxOwPzqof09u/XeVdrgFu29lZi+8XNDJtA==}
     peerDependencies:
@@ -3374,13 +3362,6 @@ snapshots:
       troika-three-text: 0.49.1(three@0.170.0)
     transitivePeerDependencies:
       - '@types/three'
-
-  '@threlte/flex@1.0.3(svelte@4.2.19)(three@0.170.0)':
-    dependencies:
-      mitt: 3.0.1
-      svelte: 4.2.19
-      three: 0.170.0
-      yoga-layout: 2.0.1
 
   '@trysound/sax@0.2.0': {}
 
@@ -5694,8 +5675,6 @@ snapshots:
       fd-slicer: 1.1.0
 
   yocto-queue@1.1.1: {}
-
-  yoga-layout@2.0.1: {}
 
   zod-to-json-schema@3.23.5(zod@3.23.8):
     dependencies:
