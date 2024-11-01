@@ -15,8 +15,8 @@ const [projects, skills] = await Promise.all([
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans - Mes projets">
-    <h1 class="text-4xl text-center mt-32">Mes projets</h1>
-    <div class="w-full px-main mt-20 mb-5 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20">
+    <h1 class="text-2xl lg:text-4xl text-center mt-32">Mes projets</h1>
+    <div class="w-full px-main mt-20 mb-5 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20 max-lg:place-content-center text-sm lg:text-base">
         <div>
             <label for="filter-type">Filtrer selon le type</label>
             <select id="filter-type" name="filter-type">
@@ -57,8 +57,10 @@ const [projects, skills] = await Promise.all([
         <p class="max-w-96 text-xs">Vous êtes en train de filtrer les projets qui utilisent les technologies ci-dessous. Sélectionnez d'autres technologies pour affiner le filtre ci-dessus.</p>
         <div class="flex flex-wrap" />
     </div>
-    <div id="projects-container" class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 px-main my-12">
+    <div id="projects-container" class="grid grid-cols-[repeat(auto-fit,minmax(260px,320px))] lg:grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 max-lg:place-content-center px-main my-12">
         {projects.map(p => (
+            <Project project={p} />
+            <Project project={p} />
             <Project project={p} />
         ))}
     </div>
@@ -66,37 +68,34 @@ const [projects, skills] = await Promise.all([
         <img src="/logos/black-hole.svg" alt="Trou noir" class="w-80" loading="lazy" />
         <p class="text-center text-lg max-w-64">Il n'y a aucun projet qui correspond aux filtres que vous avez renseignés.</p>
     </div>
-    <section class="px-main my-40">
-        <h1 class="text-4xl text-center">Mes compétences techniques</h1>
-        <div class="mt-20 flex flex-wrap justify-center *:ml-4 *:mr-4 *:mb-12">
+    <section class="px-main my-40 space-y-12">
+        <h1 class="text-2xl lg:text-4xl text-center">Mes compétences techniques</h1>
+        <div class="pt-12 flex flex-wrap justify-center *:mx-4 *:mb-12">
             <Medal>Maîtrise des frameworks web (frontend & backend)</Medal>
             <Medal>Programmation orientée objet (POO)</Medal>
             <Medal>Web scraping (Puppeteer)</Medal>
             <Medal>Capable de créer un langage interprété ou compilé via LLVM</Medal>
             <Medal>Capable de gérer une base de données relationnelle ou orientée documents</Medal>
         </div>
-        <div class="flex justify-center items-center w-full mt-8 mb-20">
-            <p class="text-center font-light leading-9 max-w-[600px]">Même si lister des technologies de cette manière n’a pas beaucoup de sens, je vous les présente comme les technologies que j’ai utilisées dans le passé et pour lesquelles j’ai un minimum d’expérience.</p>
+        <div class="flex justify-center items-center w-full pb-12">
+            <p class="text-center font-light leading-9 max-w-[600px] max-lg:text-sm max-lg:leading-8">Même si lister des technologies de cette manière n’a pas beaucoup de sens, je vous les présente comme les technologies que j’ai utilisées dans le passé et pour lesquelles j’ai un minimum d’expérience.</p>
         </div>
-        <div class="flex flex-wrap justify-center *:mb-8 *:mr-8">
+        <div class="flex flex-wrap justify-center items-center *:mb-4 *:mx-2 sm:*:mb-8 sm:*:mx-4">
             {skills.map(s => (
                 <Skill logo={getImageUrl(s, s.logo)} name={s.name} loved={s.loved} />
             ))}
         </div>
     </section>
-    <section class="px-main my-40 space-y-14">
-        <h1 class="text-4xl text-center">Mon parcours scolaire</h1>
-        <div class="flex justify-center items-center w-full">
-            <p class="text-center font-light leading-9 max-w-[600px]"></p>
-        </div>
-        <div class="flex flex-wrap justify-center *:ml-4 *:mr-4 *:mb-12">
+    <section class="px-main my-40 space-y-12">
+        <h1 class="text-2xl lg:text-4xl text-center">Mon parcours scolaire</h1>
+        <div class="pt-12 flex flex-wrap justify-center *:mx-4 *:mb-12">
             <Medal>Autonomie dans la réalisation d'un programme</Medal>
             <Medal>Management d'équipe et travail en autonomie</Medal>
             <Medal>Coopérer dans une équipe selon la méthodologie Agile</Medal>
             <Medal>Répartition des tâches dans une équipe</Medal>
         </div>
-        <div class="flex justify-center items-center w-full mt-8 mb-20">
-            <p class="text-center font-light leading-9 max-w-[800px]">
+        <div class="flex justify-center items-center w-full mb-20">
+            <p class="text-center font-light leading-9 max-w-[800px] max-lg:text-sm max-lg:leading-8">
                 J'ai obtenu mon BAC Général au lycée Sacré-cœur de Tourcoing avec mention très bien. J'ai continué mes études au sein de l'IUT de Villeneuve d'Ascq et j'y ai obtenu mon DUT Informatique. À l'heure actuelle je suis en troisième année de BUT Informatique en alternance dans une entreprise appelée Tabuléo dans laquelle je mets en pratique mes compétences dans le contexte de la plateforme éducative <a href="https://quizeo.com" target="_blank" class="underline">Quizéo</a>.
             </p>
         </div>

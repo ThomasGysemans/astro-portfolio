@@ -4,7 +4,7 @@
 
 @layer base {
     .px-main {
-        @apply px-32;
+        @apply px-10 sm:px-12 lg:px-32;
     }
 
     .carousel-btn {

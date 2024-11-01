@@ -14,7 +14,7 @@ const { title, nested = false } = Astro.props;
 <PageLayout title={title}>
     <div class="pt-16 text-primary">
         <PolygonBackground />
-        <nav class="flex justify-between px-main">
+        <nav class="flex justify-between flex-col items-center space-y-10 md:space-y-0 md:flex-row px-main">
             <div class="flex items-center space-x-6">
                 {nested ? (
                     <a href="/projects" class="flex items-center space-x-2 text-lg">
@@ -23,23 +23,23 @@ const { title, nested = false } = Astro.props;
                     </a>
                 ) : (
                     <a href="/">
-                        <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-28">
+                        <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-20 lg:max-w-28">
                     </a>
-                    <h1 class="font-extrabold text-3xl leading-normal">Thomas<br>Gysemans</h1>
+                    <h1 class="font-extrabold text-xl lg:text-3xl leading-normal">Thomas<br>Gysemans</h1>
                 )}
             </div>
-            <div class="flex items-center space-x-8">
+            <div class="flex items-center flex-col sm:flex-row sm:space-x-8 sm:space-y-0 space-y-8">
                 <div class="flex items-center space-x-5">
                     <a href="#" class="lang-link active">
-                        <Icon name="french-flag" class="text-3xl" />
+                        <Icon name="french-flag" class="text-xl lg:text-3xl" />
                         <span class="font-bold">FR</span>
                     </a>
                     <a href="#" class="lang-link group">
-                        <Icon name="uk-flag" class="text-3xl grayscale group-hover:grayscale-0" />
+                        <Icon name="uk-flag" class="text-xl lg:text-3xl grayscale group-hover:grayscale-0" />
                         <span class="font-bold">EN</span>
                     </a>
                 </div>
-                <a href="/showcase" class="py-2 rounded-md text-primary font-bold text-lg work-btn">
+                <a href="/showcase" class="py-2 rounded-md text-primary text-center font-bold lg:text-lg work-btn">
                     VITRINE DE MES PROJETS
                 </a>
             </div>

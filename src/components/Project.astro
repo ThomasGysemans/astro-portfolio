@@ -16,30 +16,30 @@ const projectNature = ProjectNature.getNature(project.nature);
 ---
 
 <div class="bg-white rounded-md border-2 border-primary/50" data-slug={project.slug}>
-    <div class="w-full h-60 relative">
+    <div class="w-full h-[240px] relative">
         <img src={getImageUrl(project, project.presentationPicture)} alt=`Présentation du projet ${project.name}` class="h-full w-full rounded-[4px_4px_0_0] object-cover" />
         <div class=`absolute top-5 right-5 rounded-full w-8 h-8 flex justify-center items-center ${projectType.color}`>
             <Icon name={projectType.icon} class="text-lg text-white" title={projectType.frenchName} />
         </div>
     </div>
-    <div class="py-4 px-6 h-[calc(100%-240px)] space-y-6 flex flex-col">
-        <strong><a href=`/projects/${project.slug}` class="underline text-primary text-2xl font-bold">{project.name}</a></strong>
-        <p class="text-primary text-sm leading-8 font-light">{project.summary}</p>
+    <div class="py-4 px-6 h-[calc(100%-240px)] space-y-4 lg:space-y-6 flex flex-col">
+        <strong><a href=`/projects/${project.slug}` class="underline text-primary text-lg lg:text-2xl font-bold">{project.name}</a></strong>
+        <p class="text-primary text-xs lg:text-sm leading-8 font-light">{project.summary}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
             {project.expand!.technologies!.map(techno => (
                 <Technology logo={getImageUrl(techno, techno.logo)} name={techno.name} />
             ))}
         </div>
         <div class="flex justify-between !mt-auto">
-            <span class="text-primary/50 flex items-center space-x-2 text-sm">
+            <span class="text-primary/50 flex items-center space-x-2 text-xs lg:text-sm">
                 <Icon name=`${project.teamMembers === 1 ? "circle-user-round" : "users"}` />
                 <span class="relative top-[1px]">{project.teamMembers === 1 ? "Solo" : project.teamMembers}</span>
             </span>
-            <span class="text-primary/50 flex items-center space-x-2 text-sm">
+            <span class="text-primary/50 flex items-center space-x-2 text-xs lg:text-sm">
                 <Icon name=`${projectNature.icon}` />
                 <span class="relative top-[1px]">{projectNature.frenchName}</span>
             </span>
-            <span class="text-primary/50 flex items-center space-x-2 text-sm">
+            <span class="text-primary/50 flex items-center space-x-2 text-xs lg:text-sm">
                 <Icon name="calendar" />
                 <span class="relative top-[1px]">{project.date}</span>
             </span>
