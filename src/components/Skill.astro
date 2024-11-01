@@ -8,7 +8,6 @@ interface Props {
 }
 
 const { logo, name, loved } = Astro.props;
-console.log(name, loved);
 ---
 
 <div class={`bg-white rounded-md border-[1px] ${loved ? 'border-yellow-500/50' : 'border-primary/25'} flex items-center px-4 py-3 space-x-4`}>
