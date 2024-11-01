@@ -3,14 +3,18 @@ import type { RecordListOptions } from "pocketbase";
 import { pb } from "@db/pb.ts";
 
 export async function presentProjects(limit?: number): Promise<PBFullProject[]> {
-    const opt: RecordListOptions = {
-        sort: "+created",
-        expand: "technologies",
-    };
-    if (limit !== undefined) {
-        return (await pb.collection<PBFullProject>("projects").getList(1, limit, opt)).items;
-    } else {
-        return await pb.collection<PBFullProject>("projects").getFullList(opt);
+    try {
+        const opt: RecordListOptions = {
+            sort: "+created",
+            expand: "technologies",
+        };
+        if (limit !== undefined) {
+            return (await pb.collection<PBFullProject>("projects").getList(1, limit, opt)).items;
+        } else {
+            return await pb.collection<PBFullProject>("projects").getFullList(opt);
+        }
+    } catch (e) {
+        return [];
     }
 }
 
@@ -29,10 +33,14 @@ export async function findProject(slug: string): Promise<PBFullProject|undefined
 }
 
 export async function getShowcase(): Promise<ShowcaseProject[]> {
-    return await pb.collection<PBFullProject>("projects").getFullList({
-        fields: "slug,name,showcaseDescription",
-        filter: "showcase=True",
-    });
+    try {
+        return await pb.collection<PBFullProject>("projects").getFullList({
+            fields: "slug,name,showcaseDescription",
+            filter: "showcase=True",
+        });
+    } catch (e) {
+        return [];
+    }
 }
 
 export function getImageUrl(record: {[p: string]: any}, filename: string): string {
