@@ -60,8 +60,6 @@ const [projects, skills] = await Promise.all([
     <div id="projects-container" class="grid grid-cols-[repeat(auto-fit,minmax(260px,320px))] lg:grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 max-lg:place-content-center px-main my-12">
         {projects.map(p => (
             <Project project={p} />
-            <Project project={p} />
-            <Project project={p} />
         ))}
     </div>
     <div id="no-project-container" class="flex flex-col items-center justify-center w-full px-main space-y-6" style="display: none;">
