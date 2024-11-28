@@ -21,14 +21,13 @@
     "pocketbase": "^0.22.0",
     "postprocessing": "^6.36.3",
     "svelte": "^4.2.19",
-    "sweetalert2": "^11.14.4",
-    "tailwindcss": "^3.4.14",
+    "tailwindcss": "^3.4.15",
     "three": "^0.170.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@iconify/svelte": "^4.0.2",
     "@types/three": "^0.169.0",
-    "sass": "^1.80.5"
+    "sass": "^1.81.0"
   }
 }
