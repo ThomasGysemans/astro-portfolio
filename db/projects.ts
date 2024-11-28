@@ -43,6 +43,6 @@ export async function getShowcase(): Promise<ShowcaseProject[]> {
     }
 }
 
-export function getImageUrl(record: {[p: string]: any}, filename: string): string {
-    return pb.files.getUrl(record, filename);
+export function getImageURL(record: {[p: string]: any}, filename: string): string {
+    return pb.files.getURL(record, filename);
 }

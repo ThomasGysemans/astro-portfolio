@@ -1,7 +1,7 @@
 ---
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
-import { presentProjects, getImageUrl } from "@db/projects";
+import { presentProjects, getImageURL } from "@db/projects";
 import { listSkills } from "@db/skills";
 import MainLayout from "@layouts/MainLayout.astro";
 import Project from "@components/Project.astro";
@@ -82,7 +82,7 @@ const [projects, skills] = await Promise.all([
         </div>
         <div class="flex flex-wrap justify-center items-center *:mb-4 *:mx-2 sm:*:mb-8 sm:*:mx-4">
             {skills.map(s => (
-                <Skill logo={getImageUrl(s, s.logo)} name={s.name} loved={s.loved} />
+                <Skill logo={getImageURL(s, s.logo)} name={s.name} loved={s.loved} />
             ))}
         </div>
     </section>
