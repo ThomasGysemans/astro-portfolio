@@ -18,7 +18,7 @@
     };
 </script>
 
-<div class="absolute top-12 -left-[15%] text-white space-x-2 text-xs">
+<div class="absolute top-6 xl:top-12 -left-[15%] text-white space-x-2 text-xs">
     {#each ['2k', '8k'] as r (r)}
         <button type="button" class="bg-primary rounded-sm py-1 px-2 {res === r ? 'opacity-100' : 'opacity-50 hover:opacity-70'}" on:click={() => res = r}>
             {r.toUpperCase()}
@@ -26,44 +26,46 @@
     {/each}
 </div>
 
-<Grabbable>
-    <Canvas size={{width: 700, height: 500}}>
-        <T.PerspectiveCamera
-            makeDefault
-            position={[10, 10, 10]}
-            on:create={({ref}) => {
-                ref.lookAt(0, 0, 0);
-            }}
-        >
-            <OrbitControls
-                enableDamping
-                enableZoom={false}
-                autoRotate={false}
-                rotateSpeed={0.5}
-            />
-        </T.PerspectiveCamera>
+<div class="max-lg:scale-75 h-full">
+    <Grabbable>
+        <Canvas>
+            <T.PerspectiveCamera
+                makeDefault
+                position={[10, 10, 10]}
+                on:create={({ref}) => {
+                    ref.lookAt(0, 0, 0);
+                }}
+            >
+                <OrbitControls
+                    enableDamping
+                    enableZoom={false}
+                    autoRotate={false}
+                    rotateSpeed={0.5}
+                />
+            </T.PerspectiveCamera>
 
-        <T.DirectionalLight position={[0, 10, 10]} />
-        <T.AmbientLight args={[0xffffff]} intensity={0.1} />
+            <T.DirectionalLight position={[0, 10, 10]} />
+            <T.AmbientLight args={[0xffffff]} intensity={0.1} />
 
-        {#if res === '2k'}
-            <Planet
-                atmosphere
-                {radius}
-                {rotationSpeed}
-                {cloudsRotationSpeed}
-                {tiltRadians}
-                texturesPaths={textures}
-            />
-        {:else}
-            <Planet
-                atmosphere
-                {radius}
-                {rotationSpeed}
-                {cloudsRotationSpeed}
-                {tiltRadians}
-                texturesPaths={textures}
-            />
-        {/if}
-    </Canvas>
-</Grabbable>
+            {#if res === '2k'}
+                <Planet
+                    atmosphere
+                    {radius}
+                    {rotationSpeed}
+                    {cloudsRotationSpeed}
+                    {tiltRadians}
+                    texturesPaths={textures}
+                />
+            {:else}
+                <Planet
+                    atmosphere
+                    {radius}
+                    {rotationSpeed}
+                    {cloudsRotationSpeed}
+                    {tiltRadians}
+                    texturesPaths={textures}
+                />
+            {/if}
+        </Canvas>
+    </Grabbable>
+</div>
