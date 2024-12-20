@@ -4,12 +4,12 @@ import SpaceSectionTrailer from "./SpaceSectionTrailer.astro";
 import { Icon } from "astro-icon/components";
 ---
 
-<section class="relative -top-24 overflow-x-hidden flex flex-col space-y-8 lg:space-y-0 justify-between h-full" id="space-section">
+<section class="relative -top-24 overflow-x-hidden flex flex-col justify-between h-full" id="space-section">
     <img src="/space-background-top.svg" class="select-none pointer-events-none w-full relative -bottom-2 -z-10" alt="">
-    <div class="flex w-full h-full bg-primary-darker py-32 relative" id="space-section-article">
-        <article class="max-w-[50%] min-w-[250px] h-auto px-main space-y-8 bg-primary-darker">
-            <p class="text-white leading-6 xl:leading-9 text-sm xl:text-xl">Je suis passionné d’informatique, et grâce à ma curiosité et ma passion je me forme en autodidacte depuis mes 13 ans et je continue à consolider mes compétences tous les jours.</p>
-            <p class="text-white leading-6 xl:leading-9 text-sm xl:text-xl">Ces extraits vidéo sont tirés d’un jeu web en 3D que j’ai créé, “SpaceVisitor”, entièrement réalisé avec <a class="underline" href="https://threejs.org" target="_blank">ThreeJS</a> et <a class="underline" href="https://threlte.xyz" target="_blank">Threlte</a>.</p>
+    <div class="flex flex-col space-y-8 lg:space-y-0 lg:flex-row w-full h-full bg-primary-darker py-32 relative" id="space-section-article">
+        <article class="max-w-[80%] lg:max-w-[50%] min-w-[250px] h-auto px-main space-y-8 bg-primary-darker">
+            <p class="text-white leading-6 xl:leading-9 text-xs lg:text-sm xl:text-xl">Je suis passionné d’informatique, et grâce à ma curiosité et ma passion je me forme en autodidacte depuis mes 13 ans et je continue à consolider mes compétences tous les jours.</p>
+            <p class="text-white leading-6 xl:leading-9 text-xs lg:text-sm xl:text-xl">Ces extraits vidéo sont tirés d’un jeu web en 3D que j’ai créé, “SpaceVisitor”, entièrement réalisé avec <a class="underline" href="https://threejs.org" target="_blank">ThreeJS</a> et <a class="underline" href="https://threlte.xyz" target="_blank">Threlte</a>.</p>
             <div class="flex items-center space-x-6">
                 <Button as="a" href="https://spacevisitor.sciencesky.fr" target="_blank">Jouer au jeu</Button>
                 <a class="text-white text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte GitHub" title="Repo GitHub" href="https://github.com/ThomasGysemans/SpaceVisitor" target="_blank"><Icon name="github" /></a>
