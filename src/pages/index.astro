@@ -12,7 +12,7 @@ const projects = await presentProjects(3);
 ---
 
 <MainLayout title="Portfolio de Thomas Gysemans" nav="px-20 xl:px-main">
-    <main class="mt-16 px-12 md:px-20 relative">
+    <main class="mt-16 px-12 md:px-20 xl:px-32 relative">
         <div class="space-y-8">
             <b class="text-xl xl:text-2xl">Je suis...</b>
             <ul class="list-disc list-inside space-y-4 text-lg lg:text-xl">
@@ -27,13 +27,6 @@ const projects = await presentProjects(3);
             </div>
         </div>
         <div class="absolute z-10 top-12 right-0 planet-container max-md:flex max-md:justify-end">
-            <div class="bg-primary max-w-96 py-2 px-3 rounded-md absolute -top-[10%] -left-[20%] sm:-left-[15%] md:-top-[10%] xl:-top-[16%]">
-                <div class="absolute -bottom-[10px] xl:-bottom-[20px] right-12 w-0 h-0 border-l-[15px] border-l-transparent border-t-[20px] border-t-primary border-r-[15px] border-r-transparent" />
-                <p class="text-white font-light text-xs xl:text-base">
-                    Je suis passionné d’informatique, mais aussi d’astronomie, j’ai ainsi combiné mes passions pour réaliser ce modèle 3D en utilisant
-                    <a href="https://threejs.org/" target="_blank" class="underline">ThreeJS</a> et <a href="https://threlte.xyz/" target="_blank" class="underline">Threlte</a> !
-                </p>
-            </div>
             <div id="earth-loading-replacement" class="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
                 <svg aria-hidden="true" class="w-14 h-14 text-gray-200 animate-spin dark:text-gray-500 fill-blue-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
@@ -107,7 +100,7 @@ const projects = await presentProjects(3);
         @media (max-width: 900px) { transform: scale(.75); top: -40px; right: -60px; }
 
         @media (max-width: 768px) {
-            margin-top: 60px;
+            margin-top: 90px;
             transform: scale(0.9);
             position: relative;
             right: -70px;
@@ -116,8 +109,6 @@ const projects = await presentProjects(3);
 
         @media (max-width: 550px) {
             left: 50px;
-            transform: scale(0.8);
-            border: 2px solid red;
         }
     }
 </style>
