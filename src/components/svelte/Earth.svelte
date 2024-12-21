@@ -82,7 +82,7 @@
 </div>
 
 <style lang="scss">
-    // Responsiveness of the dialog boxes requires some highly precise adjustments.
+    // Responsiveness of the dialog box & the earth requires some highly precise adjustments.
 
     @media (max-width: 500px) {
         .earth-container { transform: scale(.85); }
