@@ -40,7 +40,7 @@ const projects = await presentProjects(3);
     </main>
     <SpaceSection />
     <section class="flex flex-col justify-center space-y-20 pb-40">
-        <h2 class="font-bold text-primary text-3xl text-center">Mes projets récents</h2>
+        <h2 class="font-bold text-primary text-2xl lg:text-3xl text-center">Mes projets récents</h2>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 place-content-center place-items-center px-main">
             {projects.map(p => (
                 <Project project={p} />
@@ -51,7 +51,7 @@ const projects = await presentProjects(3);
         </div>
     </section>
     <section class="px-main space-y-20 pb-40">
-        <h2 class="font-bold text-primary text-center text-3xl">Quelques infos de<br>plus sur moi...</h2>
+        <h2 class="font-bold text-primary text-center text-2xl lg:text-3xl">Quelques infos de<br>plus sur moi...</h2>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,450px))] gap-20 place-content-center place-items-center">
             <AboutMe title="Mes études" icon="graduation-cap">
                 J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les bases de données et <a href="https://sql.sh/" target="_blank" class="underline">SQL</a>.
