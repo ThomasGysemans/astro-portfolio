@@ -24,7 +24,7 @@ const projectNature = ProjectNature.getNature(project.nature);
     </div>
     <div class="py-4 px-6 h-[calc(100%-240px)] space-y-4 lg:space-y-6 flex flex-col">
         <strong><a href=`/projects/${project.slug}` class="underline text-primary text-lg lg:text-2xl font-bold">{project.name}</a></strong>
-        <p class="text-primary text-xs lg:text-sm leading-8 font-light">{project.description}</p>
+        <p class="text-primary text-xs lg:text-sm leading-4 font-light">{project.description}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
             {project.expand!.technologies!.map(techno => (
                 <Technology logo={getImageURL(techno, techno.logo)} name={techno.name} />
