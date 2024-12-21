@@ -67,9 +67,9 @@ const projects = await presentProjects(3);
             </AboutMe>
         </div>
     </section>
-    <footer class="min-h-96 bg-primary-darker text-white py-20 px-main grid grid-cols-[repeat(auto-fit,minmax(250px,400px))] gap-40 place-content-center">
+    <footer class="min-h-96 bg-primary-darker text-white py-20 px-main grid grid-cols-[repeat(auto-fit,minmax(250px,400px))] gap-20 md:gap-32 2xl:gap-40 place-content-center">
         <div>
-            <h3 class="font-bold text-2xl pb-4">Contact</h3>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">Contact</h3>
             <table class="w-min [&_td]:pr-4 [&_td]:pb-4">
                 <tbody>
                     <tr>
@@ -84,12 +84,12 @@ const projects = await presentProjects(3);
             </table>
         </div>
         <div>
-            <h3 class="font-bold text-2xl pb-4">Statut</h3>
-            <p>Actuellement en alternance chez Tabuléo, et également disponible pour des projets de freelance.</p>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">Statut</h3>
+            <p class="text-sm md:text-base">Actuellement en alternance chez Tabuléo, et également disponible pour des projets de freelance.</p>
         </div>
         <div class="[&_a]:underline">
-            <h3 class="font-bold text-2xl pb-4">Concernant ce site</h3>
-            <p>Ce site a été réalisé avec <a href="https://astro.build/" target="_blank">Astro</a>, <a href="https://svelte.dev/" target="_blank">Svelte</a> et <a href="https://tailwindcss.com/" target="_blank">Tailwind</a> (pour le frontend) ainsi que <a href="https://pocketbase.io/">PocketBase</a> pour le backend (qui est une base de données <a href="https://github.com/tursodatabase/libsql" target="_blank">SQLite</a>, self-hosted). Il y a un “backoffice” privé qui me permet de contrôler le contenu de mon portfolio à tout moment. Il respecte également les <a href="https://www.accede-web.com/notices/interface-riche/" target="_blank">normes d’accessibilité</a>.</p>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">Concernant ce site</h3>
+            <p class="text-sm md:text-base">Ce site a été réalisé avec <a href="https://astro.build/" target="_blank">Astro</a>, <a href="https://svelte.dev/" target="_blank">Svelte</a> et <a href="https://tailwindcss.com/" target="_blank">Tailwind</a> (pour le frontend) ainsi que <a href="https://pocketbase.io/">PocketBase</a> pour le backend (qui est une base de données <a href="https://github.com/tursodatabase/libsql" target="_blank">SQLite</a>, self-hosted). Il y a un “backoffice” privé qui me permet de contrôler le contenu de mon portfolio à tout moment. Il respecte également les <a href="https://www.accede-web.com/notices/interface-riche/" target="_blank">normes d’accessibilité</a>.</p>
         </div>
     </footer>
 </MainLayout>
