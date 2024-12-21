@@ -2,10 +2,10 @@
 import { Icon } from "astro-icon/components";
 import { presentProjects } from "@db/projects";
 import SpaceSection from "@components/SpaceSection.astro";
+import ProjectsGrid from "@components/ProjectsGrid.astro";
 import Earth from "@components/svelte/Earth.svelte";
 import MainLayout from "@layouts/MainLayout.astro";
 import AboutMe from "@components/AboutMe.astro";
-import Project from "@components/Project.astro"
 import Button from "@components/Button.astro";
 
 const projects = await presentProjects(3);
@@ -35,17 +35,13 @@ const projects = await presentProjects(3);
             </div>
             <div class="w-[450px] sm:w-[500px] xl:w-[700px] h-[500px]">
                 <Earth client:idle />
-            </div>
+            </div> 
         </div>
     </main>
     <SpaceSection />
-    <section class="flex flex-col justify-center space-y-20 pb-40">
+    <section class="space-y-20 pb-40">
         <h2 class="font-bold text-primary text-2xl lg:text-3xl text-center">Mes projets récents</h2>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 place-content-center place-items-center px-main">
-            {projects.map(p => (
-                <Project project={p} />
-            ))}
-        </div>
+        <ProjectsGrid {projects} centered />
         <div class="flex justify-center">
             <Button as="a" href="/projects">En savoir plus</Button>
         </div>

@@ -7,6 +7,7 @@ import MainLayout from "@layouts/MainLayout.astro";
 import Project from "@components/Project.astro";
 import Skill from "@components/Skill.astro";
 import Medal from "@components/Medal.astro";
+import ProjectsGrid from "@components/ProjectsGrid.astro";
 
 const [projects, skills] = await Promise.all([
     presentProjects(),
@@ -57,11 +58,7 @@ const [projects, skills] = await Promise.all([
         <p class="max-w-96 text-xs">Vous êtes en train de filtrer les projets qui utilisent les technologies ci-dessous. Sélectionnez d'autres technologies pour affiner le filtre ci-dessus.</p>
         <div class="flex flex-wrap" />
     </div>
-    <div id="projects-container" class="grid grid-cols-[repeat(auto-fit,minmax(260px,320px))] lg:grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 max-lg:place-content-center px-main my-12">
-        {projects.map(p => (
-            <Project project={p} />
-        ))}
-    </div>
+    <ProjectsGrid {projects} id="projects-container" />
     <div id="no-project-container" class="flex flex-col items-center justify-center w-full px-main space-y-6" style="display: none;">
         <img src="/logos/black-hole.svg" alt="Trou noir" class="w-80" loading="lazy" />
         <p class="text-center text-lg max-w-64">Il n'y a aucun projet qui correspond aux filtres que vous avez renseignés.</p>

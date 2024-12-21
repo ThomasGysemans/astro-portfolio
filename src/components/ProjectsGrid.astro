@@ -1,0 +1,17 @@
+---
+import type { PBFullProject } from '@db/models';
+import Project from './Project.astro';
+
+interface Props {
+    id?: string,
+    centered?: boolean,
+    projects: PBFullProject[],
+}
+
+const { projects, id, centered } = Astro.props;
+const centeredClass = centered ? "place-content-center" : "max-lg:place-content-center";
+---
+
+<div {id} class={`grid grid-cols-[repeat(auto-fit,minmax(260px,320px))] lg:grid-cols-[repeat(auto-fit,minmax(280px,380px))] gap-10 ${centeredClass} px-main my-12`}>
+    {projects.map((p) => <Project project={p} />)}
+</div>
