@@ -9,6 +9,18 @@ const projects = await getShowcase();
 
 <PageLayout title="Portfolio de Thomas Gysemans - Vitrine de mes projets principaux">
     <div class="relative">
+        <div class="absolute z-20 top-0 left-O w-full h-dvh custom-bg pointer-events-none" />
+        <nav class="absolute z-30 top-20 left-[50%] -translate-x-[50%] w-full grid grid-cols-3 place-items-center place-content-center">
+            <p class="text-white text-lg flex items-center space-x-4">
+                <Icon name="chevron-left" />
+                <a href="/" class="hover:underline">Quitter</a>
+            </p>
+            <h1 class="text-white text-center text-3xl">Vitrine de mes<br/>meilleurs projets</h1>
+            <p class="text-white text-lg flex items-center space-x-4">
+                <a href="/projects" class="hover:underline">Tous mes projets</a>
+                <Icon name="chevron-right" />
+            </p>
+        </nav>
         <ShowCaseCarousel client:idle numberOfProjects={projects.length}>
             {projects.map((project, i) => (
                 <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label={`${i + 1} sur ${projects.length}`}>
@@ -24,18 +36,6 @@ const projects = await getShowcase();
                 </div>
             ))}
         </ShowCaseCarousel>
-        <div class="absolute z-20 top-0 left-O w-full h-dvh custom-bg pointer-events-none" />
-        <nav class="absolute z-30 top-20 left-[50%] -translate-x-[50%] w-full grid grid-cols-3 place-items-center place-content-center">
-            <p class="text-white text-lg flex items-center space-x-4">
-                <Icon name="chevron-left" />
-                <a href="/" class="hover:underline">Quitter</a>
-            </p>
-            <h1 class="text-white text-center text-3xl">Vitrine de mes<br/>meilleurs projets</h1>
-            <p class="text-white text-lg flex items-center space-x-4">
-                <a href="/projects" class="hover:underline">Tous mes projets</a>
-                <Icon name="chevron-right" />
-            </p>
-        </nav>
         <div class="absolute bottom-16 left-[50%] -translate-x-[50%] z-30">
             <a href="/projects" class="carousel-btn">Voir tous mes projets</a>
         </div>

@@ -87,7 +87,7 @@ function getLinkPresentation(): string {
     </div>
     <div id="carousel" class="fixed z-40 top-0 left-0 w-full h-dvh bg-black/75" aria-hidden="true">
         {project.pictures.map((src, i) => (
-            <div role="tabpanel" id={`img-${i}`} aria-hidden={i === 0 ? "false" : "true"} aria-roledescription="diapositive" aria-label=`${i + 1} sur ${project.pictures.length}` class="px-[5%] pt-10 z-40 w-full max-h-80dvh flex items-center justify-center">
+            <div role="tabpanel" id={`img-${i}`} aria-hidden={i === 0 ? "false" : "true"} aria-roledescription="diapositive" aria-label={`${i + 1} sur ${project.pictures.length}`} class="px-[5%] pt-10 z-40 w-full max-h-80dvh flex items-center justify-center">
                 <img src={getImageURL(project, src)} alt={`Illustration ${i + 1} du projet ${project.name}`} class="w-full h-auto max-h-[80dvh] object-contain" />
             </div>
         ))}

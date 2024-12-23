@@ -34,11 +34,13 @@
         const cells = getCells();
         const angle = theta * selectedIndex * -1;
         carousel.style.transform = `translateZ(${-radius}px) ${rotateFn}(${angle}deg)`;
-        carousel.querySelectorAll(".previous-active")?.forEach(e => e.classList.remove("previous-active"));
-        carousel.querySelectorAll(".active")?.forEach(e => e.classList.remove("active"));
-        carousel.querySelectorAll(".next-active")?.forEach(e => e.classList.remove("next-active"));
+        carousel.querySelectorAll(".previous-active").forEach(e => e.classList.remove("previous-active"));
+        carousel.querySelectorAll(".active").forEach(e => e.classList.remove("active"));
+        carousel.querySelectorAll(".next-active").forEach(e => e.classList.remove("next-active"));
+        carousel.querySelectorAll(".cell:not(.active)").forEach(e => e.setAttribute("inert", "inert"));
         cells[getActualCellIndex(selectedIndex - 1)]?.classList.add("previous-active");
         cells[getActualCellIndex(selectedIndex)]?.classList.add("active");
+        cells[getActualCellIndex(selectedIndex)]?.removeAttribute("inert");
         cells[getActualCellIndex(selectedIndex + 1)]?.classList.add("next-active");
     }
 
@@ -76,7 +78,9 @@
             if (i < numberOfProjects) { // visible cell
                 cell.style.visibility = "visible";
                 cell.style.transform = `${rotateFn}(${theta * i}deg) translateZ(${radius}px)`;
+                cell.removeAttribute("inert");
             } else { // hidden cell
+                cell.setAttribute("inert", "inert");
                 cell.style.visibility = "hidden";
                 cell.style.transform = 'none';
             }
