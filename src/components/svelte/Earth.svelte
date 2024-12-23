@@ -18,7 +18,7 @@
     };
 </script>
 
-<div class="dialog bg-primary max-w-96 py-2 px-3 rounded-md absolute -top-[12%] -left-[20%] sm:-left-[15%] md:-top-[14%] xl:-top-[16%]">
+<div class="dialog bg-primary max-w-96 py-2 px-3 rounded-md absolute -top-[12%] 2xl:-top-[32%] -left-[20%] sm:-left-[15%] md:-top-[14%] xl:-top-[16%]">
     <div class="dialog-triangle absolute -bottom-[10px] xl:-bottom-[20px] right-12 w-0 h-0 border-l-[15px] border-l-transparent border-t-[20px] border-t-primary border-r-[15px] border-r-transparent" />
     <p class="text-white font-light text-sm xl:text-base">
         Je suis passionné d’informatique, mais aussi d’astronomie, j’ai ainsi combiné mes passions pour réaliser ce modèle 3D en utilisant
@@ -33,7 +33,7 @@
     </div>
 </div>
 
-<div class="earth-container h-full">
+<div class="earth-container h-full 2xl:scale-125">
     <Grabbable>
         <Canvas>
             <T.PerspectiveCamera
