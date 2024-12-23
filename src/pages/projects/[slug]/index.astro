@@ -9,7 +9,7 @@ import MainLayout from "@layouts/MainLayout.astro";
 import Skill from "@components/Skill.astro";
 
 const { slug } = Astro.params;
-const project = (!!slug ? await findProject(slug) : undefined)!; // TODO: handle undefined case
+const project = (!!slug ? await findProject(slug) : undefined)!;
 
 if (project === undefined) {
     return Astro.rewrite("/404");
@@ -65,7 +65,7 @@ function getLinkPresentation(): string {
         </div>
         <p class="max-w-[50%] min-w-80">{project.summary}</p>
         {project.github && (
-            <p>Lien GitHub : <a href=`https://github.com/${project.github}` target="_blank">https://github.com/{project.github}</a></p>
+            <p>Lien GitHub : <a href={project.github} target="_blank">{project.github}</a></p>
         )}
         {project.link && (
             <p>
@@ -75,7 +75,7 @@ function getLinkPresentation(): string {
         )}
         <div class={"illustrations-container " + (useCarousel ? "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8" : "space-y-8")}>
             {project.pictures.map(p => (
-                <ProjectIllustration src={getImageURL(project, p)} alt=`Illustration du projet ${project.name}` interactive={useCarousel} />
+                <ProjectIllustration src={getImageURL(project, p)} alt={`Illustration du projet ${project.name}`} interactive={useCarousel} />
             ))}
         </div>
         <h2>Technologies utilisées dans ce projet</h2>
@@ -87,8 +87,8 @@ function getLinkPresentation(): string {
     </div>
     <div id="carousel" class="fixed z-40 top-0 left-0 w-full h-dvh bg-black/75" aria-hidden="true">
         {project.pictures.map((src, i) => (
-            <div role="tabpanel" id=`img-${i}` aria-hidden={i === 0 ? "false" : "true"} aria-roledescription="diapositive" aria-label=`${i + 1} sur ${project.pictures.length}` class="px-[5%] pt-10 z-40 w-full max-h-80dvh flex items-center justify-center">
-                <img src={getImageURL(project, src)} alt=`Illustration ${i + 1} du projet ${project.name}` class="w-full h-auto max-h-[80dvh] object-contain" />
+            <div role="tabpanel" id={`img-${i}`} aria-hidden={i === 0 ? "false" : "true"} aria-roledescription="diapositive" aria-label=`${i + 1} sur ${project.pictures.length}` class="px-[5%] pt-10 z-40 w-full max-h-80dvh flex items-center justify-center">
+                <img src={getImageURL(project, src)} alt={`Illustration ${i + 1} du projet ${project.name}`} class="w-full h-auto max-h-[80dvh] object-contain" />
             </div>
         ))}
         <div role="tablist" aria-label="Diapositives" class="absolute bottom-10 left-0 w-full py-6 flex items-center justify-center space-x-2">
@@ -97,7 +97,7 @@ function getLinkPresentation(): string {
                     type="button"
                     role="tab"
                     aria-selected={i === 0 ? "true" : "false"}
-                    aria-controls=`diapo-${i}`
+                    aria-controls={`diapo-${i}`}
                     class="rounded-full w-5 h-5 bg-white/10 border-2 border-white hover:bg-white [&[aria-selected='true']]:bg-white"
                 />
             ))}

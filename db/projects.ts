@@ -35,7 +35,7 @@ export async function findProject(slug: string): Promise<PBFullProject|undefined
 export async function getShowcase(): Promise<ShowcaseProject[]> {
     try {
         return await pb.collection<PBFullProject>("projects").getFullList({
-            fields: "slug,name,showcaseDescription",
+            fields: "slug,name,showcaseDescription,description",
             filter: "showcase=True",
         });
     } catch (e) {

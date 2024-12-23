@@ -11,11 +11,11 @@ const projects = await getShowcase();
     <div class="relative">
         <ShowCaseCarousel client:idle numberOfProjects={projects.length}>
             {projects.map((project, i) => (
-                <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label=`${i + 1} sur ${projects.length}`>
+                <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label={`${i + 1} sur ${projects.length}`}>
                     <div class="px-4 w-full h-full py-16 space-y-4">
                         <h2 class="text-2xl text-center w-full">{project.name}</h2>
                         <div class="cell-details flex flex-col items-center space-y-4">
-                            <p class="text-sm w-full inline-block">{project.showcaseDescription}</p>
+                            <p class="text-sm w-full inline-block">{project.showcaseDescription || project.description}</p>
                             <a type="button" class="carousel-btn" href={`/projects/${project.slug}`}>
                                 En savoir plus
                             </a>

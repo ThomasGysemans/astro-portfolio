@@ -27,7 +27,8 @@ export type ShowcaseProject = Pick<
     FullProject,
     "slug" |
     "name" |
-    "showcaseDescription"
+    "showcaseDescription" |
+    "description"
 >
 
 export type PBCollection<T> = {
