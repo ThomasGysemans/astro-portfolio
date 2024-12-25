@@ -9,6 +9,9 @@ export default defineConfig({
   site: "https://portfolio.sciencesky.fr",
   integrations: [tailwind(), icon({ iconDir: "./public/icons" }), svelte()],
   vite: {
+    server: {
+      host: true,
+    },
     css: {
       preprocessorOptions: {
         scss: {
