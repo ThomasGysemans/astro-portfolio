@@ -9,9 +9,9 @@ export async function presentProjects(limit?: number): Promise<PBFullProject[]> 
             expand: "technologies",
         };
         if (limit !== undefined) {
-            return (await pb.collection<PBFullProject>("projects").getList(1, limit, opt)).items;
+            return ((await pb.collection<PBFullProject>("projects").getList(1, limit, opt)).items).map(i => ({ ...i, technologies: i.expand!.technologies! }));
         } else {
-            return await pb.collection<PBFullProject>("projects").getFullList(opt);
+            return (await pb.collection<PBFullProject>("projects").getFullList(opt)).map(i => ({ ...i, technologies: i.expand!.technologies! }));
         }
     } catch (e) {
         return [];

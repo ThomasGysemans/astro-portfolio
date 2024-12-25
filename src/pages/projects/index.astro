@@ -4,7 +4,6 @@ import { Icon } from "astro-icon/components";
 import { presentProjects, getImageURL } from "@db/projects";
 import { listSkills } from "@db/skills";
 import MainLayout from "@layouts/MainLayout.astro";
-import Project from "@components/Project.astro";
 import Skill from "@components/Skill.astro";
 import Medal from "@components/Medal.astro";
 import ProjectsGrid from "@components/ProjectsGrid.astro";
@@ -39,7 +38,7 @@ const [projects, skills] = await Promise.all([
             <label for="filter-techno">Filtrer selon les technologies</label>
             <select id="filter-techno" name="filter-techno">
                 <option value="all" selected>Toutes</option>
-                {skills.map(s => (
+                {skills.sort((a,b) => a.name.localeCompare(b.name)).map(s => (
                     <option value={s.name}>{s.name}</option>
                 ))}
             </select>
