@@ -17,6 +17,7 @@ if (project === undefined) {
 
 const projectType = project && ProjectType.getProjectType(project.type);
 const projectNature = project && ProjectNature.getNature(project.nature);
+const isApplication = projectType === ProjectType.APPLICATION
 const useCarousel = !!project && project.pictures.length > 3;
 
 function getLinkPresentation(): string {
@@ -34,18 +35,18 @@ function getLinkPresentation(): string {
 ---
 
 <MainLayout title=`Projet ${project.name}` nested>
-    <div class="mt-20 px-main space-y-8">
-        <h1 class="text-4xl max-w-[60%] min-w-80">{project.name}</h1>
-        <div class="flex flex-wrap items-center space-x-8">
-            <div class="flex items-center space-x-2">
+    <div class="mt-20 px-main space-y-8 text-sm sm:text-base">
+        <h1 class="text-2xl sm:text-4xl sm:max-w-[60%]">{project.name}</h1>
+        <div class="flex flex-wrap items-center">
+            <div class="flex items-center space-x-2 mr-8">
                 <Icon name={projectType.icon} />
                 <span>{projectType.frenchName}</span>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 mr-8">
                 <Icon name={projectNature.icon} />
                 <span>{projectNature.frenchName}</span>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 mr-8">
                 <Icon name="calendar" />
                 <span>{project.date}</span>
             </div>
@@ -63,19 +64,23 @@ function getLinkPresentation(): string {
                 })}
             </div>
         </div>
-        <p class="max-w-[50%] min-w-80">{project.summary}</p>
+        <p class="md:max-w-[65%] xl:max-w-[50%]">{project.summary}</p>
         {project.github && (
-            <p>Lien GitHub : <a href={project.github} target="_blank">{project.github}</a></p>
+            <p>Lien GitHub : <a href={project.github} target="_blank" class="break-words">{project.github}</a></p>
         )}
         {project.link && (
             <p>
                 <span>{getLinkPresentation()} :</span>
-                <a href={project.link} target="_blank">{project.link}</a>
+                <a href={project.link} target="_blank" class="break-words">{project.link}</a>
             </p>
         )}
-        <div class={"illustrations-container " + (useCarousel ? "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8" : "space-y-8")}>
+        <div class={`illustrations-container ${useCarousel ? "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8" : (isApplication ? "grid grid-cols-[repeat(auto-fit,minmax(200px,460px))] gap-12" : "space-y-8")}`}>
             {project.pictures.map(p => (
-                <ProjectIllustration src={getImageURL(project, p)} alt={`Illustration du projet ${project.name}`} interactive={useCarousel} />
+                <ProjectIllustration
+                    src={getImageURL(project, p)}
+                    alt={`Illustration du projet ${project.name}`}
+                    interactive={useCarousel}
+                />
             ))}
         </div>
         <h2>Technologies utilisées dans ce projet</h2>
