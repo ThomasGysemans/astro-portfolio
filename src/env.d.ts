@@ -13,6 +13,8 @@ interface ImportEnv {
 
 declare namespace App {
     interface Locals {
-        lang: string,
+        lang: App.LangCode,
     }
+    
+    type LangCode = "fr" | "en";
 }

@@ -1,7 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import PolygonBackground from "@components/PolygonBackground.astro";
 import PageLayout from "./PageLayout.astro";
+import trans from "@trans";
 
 interface Props {
     title: string;
@@ -12,7 +14,6 @@ interface Props {
 const { title, nested = false, nav = "px-main", } = Astro.props;
 const lang = Astro.locals.lang;
 const isEn = lang === "en";
-console.log("lang =", lang);
 ---
 
 <PageLayout title={title}>
@@ -21,13 +22,13 @@ console.log("lang =", lang);
         <nav class={"flex justify-between flex-col items-center space-y-10 md:space-y-0 md:flex-row " + nav}>
             <div class="flex items-center space-x-6">
                 {nested ? (
-                    <a href="/projects" class="flex items-center space-x-2 text-lg">
+                    <a href={getRelativeLocaleUrl(lang, "/projects")} class="flex items-center space-x-2 text-lg">
                         <Icon name="chevron-left" />
-                        <span class="underline">Retour</span>
+                        <span class="underline">{trans.common.back[lang]}</span>
                     </a>
                 ) : (
-                    <a href="/">
-                        <img src="/logo.png" alt="Logo de ScienceSky.fr" class="max-w-20 lg:max-w-28" />
+                    <a href={getRelativeLocaleUrl(lang, "/")}>
+                        <img src="/logo.png" alt={trans.common.logo[lang]} class="max-w-20 lg:max-w-28" />
                     </a>
                     <h1 class="font-extrabold text-xl lg:text-3xl leading-normal">Thomas<br />Gysemans</h1>
                 )}
@@ -43,8 +44,8 @@ console.log("lang =", lang);
                         <span class="font-bold">EN</span>
                     </a>
                 </div>
-                <a href="/showcase" class="py-2 rounded-md text-primary text-center font-bold lg:text-lg work-btn">
-                    VITRINE DE MES PROJETS
+                <a href={getRelativeLocaleUrl(lang, "/showcase")} class="py-2 rounded-md text-primary text-center font-bold lg:text-lg work-btn">
+                    {trans.common.showcase[lang]}
                 </a>
             </div>
         </nav>

@@ -3,6 +3,9 @@
     import { OrbitControls } from "@threlte/extras";
     import Grabbable from "@components/svelte/Grabbable.svelte";
     import Planet from "./Planet.svelte";
+    import trans from "@trans";
+
+    export let lang: App.LangCode;
 
     const radius = 6;
     const rotationSpeed = 0.1;
@@ -20,10 +23,7 @@
 
 <div class="dialog bg-primary max-w-96 py-2 px-3 rounded-md absolute -top-[12%] 2xl:-top-[32%] -left-[20%] sm:-left-[15%] md:-top-[14%] xl:-top-[16%]">
     <div class="dialog-triangle absolute -bottom-[10px] xl:-bottom-[20px] right-12 w-0 h-0 border-l-[15px] border-l-transparent border-t-[20px] border-t-primary border-r-[15px] border-r-transparent" />
-    <p class="text-white font-light text-sm xl:text-base">
-        Je suis passionné d’informatique, mais aussi d’astronomie, j’ai ainsi combiné mes passions pour réaliser ce modèle 3D en utilisant
-        <a href="https://threejs.org/" target="_blank" class="underline">ThreeJS</a> et <a href="https://threlte.xyz/" target="_blank" class="underline">Threlte</a> !
-    </p>
+    <p class="text-white font-light text-sm xl:text-base">{@html trans.homepage.dialog[lang]}</p>
     <div class="resolutions absolute -bottom-10 left-0 text-white space-x-2 text-xs">
         {#each ['2k', '8k'] as r (r)}
             <button type="button" class="bg-primary rounded-sm py-1 px-2 {res === r ? 'opacity-100' : 'opacity-50 hover:opacity-70'}" on:click={() => res = r}>

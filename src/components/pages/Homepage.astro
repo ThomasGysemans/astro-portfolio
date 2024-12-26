@@ -8,24 +8,25 @@ import Earth from "@components/svelte/Earth.svelte";
 import MainLayout from "@layouts/MainLayout.astro";
 import AboutMe from "@components/AboutMe.astro";
 import Button from "@components/Button.astro";
+import trans from "@trans";
 
 const projects = await presentProjects(3);
 const lang = Astro.locals.lang;
 ---
 
-<MainLayout title="Portfolio de Thomas Gysemans" nav="px-20 xl:px-main">
+<MainLayout title={trans.common.title[lang]} nav="px-20 xl:px-main">
     <main class="mt-16 2xl:mt-32 px-12 md:px-20 xl:px-32 2xl:px-64 relative z-50">
         <div class="space-y-8">
-            <b class="text-lg md:text-xl xl:text-2xl">Je suis...</b>
+            <b class="text-lg md:text-xl xl:text-2xl">{trans.homepage.iam[lang]}</b>
             <ul class="list-disc list-inside space-y-4 2xl:space-y-6 text-sm md:text-lg lg:text-xl">
-                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>Développeur web</strong><Icon name="globe" /></li>
-                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>Développeur d'applications</strong><Icon name="smartphone" /></li>
-                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>UI/UX Designer</strong><Icon name="flower-2" /></li>
+                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.webdev[lang]}</strong><Icon name="globe" /></li>
+                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.appdev[lang]}</strong><Icon name="smartphone" /></li>
+                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.designer[lang]}</strong><Icon name="flower-2" /></li>
             </ul>
             <div class="flex items-center space-x-6">
-                <Button as="a" href={getRelativeLocaleUrl(lang, "/projects")}>En savoir plus</Button>
-                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte GitHub" title="Mon compte GitHub" href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
-                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte LinkedIn" title="Mon compte LinkedIn" href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
+                <Button as="a" href={getRelativeLocaleUrl(lang, "/projects")}>{trans.common.knowmore[lang]}</Button>
+                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" title={trans.common.mygithubaccount[lang]} href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
+                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" title={trans.common.mylinkedinaccount[lang]} href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
             </div>
         </div>
         <div class="absolute z-10 top-12 2xl:top-32 right-0 planet-container max-md:flex max-md:justify-end">
@@ -36,38 +37,30 @@ const lang = Astro.locals.lang;
                 </svg>
             </div>
             <div class="w-[450px] sm:w-[500px] xl:w-[700px] 2xl:w-[800px] h-[500px]">
-                <Earth client:idle />
+                <Earth {lang} client:idle />
             </div> 
         </div>
     </main>
     <SpaceSection />
     <section class="space-y-20 pb-40">
-        <h2 class="font-bold text-primary text-2xl lg:text-3xl text-center">Mes projets récents</h2>
+        <h2 class="font-bold text-primary text-2xl lg:text-3xl text-center">{trans.homepage.recentprojects[lang]}</h2>
         <ProjectsGrid {projects} centered />
         <div class="flex justify-center">
-            <Button as="a" href="/projects">En savoir plus</Button>
+            <Button as="a" href="/projects">{trans.common.knowmore[lang]}</Button>
         </div>
     </section>
     <section class="px-main space-y-20 pb-40">
-        <h2 class="font-bold text-primary text-center text-2xl lg:text-3xl">Quelques infos de<br>plus sur moi...</h2>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,450px))] gap-20 place-content-center place-items-center">
-            <AboutMe title="Mes études" icon="graduation-cap">
-                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les bases de données et <a href="https://sql.sh/" target="_blank" class="underline">SQL</a>.
-            </AboutMe>
-            <AboutMe title="Mon expérience professionnelle" icon="briefcase">
-                J’ai suivi un stage d’une semaine à <a href="https://www.kimpleapp.com/" target="_blank" class="underline">Kimple</a> lors de mon année de Seconde durant laquelle j’ai re-créé “Flappy Bird” pour le web. J’ai également suivi un stage de 3 mois chez <a href="https://www.tabuleo.com/" target="_blank" class="underline">Tabuléo</a> où j’ai contribué au re-design de leur projet “Quizéo”. Je suis désormais en alternance chez eux.
-            </AboutMe>
-            <AboutMe title="Ma freelance" icon="hard-hat">
-                Grâce au bouche-à-oreille, des entrepreneurs m’ont contacté pour que je leur crée un site web d’entreprise. Cela m’a appris beaucoup car j’ai dû réaliser des projets clients de A à Z, seul et en respectant des délais précis.
-            </AboutMe>
-            <AboutMe title="Mes compétences d'équipe" icon="team">
-                J’ai suivi une formation sur la méthode Agile durant mes études et je suis capable de travailler dans une grande équipe. Mon stage chez Tabuléo m’a également appris à travailler dans une petite équipe avec une méthode plus adaptée.
-            </AboutMe>
+        <h2 class="font-bold text-primary text-center text-2xl lg:text-3xl" set:html={trans.homepage.aboutme[lang]} />
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,450px))] gap-20 place-content-center">
+            <AboutMe title={trans.homepage.mystudies[lang]} icon="graduation-cap" set:html={trans.homepage.studies[lang]} />
+            <AboutMe title={trans.homepage.myproxp[lang]} icon="briefcase" set:html={trans.homepage.proxp[lang]} />
+            <AboutMe title={trans.homepage.myfreelance[lang]} icon="hard-hat" set:html={trans.homepage.freelance[lang]} />
+            <AboutMe title={trans.homepage.myteamskills[lang]} icon="team" set:html={trans.homepage.teamskills[lang]} />
         </div>
     </section>
     <footer class="min-h-96 bg-primary-darker text-white py-20 px-main grid grid-cols-[repeat(auto-fit,minmax(250px,400px))] gap-20 md:gap-32 2xl:gap-40 place-content-center">
         <div>
-            <h3 class="font-bold text-lg xl:text-2xl pb-4">Contact</h3>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">{trans.common.contact[lang]}</h3>
             <table class="w-min [&_td]:pr-4 [&_td]:pb-4">
                 <tbody>
                     <tr>
@@ -82,12 +75,12 @@ const lang = Astro.locals.lang;
             </table>
         </div>
         <div>
-            <h3 class="font-bold text-lg xl:text-2xl pb-4">Statut</h3>
-            <p class="text-sm md:text-base">Actuellement en alternance chez Tabuléo, et également disponible pour des projets de freelance.</p>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">{trans.common.status[lang]}</h3>
+            <p class="text-sm md:text-base">{trans.homepage.status[lang]}</p>
         </div>
         <div class="[&_a]:underline">
-            <h3 class="font-bold text-lg xl:text-2xl pb-4">Concernant ce site</h3>
-            <p class="text-sm md:text-base">Ce site a été réalisé avec <a href="https://astro.build/" target="_blank">Astro</a>, <a href="https://svelte.dev/" target="_blank">Svelte</a> et <a href="https://tailwindcss.com/" target="_blank">Tailwind</a> (pour le frontend) ainsi que <a href="https://pocketbase.io/">PocketBase</a> pour le backend (qui est une base de données <a href="https://github.com/tursodatabase/libsql" target="_blank">SQLite</a>, self-hosted). Il y a un “backoffice” privé qui me permet de contrôler le contenu de mon portfolio à tout moment. Il respecte également les <a href="https://www.accede-web.com/notices/interface-riche/" target="_blank">normes d’accessibilité</a>.</p>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">{trans.homepage.aboutthissite[lang]}</h3>
+            <p class="text-sm md:text-base" set:html={trans.homepage.thissite[lang]} />
         </div>
     </footer>
 </MainLayout>
