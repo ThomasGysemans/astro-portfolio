@@ -1,0 +1,56 @@
+---
+import { Icon } from "astro-icon/components";
+import { getShowcase } from "@db/projects";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import ShowCaseCarousel from "@components/svelte/ShowCaseCarousel.svelte";
+import PageLayout from "@layouts/PageLayout.astro";
+import trans from "@trans";
+
+const projects = await getShowcase();
+const lang = Astro.locals.lang;
+---
+
+<PageLayout title={trans.showcase.title[lang]}>
+    <div class="relative">
+        <div class="absolute z-20 top-0 left-O w-full h-dvh custom-bg pointer-events-none" />
+        <nav class="absolute z-30 top-20 left-[50%] -translate-x-[50%] w-full">
+            <p class="absolute top-[80%] md:top-[30%] left-8 text-white text-sm sm:text-base lg:text-lg flex items-center space-x-4">
+                <Icon name="chevron-left" />
+                <a href={getRelativeLocaleUrl(lang, "/")} class="hover:underline">{trans.common.quit[lang]}</a>
+            </p>
+            <h1 class="text-white text-center text-xl lg:text-3xl max-md:relative max-md:-top-9" set:html={trans.showcase.mybestprojects[lang]} />
+            <p class="absolute top-[80%] md:top-[30%] right-8 text-white text-sm sm:text-base lg:text-lg flex items-center justify-end space-x-4">
+                <a href={getRelativeLocaleUrl(lang, "/projects")} class="hover:underline">{trans.showcase.allprojects[lang]}</a>
+                <Icon name="chevron-right" />
+            </p>
+        </nav>
+        <ShowCaseCarousel client:idle numberOfProjects={projects.length} {lang}>
+            {projects.map((project, i) => (
+                <div class="cell" role="tabpanel" aria-roledescription="diapositive" aria-label={`${i + 1} sur ${projects.length}`}>
+                    <div class="px-4 w-full h-full py-16 space-y-4">
+                        <h2 class="text-2xl text-center w-full">{project.name}</h2>
+                        <div class="cell-details flex flex-col items-center space-y-4">
+                            <p class="text-sm w-full inline-block">{project.showcaseDescription || project.description}</p>
+                            <a type="button" class="carousel-btn" href={getRelativeLocaleUrl(lang, `/projects/${project.slug}`)}>
+                                {trans.common.knowmore[lang]}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </ShowCaseCarousel>
+        <div class="absolute bottom-16 left-[50%] -translate-x-[50%] z-30">
+            <a href={getRelativeLocaleUrl(lang, "/projects")} class="carousel-btn">{trans.showcase.seeall[lang]}</a>
+        </div>
+    </div>
+</PageLayout>
+
+<style lang="scss">
+    .cell-details {
+        transition: opacity 200ms ease;
+    }
+
+    .custom-bg {
+        background: radial-gradient(circle, rgba(#000,0) 0%, rgba(#000,.6) 99%, rgba(#000,0) 100%);
+    }
+</style>

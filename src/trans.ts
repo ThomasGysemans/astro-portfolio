@@ -14,8 +14,10 @@ const trans = {
         "githubrepo": text("Repo GitHub", "GitHub repo"),
         "playgame": text("Jouer au jeu", "Play the game"),
         "back": text("Retour", "Back"),
-        "showcase": text("VITRINE DE MES PROJETS", "SHOWCASE OF MY PROJECTS"),
         "logo": text("Logo de ScienceSky.fr", "Logo of ScienceSky.fr"),
+        "quit": text("Quitter", "Leave"),
+        "previous": text("Précédent", "Previous"),
+        "next": text("Suivant", "Next"),
     },
     "homepage": {
         "iam": text("Je suis...", "I am..."),
@@ -38,6 +40,13 @@ const trans = {
         "spacesection": text("Je suis passionné d’informatique, et grâce à ma curiosité et ma passion je me forme en autodidacte depuis mes 13 ans et je continue à consolider mes compétences tous les jours.", "I am passionate about computer programming, and thanks to my curiosity and passion I have been self-taught since I was 13 and I continue to consolidate my skills every day."),
         "spacevideo": text("Ces extraits vidéo sont tirés d’un jeu web en 3D que j’ai créé, “SpaceVisitor”, entièrement réalisé avec <a class='underline' href='https://threejs.org' target='_blank'>ThreeJS</a> et <a class='underline' href='https://threlte.xyz' target='_blank'>Threlte</a>.", "These video clips are from a 3D web game I created, “SpaceVisitor”, made entirely with <a class='underline' href='https://threejs.org' target='_blank'>ThreeJS</a> and <a class='underline' href='https://threlte.xyz' target='_blank'>Threlte</a>."),
         "dialog": text("Je suis passionné d’informatique, mais aussi d’astronomie, j’ai ainsi combiné mes passions pour réaliser ce modèle 3D en utilisant <a href='https://threejs.org/' target='_blank' class='underline'>ThreeJS</a> et <a href='https://threlte.xyz/' target='_blank' class='underline'>Threlte</a> !", "I am passionate about computer programming, but also about astronomy, so I combined my passions to create this 3D model using <a href='https://threejs.org/' target='_blank' class='underline'>ThreeJS</a> and <a href='https://threlte.xyz/' target='_blank' class='underline'>Threlte</a>!"),
+        "showcase": text("VITRINE DE MES PROJETS", "SHOWCASE OF MY PROJECTS"),
+    },
+    "showcase": {
+        "seeall": text("Voir tous mes projets", "See all of my projects"),
+        "allprojects": text("Tous mes projets", "All of my projects"),
+        "mybestprojects": text("Vitrine de mes<br>meilleurs projets", "Showcase of my<br>best projects"),
+        "title": text("Portfolio de Thomas Gysemans - Vitrine de mes projets principaux", "Portfolio of Thomas Gysemans - Showcase of my main projects"),
     },
 } satisfies Record<string, Record<string, Text>>;
 

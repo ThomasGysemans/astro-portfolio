@@ -3,6 +3,7 @@
     import { spring } from "svelte/motion";
     import { onMount } from "svelte";
     import Nebula from "@components/svelte/Nebula.svelte";
+    import trans from "@trans";
 
     const ri = spring(0);
     const gi = spring(0);
@@ -19,6 +20,7 @@
     }
 
     export let numberOfProjects: number;
+    export let lang: App.LangCode;
 
     const rotateFn = 'rotateY'; // rotateX for horizontal
     let carousel: HTMLElement;
@@ -128,8 +130,8 @@
     </div>
 
     <div class="absolute bottom-32 left-[50%] -translate-x-[50%] z-30 flex items-center justify-center space-x-6">
-        <button type="button" id="previous-button" class="carousel-btn w-32" on:click={previous}>Précédent</button>
-        <button type="button" id="next-button" class="carousel-btn w-32" on:click={next}>Suivant</button>
+        <button type="button" id="previous-button" class="carousel-btn w-32" on:click={previous}>{trans.common.previous[lang]}</button>
+        <button type="button" id="next-button" class="carousel-btn w-32" on:click={next}>{trans.common.next[lang]}</button>
     </div>
 </div>
 
