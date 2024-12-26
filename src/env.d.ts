@@ -10,3 +10,9 @@ interface ImportMetaEnv {
 interface ImportEnv {
     readonly env: ImportMetaEnv;
 }
+
+declare namespace App {
+    interface Locals {
+        lang: string,
+    }
+}

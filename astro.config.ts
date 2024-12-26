@@ -8,6 +8,14 @@ export default defineConfig({
   output: "server",
   site: "https://portfolio.sciencesky.fr",
   integrations: [tailwind(), icon({ iconDir: "./public/icons" }), svelte()],
+  i18n: {
+    locales: ["fr", "en"],
+    defaultLocale: "fr",
+    routing: "manual",
+    fallback: {
+      en: "fr",
+    },
+  },
   vite: {
     css: {
       preprocessorOptions: {

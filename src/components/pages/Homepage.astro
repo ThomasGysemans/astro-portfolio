@@ -1,0 +1,112 @@
+---
+import { Icon } from "astro-icon/components";
+import { presentProjects } from "@db/projects";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import SpaceSection from "@components/SpaceSection.astro";
+import ProjectsGrid from "@components/ProjectsGrid.astro";
+import Earth from "@components/svelte/Earth.svelte";
+import MainLayout from "@layouts/MainLayout.astro";
+import AboutMe from "@components/AboutMe.astro";
+import Button from "@components/Button.astro";
+
+const projects = await presentProjects(3);
+const lang = Astro.locals.lang;
+---
+
+<MainLayout title="Portfolio de Thomas Gysemans" nav="px-20 xl:px-main">
+    <main class="mt-16 2xl:mt-32 px-12 md:px-20 xl:px-32 2xl:px-64 relative z-50">
+        <div class="space-y-8">
+            <b class="text-lg md:text-xl xl:text-2xl">Je suis...</b>
+            <ul class="list-disc list-inside space-y-4 2xl:space-y-6 text-sm md:text-lg lg:text-xl">
+                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>Développeur web</strong><Icon name="globe" /></li>
+                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>Développeur d'applications</strong><Icon name="smartphone" /></li>
+                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>UI/UX Designer</strong><Icon name="flower-2" /></li>
+            </ul>
+            <div class="flex items-center space-x-6">
+                <Button as="a" href={getRelativeLocaleUrl(lang, "/projects")}>En savoir plus</Button>
+                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte GitHub" title="Mon compte GitHub" href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
+                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" aria-label="Mon compte LinkedIn" title="Mon compte LinkedIn" href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
+            </div>
+        </div>
+        <div class="absolute z-10 top-12 2xl:top-32 right-0 planet-container max-md:flex max-md:justify-end">
+            <div id="earth-loading-replacement" class="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
+                <svg aria-hidden="true" class="w-14 h-14 text-gray-200 animate-spin dark:text-gray-500 fill-blue-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                </svg>
+            </div>
+            <div class="w-[450px] sm:w-[500px] xl:w-[700px] 2xl:w-[800px] h-[500px]">
+                <Earth client:idle />
+            </div> 
+        </div>
+    </main>
+    <SpaceSection />
+    <section class="space-y-20 pb-40">
+        <h2 class="font-bold text-primary text-2xl lg:text-3xl text-center">Mes projets récents</h2>
+        <ProjectsGrid {projects} centered />
+        <div class="flex justify-center">
+            <Button as="a" href="/projects">En savoir plus</Button>
+        </div>
+    </section>
+    <section class="px-main space-y-20 pb-40">
+        <h2 class="font-bold text-primary text-center text-2xl lg:text-3xl">Quelques infos de<br>plus sur moi...</h2>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,450px))] gap-20 place-content-center place-items-center">
+            <AboutMe title="Mes études" icon="graduation-cap">
+                J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les bases de données et <a href="https://sql.sh/" target="_blank" class="underline">SQL</a>.
+            </AboutMe>
+            <AboutMe title="Mon expérience professionnelle" icon="briefcase">
+                J’ai suivi un stage d’une semaine à <a href="https://www.kimpleapp.com/" target="_blank" class="underline">Kimple</a> lors de mon année de Seconde durant laquelle j’ai re-créé “Flappy Bird” pour le web. J’ai également suivi un stage de 3 mois chez <a href="https://www.tabuleo.com/" target="_blank" class="underline">Tabuléo</a> où j’ai contribué au re-design de leur projet “Quizéo”. Je suis désormais en alternance chez eux.
+            </AboutMe>
+            <AboutMe title="Ma freelance" icon="hard-hat">
+                Grâce au bouche-à-oreille, des entrepreneurs m’ont contacté pour que je leur crée un site web d’entreprise. Cela m’a appris beaucoup car j’ai dû réaliser des projets clients de A à Z, seul et en respectant des délais précis.
+            </AboutMe>
+            <AboutMe title="Mes compétences d'équipe" icon="team">
+                J’ai suivi une formation sur la méthode Agile durant mes études et je suis capable de travailler dans une grande équipe. Mon stage chez Tabuléo m’a également appris à travailler dans une petite équipe avec une méthode plus adaptée.
+            </AboutMe>
+        </div>
+    </section>
+    <footer class="min-h-96 bg-primary-darker text-white py-20 px-main grid grid-cols-[repeat(auto-fit,minmax(250px,400px))] gap-20 md:gap-32 2xl:gap-40 place-content-center">
+        <div>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">Contact</h3>
+            <table class="w-min [&_td]:pr-4 [&_td]:pb-4">
+                <tbody>
+                    <tr>
+                        <td><a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" class="underline">LinkedIn</a></td>
+                        <td><Icon name="linkedin" class="text-xl" /></td>
+                    </tr>
+                    <tr>
+                        <td><a href="https://github.com/ThomasGysemans/" target="_blank" class="underline">GitHub</a></td>
+                        <td><Icon name="github" class="text-xl" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">Statut</h3>
+            <p class="text-sm md:text-base">Actuellement en alternance chez Tabuléo, et également disponible pour des projets de freelance.</p>
+        </div>
+        <div class="[&_a]:underline">
+            <h3 class="font-bold text-lg xl:text-2xl pb-4">Concernant ce site</h3>
+            <p class="text-sm md:text-base">Ce site a été réalisé avec <a href="https://astro.build/" target="_blank">Astro</a>, <a href="https://svelte.dev/" target="_blank">Svelte</a> et <a href="https://tailwindcss.com/" target="_blank">Tailwind</a> (pour le frontend) ainsi que <a href="https://pocketbase.io/">PocketBase</a> pour le backend (qui est une base de données <a href="https://github.com/tursodatabase/libsql" target="_blank">SQLite</a>, self-hosted). Il y a un “backoffice” privé qui me permet de contrôler le contenu de mon portfolio à tout moment. Il respecte également les <a href="https://www.accede-web.com/notices/interface-riche/" target="_blank">normes d’accessibilité</a>.</p>
+        </div>
+    </footer>
+</MainLayout>
+
+<style lang="scss">
+    .planet-container {
+        @media (max-width: 1024px) { transform: scale(.8); top: -4px; }
+        @media (max-width: 900px) { transform: scale(.75); top: -40px; right: -60px; }
+
+        @media (max-width: 768px) {
+            margin-top: 90px;
+            transform: scale(0.9);
+            position: relative;
+            right: -70px;
+            top: 0;
+        }
+
+        @media (max-width: 550px) {
+            left: 50px;
+        }
+    }
+</style>
