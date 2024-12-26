@@ -17,6 +17,9 @@ export default defineConfig({
     },
   },
   vite: {
+    server: {
+      host: true,
+    },
     css: {
       preprocessorOptions: {
         scss: {
