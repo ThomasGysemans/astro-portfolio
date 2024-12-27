@@ -6,10 +6,11 @@ interface Props {
 }
 
 const { title } = Astro.props;
+const lang = Astro.locals.lang;
 ---
 
 <!DOCTYPE html>
-<html lang="fr">
+<html {lang}>
     <head>
         <meta charset="utf-8">
         <link rel="icon" type="image/svg+xml" href="/favicon.svg">

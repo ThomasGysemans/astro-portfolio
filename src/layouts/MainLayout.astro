@@ -13,6 +13,7 @@ interface Props {
 
 const { title, nested = false, nav = "px-main", } = Astro.props;
 const lang = Astro.locals.lang;
+const pathname = Astro.url.pathname;
 const isEn = lang === "en";
 ---
 
@@ -35,11 +36,11 @@ const isEn = lang === "en";
             </div>
             <div class="flex items-center flex-col sm:flex-row sm:space-x-8 sm:space-y-0 space-y-8">
                 <div class="flex items-center space-x-5">
-                    <a href="/" class={`lang-link ${isEn ? "group" : "active"}`}>
+                    <a href={pathname.replace("/en", "")} class={`lang-link ${isEn ? "group" : "active"}`}>
                         <Icon name="french-flag" class={`text-xl lg:text-3xl ${isEn ? "grayscale group-hover:grayscale-0" : ""}`} />
                         <span class="font-bold">FR</span>
                     </a>
-                    <a href="en/" class={`lang-link ${isEn ? "active" : "group"}`}>
+                    <a href={`/en${pathname}`} class={`lang-link ${isEn ? "active" : "group"}`}>
                         <Icon name="uk-flag" class={`text-xl lg:text-3xl ${isEn ? "" : "grayscale group-hover:grayscale-0"}`} />
                         <span class="font-bold">EN</span>
                     </a>
