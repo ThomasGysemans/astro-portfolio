@@ -18,6 +18,12 @@ const trans = {
         "quit": text("Quitter", "Leave"),
         "previous": text("Précédent", "Previous"),
         "next": text("Suivant", "Next"),
+        "all": text("Tous", "All"),
+        "allFeminine": text("Toutes", "All"),
+        "noFilter": text("Aucun tri", "No filter"),
+        "mostRecent": text("Plus récents", "Newest"),
+        "mostOld": text("Plus anciens", "Oldest"),
+        "blackhole": text("Trou noir", "Black hole"),
     },
     "homepage": {
         "iam": text("Je suis...", "I am..."),
@@ -49,10 +55,39 @@ const trans = {
         "title": text("Portfolio de Thomas Gysemans - Vitrine de mes projets principaux", "Portfolio of Thomas Gysemans - Showcase of my main projects"),
     },
     "error": {
-        blackhole: text("Trou noir", "Black hole"),
-        notfound: text("Page introuvable", "Page not found"),
+        "notfound": text("Page introuvable", "Page not found"),
+    },
+    "projects": {
+        "title": text("Portfolio de Thomas Gysemans - Mes projets", "Portfolio of Thomas Gysemans - My projects"),
+        "myprojects": text("Mes projets", "My projects"),
+        "filterType": text("Filtrer selon le type", "Filter type"),
+        "filterSkills": text("Filtrer selon les technologies", "Filter skills"),
+        "orderDate": text("Trier selon la date", "Order based on date"),
+        "searchProject": text("Rechercher un projet", "Search by name"),
+        "filteringSkills": text("Vous êtes en train de filtrer les projets qui utilisent les technologies ci-dessous. Sélectionnez d'autres technologies pour affiner le filtre ci-dessus.", "You are currently filtering projects that use the technologies below. Select other technologies to refine the filter above."),
+        "noProjectFound": text("Il n'y a aucun projet qui correspond aux filtres que vous avez renseignés.", "There are no projects that match the filters you have entered."),
+        "myTechSkills": text("Mes compétences techniques", "My tech skills"),
+        "listingSkills": text("Même si lister des technologies de cette manière n’a pas beaucoup de sens, je vous les présente comme les technologies que j’ai utilisées dans le passé et pour lesquelles j’ai un minimum d’expérience.", "Although listing technologies in this way does not make much sense, I present them to you as technologies that I have used in the past and for which I have a minimum of experience."),
+        "educationalBackground": text("Mon parcours scolaire", "My educational background"),
+        "school": text("J'ai obtenu mon BAC Général au lycée Sacré-cœur de Tourcoing avec mention très bien. J'ai continué mes études au sein de l'IUT de Villeneuve d'Ascq et j'y ai obtenu mon DUT Informatique. À l'heure actuelle je suis en troisième année de BUT Informatique en alternance dans une entreprise appelée Tabuléo dans laquelle je mets en pratique mes compétences dans le contexte de la plateforme éducative <a href='https://quizeo.com' target='_blank' class='underline'>Quizéo</a>.", "I obtained my high school diploma with honors (\"mention très bien\"). I continued my studies at the IUT of Villeneuve d'Ascq and obtained another diploma (\"DUT\") in Computer Science. I am currently in my third year of a \"BUT\" in Computer Science in a work-study program in a company called Tabuléo where I put my skills into practice in the context of the educational platform <a href='https://quizeo.com' target='_blank' class='underline'>Quizéo</a>."),
+        "presentingProject": text("Présentation du projet", "Presenting project"),
     },
 } satisfies Record<string, Record<string, Text>>;
+
+export const techSkills = [
+    text("Maîtrise des frameworks web (frontend & backend)", "Mastery of web frameworks (frontend & backend)"),
+    text("Programmation orientée objet (POO)", "Object-oriented programming (POO)"),
+    text("Web scraping (Puppeteer)"),
+    text("Capable de créer un langage interprété ou compilé via LLVM", "Able to create interpreted or compiled language via LLVM"),
+    text("Capable de gérer une base de données relationnelle ou orientée documents", "Able to manage a relational or document-oriented database"),
+];
+
+export const schoolSkills = [
+    text("Autonomie dans la réalisation d'un programme", "Autonomy in carrying out a program"),
+    text("Management d'équipe et travail en autonomie", "Team management and independent work"),
+    text("Coopérer dans une équipe selon la méthodologie Agile", "Cooperating in a team according to the Agile methodology"),
+    text("Répartition des tâches dans une équipe", "Distribution of tasks in a team"),
+];
 
 function text(fr: string, en?: string): Text {
     return {
