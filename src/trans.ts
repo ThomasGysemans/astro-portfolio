@@ -72,6 +72,13 @@ const trans = {
         "school": text("J'ai obtenu mon BAC Général au lycée Sacré-cœur de Tourcoing avec mention très bien. J'ai continué mes études au sein de l'IUT de Villeneuve d'Ascq et j'y ai obtenu mon DUT Informatique. À l'heure actuelle je suis en troisième année de BUT Informatique en alternance dans une entreprise appelée Tabuléo dans laquelle je mets en pratique mes compétences dans le contexte de la plateforme éducative <a href='https://quizeo.com' target='_blank' class='underline'>Quizéo</a>.", "I obtained my high school diploma with honors (\"mention très bien\"). I continued my studies at the IUT of Villeneuve d'Ascq and obtained another diploma (\"DUT\") in Computer Science. I am currently in my third year of a \"BUT\" in Computer Science in a work-study program in a company called Tabuléo where I put my skills into practice in the context of the educational platform <a href='https://quizeo.com' target='_blank' class='underline'>Quizéo</a>."),
         "presentingProject": text("Présentation du projet", "Presenting project"),
     },
+    "singleProject": {
+        "usedTechonologies": text("Techonologies utilisées dans ce projet", "Technologies used in this project"),
+        "linkToGithub": text("Lien GitHub", "Link to the GitHub repo"),
+        "illustratingProject": text("Illustration du projet", "Illustration of the project"),
+        "illustrationNumber": text("Illustration numéro", "Illustration number"),
+        "ofProject": text("du projet", "of project"),
+    },
 } satisfies Record<string, Record<string, Text>>;
 
 export const techSkills = [

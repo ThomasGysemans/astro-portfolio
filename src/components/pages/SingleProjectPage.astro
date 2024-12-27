@@ -1,0 +1,128 @@
+---
+import { ProjectNature } from "@lib/ProjectNature";
+import { ProjectType } from "@lib/ProjectType";
+import { Icon } from "astro-icon/components";
+import { Language } from "@lib/Language";
+import { findProject, getImageURL } from "@db/projects";
+import ProjectIllustration from "@components/ProjectIllustration.astro";
+import MainLayout from "@layouts/MainLayout.astro";
+import Skill from "@components/Skill.astro";
+import trans from "@trans";
+
+const { slug } = Astro.params;
+const project = (!!slug ? await findProject(slug) : undefined)!;
+
+if (project === undefined) {
+    return Astro.rewrite("/404");
+}
+
+const projectType = project && ProjectType.getProjectType(project.type);
+const projectNature = project && ProjectNature.getNature(project.nature);
+const isApplication = projectType === ProjectType.APPLICATION
+const useCarousel = !!project && project.pictures.length > 3;
+const lang = Astro.locals.lang;
+const isEn = lang === "en";
+
+function getLinkPresentation(): string {
+    switch (projectType) {
+        case ProjectType.WEB: return isEn ? "Link to the website" : "Lien du site";
+        case ProjectType.APPLICATION: return isEn ? "Link to the app" : "Lien de l'appli";
+        case ProjectType.SOFTWARE: return isEn ? "Link to the software" : "Lien du logiciel";
+        case ProjectType.LANGUAGE: return isEn ? "Link to the doc" : "Lien vers la doc";
+        case ProjectType.GAME: return isEn ? "Link to the game" : "Lien du jeu";
+        case ProjectType.CHALLENGE: return isEn ? "Link to the challenge" : "Lien du challenge";
+        default:
+            return isEn ? "Link to the project" : "Lien du projet";
+    }
+}
+---
+
+<MainLayout title=`Projet ${project.name}` nested>
+    <div class="mt-20 px-main space-y-8 text-sm sm:text-base">
+        <h1 class="text-2xl sm:text-4xl sm:max-w-[60%]">{project.name}</h1>
+        <div class="flex flex-wrap items-center">
+            <div class="flex items-center space-x-2 mr-8">
+                <Icon name={projectType.icon} />
+                <span>{projectType.getTranslatedName(lang)}</span>
+            </div>
+            <div class="flex items-center space-x-2 mr-8">
+                <Icon name={projectNature.icon} />
+                <span>{projectNature.getTranslatedName(lang)}</span>
+            </div>
+            <div class="flex items-center space-x-2 mr-8">
+                <Icon name="calendar" />
+                <span>{project.date}</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                {project.languages.map(short => {
+                    const lang = Language.getLanguage(short);
+                    if (lang) {
+                        return (
+                            <div class="flex items-center space-x-2">
+                                <Icon name={lang.flag} class="relative bottom-0.5" />
+                                <span>{lang.short}</span>
+                            </div>
+                        );
+                    }
+                })}
+            </div>
+        </div>
+        <p class="md:max-w-[65%] xl:max-w-[50%]">{project.summary}</p>
+        {project.github && (
+            <p>{trans.singleProject.linkToGithub[lang]} : <a href={project.github} target="_blank" class="break-words">{project.github}</a></p>
+        )}
+        {project.link && (
+            <p>
+                <span>{getLinkPresentation()} :</span>
+                <a href={project.link} target="_blank" class="break-words">{project.link}</a>
+            </p>
+        )}
+        <div class={`illustrations-container ${useCarousel ? "grid grid-cols-[repeat(auto-fit,minmax(300px,600px))] gap-8" : (isApplication ? "grid grid-cols-[repeat(auto-fit,minmax(200px,460px))] gap-12" : "space-y-8")}`}>
+            {project.pictures.map(p => (
+                <ProjectIllustration
+                    src={getImageURL(project, p)}
+                    alt={`${trans.singleProject.illustratingProject[lang]} ${project.name}`}
+                    interactive={useCarousel}
+                />
+            ))}
+        </div>
+        <h2>{trans.singleProject.usedTechonologies[lang]}</h2>
+        <div class="flex flex-wrap *:mb-8 *:mr-8 pb-40">
+            {project.technologies.map(t => (
+                <Skill logo={getImageURL(t, t.logo)} name={t.name} loved={t.loved} />
+            ))}
+        </div>
+    </div>
+    <div id="carousel" class="fixed z-40 top-0 left-0 w-full h-dvh bg-black/75" aria-hidden="true">
+        {project.pictures.map((src, i) => (
+            <div role="tabpanel" id={`img-${i}`} aria-hidden={i === 0 ? "false" : "true"} aria-roledescription="diapositive" aria-label={`${i + 1} sur ${project.pictures.length}`} class="px-[5%] pt-10 z-40 w-full max-h-80dvh flex items-center justify-center">
+                <img src={getImageURL(project, src)} alt={`${trans.singleProject.illustrationNumber[lang]} ${i + 1} ${trans.singleProject.ofProject[lang]} ${project.name}`} class="w-full h-auto max-h-[80dvh] object-contain" />
+            </div>
+        ))}
+        <div role="tablist" aria-label="Diapositives" class="absolute bottom-10 left-0 w-full py-6 flex items-center justify-center space-x-2">
+            {project.pictures.map((_, i) => (
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={i === 0 ? "true" : "false"}
+                    aria-controls={`diapo-${i}`}
+                    class="rounded-full w-5 h-5 bg-white/10 border-2 border-white hover:bg-white [&[aria-selected='true']]:bg-white"
+                />
+            ))}
+        </div>
+    </div>
+</MainLayout>
+
+{useCarousel && (
+    <script src="../../../lib/pages/carousel.ts"></script>
+)}
+
+<style lang="scss">
+    a {
+        @apply text-primary-light opacity-75 hover:opacity-100 transition-colors underline;
+    }
+
+    [aria-hidden="true"] {
+        display: none;
+    }
+</style>
