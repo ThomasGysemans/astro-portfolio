@@ -48,6 +48,10 @@ const trans = {
         "mybestprojects": text("Vitrine de mes<br>meilleurs projets", "Showcase of my<br>best projects"),
         "title": text("Portfolio de Thomas Gysemans - Vitrine de mes projets principaux", "Portfolio of Thomas Gysemans - Showcase of my main projects"),
     },
+    "error": {
+        blackhole: text("Trou noir", "Black hole"),
+        notfound: text("Page introuvable", "Page not found"),
+    },
 } satisfies Record<string, Record<string, Text>>;
 
 function text(fr: string, en?: string): Text {
