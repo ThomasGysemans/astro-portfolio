@@ -1,26 +1,26 @@
 ---
+import type { FullProject } from "@db/models";
 import { ProjectNature } from "@lib/ProjectNature";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
 import { Language } from "@lib/Language";
-import { findProject, getImageURL } from "@db/projects";
+import { getImageURL } from "@db/projects";
 import ProjectIllustration from "@components/ProjectIllustration.astro";
 import MainLayout from "@layouts/MainLayout.astro";
 import Skill from "@components/Skill.astro";
 import trans from "@trans";
 
-const { slug } = Astro.params;
-const project = (!!slug ? await findProject(slug) : undefined)!;
-
-if (project === undefined) {
-    return Astro.rewrite("/404");
+interface Props {
+    project: FullProject,
+    lang: App.LangCode,
 }
+
+const { project, lang } = Astro.props;
 
 const projectType = project && ProjectType.getProjectType(project.type);
 const projectNature = project && ProjectNature.getNature(project.nature);
 const isApplication = projectType === ProjectType.APPLICATION
 const useCarousel = !!project && project.pictures.length > 3;
-const lang = Astro.locals.lang;
 const isEn = lang === "en";
 
 function getLinkPresentation(): string {

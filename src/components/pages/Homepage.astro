@@ -10,8 +10,8 @@ import AboutMe from "@components/AboutMe.astro";
 import Button from "@components/Button.astro";
 import trans from "@trans";
 
-const projects = await presentProjects(3);
 const lang = Astro.locals.lang;
+const projects = await presentProjects(lang, 3);
 ---
 
 <MainLayout title={trans.common.title[lang]} nav="px-20 xl:px-main">

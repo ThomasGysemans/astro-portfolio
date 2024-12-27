@@ -6,8 +6,8 @@ import ShowCaseCarousel from "@components/svelte/ShowCaseCarousel.svelte";
 import PageLayout from "@layouts/PageLayout.astro";
 import trans from "@trans";
 
-const projects = await getShowcase();
 const lang = Astro.locals.lang;
+const projects = await getShowcase(lang);
 ---
 
 <PageLayout title={trans.showcase.title[lang]}>

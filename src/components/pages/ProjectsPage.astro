@@ -11,7 +11,7 @@ import trans, { techSkills, schoolSkills } from "@trans";
 
 const lang = Astro.locals.lang;
 const [projects, skills] = await Promise.all([
-    presentProjects(),
+    presentProjects(lang),
     listSkills()
 ]);
 ---

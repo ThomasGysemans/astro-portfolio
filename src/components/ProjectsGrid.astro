@@ -1,11 +1,11 @@
 ---
-import type { PBFullProject } from '@db/models';
+import type { FullProject } from '@db/models';
 import Project from './Project.astro';
 
 interface Props {
     id?: string,
     centered?: boolean,
-    projects: PBFullProject[],
+    projects: FullProject[],
 }
 
 const { projects, id, centered } = Astro.props;

@@ -23,6 +23,13 @@ export type FullProject = {
     showcaseDescription?: string | null,
 }
 
+export type PBCollection<T> = {
+    id: string,
+    collectionId: string,
+    updated: string,
+    created: string,
+} & T;
+
 export type ShowcaseProject = Pick<
     FullProject,
     "slug" |
@@ -31,13 +38,42 @@ export type ShowcaseProject = Pick<
     "description"
 >
 
-export type PBCollection<T> = {
-    id: string,
-    collectionId: string,
-    updated: string,
-    created: string,
-    expand?: Partial<T>,
-} & T
+export type PBShowcaseProject = PBCollection<{
+    slug: string,
+    name: string,
+    expand: {
+        french?: ProjectText,
+        english?: ProjectText,
+    },
+}>;
 
-export type PBFullProject = PBCollection<FullProject>;
+export type PBProject = PBCollection<{
+    name: string,
+    slug: string,
+    presentationPicture: string,
+    pictures: string[],
+    teamMembers: number,
+    nature: string,
+    type: string,
+    date: string,
+    languages: string[],
+    github?: string,
+    link?: string,
+    showcase: boolean,
+    technologies: string[],
+    french: string,
+    english: string,
+    expand: {
+        technologies?: PBCollection<Technology>[],
+        french?: ProjectText,
+        english?: ProjectText,
+    },
+}>;
+
+export type ProjectText = {
+    description: string,
+    summary: string,
+    showcaseDescription?: string,
+};
+
 export type PBTechnology = PBCollection<Technology>;

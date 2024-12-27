@@ -1,5 +1,5 @@
 ---
-import type { PBFullProject } from "@db/models";
+import type { FullProject } from "@db/models";
 import { ProjectType } from "@lib/ProjectType";
 import { ProjectNature } from "@lib/ProjectNature";
 import { Icon } from "astro-icon/components";
@@ -9,7 +9,7 @@ import Technology from "./Technology.astro";
 import trans from "@trans";
 
 interface Props {
-    project: PBFullProject;
+    project: FullProject
 }
 
 const { project } = Astro.props;
@@ -22,14 +22,14 @@ const lang = Astro.locals.lang;
     <div class="w-full h-[240px] relative">
         <img src={getImageURL(project, project.presentationPicture)} alt=`${trans.projects.presentingProject[lang]} ${project.name}` class="h-full w-full rounded-[4px_4px_0_0] object-cover" />
         <div class=`absolute top-5 right-5 rounded-full w-8 h-8 flex justify-center items-center ${projectType.color}`>
-            <Icon name={projectType.icon} class="text-lg text-white" title={projectType.frenchName} />
+            <Icon name={projectType.icon} class="text-lg text-white" title={projectType.getTranslatedName(lang)} />
         </div>
     </div>
     <div class="py-4 px-6 h-[calc(100%-240px)] space-y-4 lg:space-y-6 flex flex-col">
         <strong><a href={getRelativeLocaleUrl(lang, `/projects/${project.slug}`)} class="underline text-primary text-lg lg:text-2xl font-bold">{project.name}</a></strong>
         <p class="text-primary text-xs lg:text-sm leading-4 font-light">{project.description}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
-            {project.expand!.technologies!.map(techno => (
+            {project.technologies.map(techno => (
                 <Technology logo={getImageURL(techno, techno.logo)} name={techno.name} />
             ))}
         </div>
@@ -40,7 +40,7 @@ const lang = Astro.locals.lang;
             </span>
             <span class="text-primary/50 flex items-center space-x-2 text-xs lg:text-sm">
                 <Icon name=`${projectNature.icon}` />
-                <span class="relative top-[1px]">{projectNature.frenchName}</span>
+                <span class="relative top-[1px]">{projectNature.getTranslatedName(lang)}</span>
             </span>
             <span class="text-primary/50 flex items-center space-x-2 text-xs lg:text-sm">
                 <Icon name="calendar" />
