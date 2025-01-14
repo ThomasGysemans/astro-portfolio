@@ -13,20 +13,23 @@ interface Props {
 }
 
 const { project } = Astro.props;
+const lang = Astro.locals.lang;
 const projectType = ProjectType.getProjectType(project.type);
 const projectNature = ProjectNature.getNature(project.nature);
-const lang = Astro.locals.lang;
+const projectHref = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
 ---
 
 <div class="bg-white rounded-md border-2 border-primary/50" data-slug={project.slug}>
     <div class="w-full h-[240px] relative">
-        <img src={getImageURL(project, project.presentationPicture)} alt=`${trans.projects.presentingProject[lang]} ${project.name}` class="h-full w-full rounded-[4px_4px_0_0] object-cover" />
+        <a href={projectHref}>
+            <img src={getImageURL(project, project.presentationPicture)} alt=`${trans.projects.presentingProject[lang]} ${project.name}` class="h-full w-full rounded-[4px_4px_0_0] object-cover" />
+        </a>
         <div class=`absolute top-5 right-5 rounded-full w-8 h-8 flex justify-center items-center ${projectType.color}`>
             <Icon name={projectType.icon} class="text-lg text-white" title={projectType.getTranslatedName(lang)} />
         </div>
     </div>
     <div class="py-4 px-6 h-[calc(100%-240px)] space-y-4 lg:space-y-6 flex flex-col">
-        <strong><a href={getRelativeLocaleUrl(lang, `/projects/${project.slug}`)} class="underline text-primary text-lg lg:text-2xl font-bold">{project.name}</a></strong>
+        <strong><a href={projectHref} class="underline text-primary text-lg lg:text-2xl font-bold">{project.name}</a></strong>
         <p class="text-primary text-xs lg:text-sm leading-4 font-light">{project.description}</p>
         <div class="flex flex-wrap *:mb-4 *:mr-4">
             {project.technologies.map(techno => (
