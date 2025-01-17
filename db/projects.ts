@@ -25,7 +25,7 @@ function mapPocketbaseToFullProject(project: PBProject): FullProject {
 export async function presentProjects(lang: App.LangCode, limit?: number): Promise<FullProject[]> {
     try {
         const opt: RecordListOptions = {
-            sort: "+created",
+            sort: "-created",
             expand: `technologies,${getLangTable(lang)}`,
         };
         if (limit !== undefined) {
