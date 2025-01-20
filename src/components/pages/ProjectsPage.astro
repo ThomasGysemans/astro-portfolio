@@ -13,7 +13,7 @@ import trans, { techSkills, schoolSkills } from "@trans";
 
 const lang = Astro.locals.lang;
 const [projects, skills] = await Promise.all([
-    new Promise((resolve, reject) => presentProjects(lang).then(p => resolve(sortInitialProjects(p))).catch(reject)),
+    new Promise<FullProject[]>((resolve, reject) => presentProjects(lang).then(p => resolve(sortInitialProjects(p))).catch(reject)),
     listSkills()
 ]);
 
