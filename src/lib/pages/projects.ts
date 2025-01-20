@@ -1,4 +1,5 @@
 import type { FullProject } from "../../../db/models";
+import { getProjectTimestamp } from "../getProjectTimestamp.ts";
 import { createElement } from "../DOMHelper.ts";
 
 declare const projects: FullProject[];
@@ -18,7 +19,9 @@ const filterType = document.querySelector("#filter-type") as HTMLSelectElement;
 const filterDate = document.querySelector("#filter-date") as HTMLSelectElement
 const filterTechno = document.querySelector("#filter-techno") as HTMLSelectElement
 const searchBar = document.querySelector("input[type='search']") as HTMLInputElement;
-const filter: Filter = {};
+const filter: Filter = {
+    date: "recent",
+};
 
 searchBar.addEventListener('input', () => {
     const search = searchBar.value.trim().toLowerCase();
@@ -39,6 +42,7 @@ filterType.addEventListener('change', () => {
 filterDate.addEventListener('change', () => {
     const value = filterDate.value;
     filter.date = value === "none" ? undefined : value;
+    console.log("filter.date =", filter.date);
     filterElements(true);
 });
 
@@ -112,12 +116,6 @@ function displayFilteredSkills(): void {
     } else {
         filteredSkillsContainer.style.display = "none";
     }
-}
-
-function getProjectTimestamp(project: FullProject): number {
-    return project.date.includes("-")
-        ? new Date(project.date.substring(project.date.indexOf("-") + 1)).getTime()
-        : new Date(project.date).getTime();
 }
 
 function getFilteredProjects(): string[] {

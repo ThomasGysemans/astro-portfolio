@@ -1,7 +1,9 @@
 ---
+import type { FullProject } from "@db/models";
 import { ProjectType } from "@lib/ProjectType";
 import { Icon } from "astro-icon/components";
 import { presentProjects, getImageURL } from "@db/projects";
+import { getProjectTimestamp } from "@lib/getProjectTimestamp";
 import { listSkills } from "@db/skills";
 import MainLayout from "@layouts/MainLayout.astro";
 import Skill from "@components/Skill.astro";
@@ -11,9 +13,13 @@ import trans, { techSkills, schoolSkills } from "@trans";
 
 const lang = Astro.locals.lang;
 const [projects, skills] = await Promise.all([
-    presentProjects(lang),
+    new Promise((resolve, reject) => presentProjects(lang).then(p => resolve(sortInitialProjects(p))).catch(reject)),
     listSkills()
 ]);
+
+function sortInitialProjects(projects: FullProject[]): FullProject[] {
+    return projects.toSorted((a, b) => getProjectTimestamp(a) - getProjectTimestamp(b));
+}
 ---
 
 <MainLayout title={trans.projects.title[lang]}>
@@ -31,8 +37,8 @@ const [projects, skills] = await Promise.all([
         <div>
             <label for="filter-date">{trans.projects.orderDate[lang]}</label>
             <select id="filter-date" name="filter-date">
-                <option value="none" selected>{trans.common.noFilter[lang]}</option>
-                <option value="recent">{trans.common.mostRecent[lang]}</option>
+                <option value="none">{trans.common.noFilter[lang]}</option>
+                <option value="recent" selected>{trans.common.mostRecent[lang]}</option>
                 <option value="oldest">{trans.common.mostOld[lang]}</option>
             </select>
         </div>
