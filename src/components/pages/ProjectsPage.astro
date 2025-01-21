@@ -18,7 +18,7 @@ const [projects, skills] = await Promise.all([
 ]);
 
 function sortInitialProjects(projects: FullProject[]): FullProject[] {
-    return projects.toSorted((a, b) => getProjectTimestamp(a) - getProjectTimestamp(b));
+    return projects.toSorted((a, b) => getProjectTimestamp(b) - getProjectTimestamp(a));
 }
 ---
 
@@ -37,7 +37,6 @@ function sortInitialProjects(projects: FullProject[]): FullProject[] {
         <div>
             <label for="filter-date">{trans.projects.orderDate[lang]}</label>
             <select id="filter-date" name="filter-date">
-                <option value="none">{trans.common.noFilter[lang]}</option>
                 <option value="recent" selected>{trans.common.mostRecent[lang]}</option>
                 <option value="oldest">{trans.common.mostOld[lang]}</option>
             </select>

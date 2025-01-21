@@ -4,9 +4,11 @@ import { createElement } from "../DOMHelper.ts";
 
 declare const projects: FullProject[];
 
+type FilterDate = "recent" | "oldest";
+
 type Filter = {
     name?: string;
-    date?: string;
+    date?: FilterDate;
     type?: string;
     skills?: string[];
 };
@@ -19,9 +21,7 @@ const filterType = document.querySelector("#filter-type") as HTMLSelectElement;
 const filterDate = document.querySelector("#filter-date") as HTMLSelectElement
 const filterTechno = document.querySelector("#filter-techno") as HTMLSelectElement
 const searchBar = document.querySelector("input[type='search']") as HTMLInputElement;
-const filter: Filter = {
-    date: "recent",
-};
+const filter: Filter = {};
 
 searchBar.addEventListener('input', () => {
     const search = searchBar.value.trim().toLowerCase();
@@ -41,9 +41,10 @@ filterType.addEventListener('change', () => {
 
 filterDate.addEventListener('change', () => {
     const value = filterDate.value;
-    filter.date = value === "none" ? undefined : value;
-    console.log("filter.date =", filter.date);
-    filterElements(true);
+    if (["recent", "oldest"].includes(value)) {
+        filter.date = value === "recent" ? undefined : value as FilterDate;
+        filterElements(true);
+    }
 });
 
 filterTechno.addEventListener('change', () => {
@@ -127,7 +128,7 @@ function getFilteredProjects(): string[] {
     }).map(p => p.slug);
 }
 
-function sortElements() {
+function sortElements(): void {
     const projectsElements = getProjectsElements();
     while (projectsContainer.firstChild) {
         projectsContainer.removeChild(projectsContainer.firstChild);
@@ -158,7 +159,7 @@ function sortElements() {
     }
 }
 
-function filterElements(needSorting: boolean) {
+function filterElements(needSorting: boolean): void {
     if (needSorting) {
         sortElements();
     }
