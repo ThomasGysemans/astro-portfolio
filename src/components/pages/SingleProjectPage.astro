@@ -53,6 +53,10 @@ function getLinkPresentation(): string {
                 <Icon name="calendar" />
                 <span>{project.date}</span>
             </div>
+            <div class="flex items-center space-x-2 mr-8">
+                <Icon name=`${project.teamMembers === 1 ? "circle-user-round" : "users"}` />
+                <span>{project.teamMembers < 2 ? "Solo" : `Équipe de ${project.teamMembers}`}</span>
+            </div>
             <div class="flex items-center space-x-4">
                 {project.languages.map(short => {
                     const lang = Language.getLanguage(short);
