@@ -1,4 +1,4 @@
-import { FullProject, Technology } from "../../../db/models";
+import type { FullProject, Technology } from "@db/models.js";
 import { ProjectNature } from "../ProjectNature.ts";
 import { ProjectType } from "../ProjectType.ts";
 import { Language } from "../Language.ts";
@@ -67,7 +67,7 @@ export function mockProject(skillsPool?: Technology[]): FullProject {
         slug: name.replace(/ /g, "-"),
         description: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
         summary: "Un jeu 3D dans lequel le joueur vole dans le Système Solaire avec sur son passage les planètes, dont la Terre, et le Soleil.",
-        presentationPicture: 0,
+        presentationPicture: "/example-space-visitor.png",
         pictures: ["/exemple-space-visitor.png"],
         technologies: technologies ?? mockSkills(),
         teamMembers: Math.ceil(Math.random() * 20 + 1),
@@ -77,7 +77,6 @@ export function mockProject(skillsPool?: Technology[]): FullProject {
         github: "ThomasGysemans/SpaceVisitor",
         link: "https://spacevisitor.sciencesky.fr/",
         showcase: Math.random() < 0.3,
-        updatedAt: new Date(),
         languages,
     };
 }
