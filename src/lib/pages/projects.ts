@@ -13,6 +13,7 @@ type Filter = {
     skills?: string[];
 };
 
+const containerProjectsGrid = document.querySelector("#container-projects-grid") as HTMLDivElement;
 const noProjectContainer = document.querySelector("#no-project-container") as HTMLDivElement;
 const projectsContainer = document.querySelector("#projects-container") as HTMLDivElement;
 const filteredSkillsContainer = document.querySelector("#technologies-filter-container") as HTMLDivElement;
@@ -21,7 +22,49 @@ const filterType = document.querySelector("#filter-type") as HTMLSelectElement;
 const filterDate = document.querySelector("#filter-date") as HTMLSelectElement
 const filterTechno = document.querySelector("#filter-techno") as HTMLSelectElement
 const searchBar = document.querySelector("input[type='search']") as HTMLInputElement;
-const filter: Filter = {};
+
+const filterHandler = {
+    set(obj: Filter, prop: keyof Filter, value: any) {
+        obj[prop] = value;
+        const pathname = window.location.pathname;
+        const query = `${Object.entries(filter).map(([key, value]) => value ? `${key}=${Array.isArray(value) ? value.join(',') : value}` : "").filter(s => !!s).join("&")}`;
+        window.history.pushState({}, "", encodeURI(`${pathname}${query ? `?${query}` : ''}`));
+        return true;
+    }
+};
+
+let filter: Filter;
+
+window.addEventListener("DOMContentLoaded", () => {
+    const search = decodeURI(window.location.search);
+    if (search) {
+        const query = search.substring(1); // removes the "?" prefix
+        const properties = query.split("&");
+        const validKeys = ["name", "date", "type", "skills"] as (keyof Filter)[];
+        const initialFilter = {} as Filter;
+        for (const property of properties) {
+            const parts = property.split("=");
+            const key = parts[0] as keyof Filter;
+            const value = parts[1];
+            if (validKeys.includes(key)) {
+                if (key === "skills") {
+                    initialFilter[key] = value.split(",");
+                } else if (key === "date") {
+                    if (value === "oldest") {
+                        initialFilter[key] = value;
+                    }
+                } else {
+                    initialFilter[key] = value as any;
+                }
+            }
+        }
+        filter = new Proxy(initialFilter, filterHandler);
+        filterElements(true);
+        containerProjectsGrid.style.display = "block";
+    } else {
+        filter = new Proxy({} as Filter, filterHandler);
+    }
+});
 
 searchBar.addEventListener('input', () => {
     const search = searchBar.value.trim().toLowerCase();
@@ -53,10 +96,10 @@ filterTechno.addEventListener('change', () => {
         filter.skills = undefined;
     } else {
         if (filter.skills?.includes(value)) {
-            filter.skills!.splice(filter.skills!.indexOf(value), 1);
+            filter.skills = filter.skills.filter(s => s !== value);
         } else {
             if (filter.skills) {
-                filter.skills.push(value);
+                filter.skills = [...filter.skills, value];
             } else {
                 filter.skills = [value];
             }
@@ -84,7 +127,7 @@ function getProjectsElements(): HTMLDivElement[] {
 function removeSkill(name: string): void {
     const index = filter.skills!.indexOf(name);
     if (index >= 0) {
-        filter.skills!.splice(index, 1);
+        filter.skills = filter.skills!.filter((_, i) => i !== index);
         if (filter.skills!.length === 0) {
             filter.skills = undefined;
             filterTechno.value = "all";
@@ -137,10 +180,10 @@ function sortElements(): void {
         projectsElements.sort((a, b) => {
             const pa = projects.find(p => p.slug === a.getAttribute("data-slug"))!;
             const pb = projects.find(p => p.slug === b.getAttribute("data-slug"))!;
-            if (filter.date === "recent") {
-                return getProjectTimestamp(pb) - getProjectTimestamp(pa);
-            } else {
+            if (filter.date === "oldest") {
                 return getProjectTimestamp(pa) - getProjectTimestamp(pb);
+            } else {
+                return getProjectTimestamp(pb) - getProjectTimestamp(pa);
             }
         });
         for (const element of projectsElements) {

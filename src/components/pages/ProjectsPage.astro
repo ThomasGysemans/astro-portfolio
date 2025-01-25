@@ -11,6 +11,8 @@ import Medal from "@components/Medal.astro";
 import ProjectsGrid from "@components/ProjectsGrid.astro";
 import trans, { techSkills, schoolSkills } from "@trans";
 
+const hasInitialProjectFilter = !!Astro.url.search;
+const searchParams = Astro.url.searchParams;
 const lang = Astro.locals.lang;
 const [projects, skills] = await Promise.all([
     new Promise<FullProject[]>((resolve, reject) => presentProjects(lang).then(p => resolve(sortInitialProjects(p))).catch(reject)),
@@ -30,15 +32,15 @@ function sortInitialProjects(projects: FullProject[]): FullProject[] {
             <select id="filter-type" name="filter-type">
                 <option value="all" selected>{trans.common.all[lang]}</option>
                 {ProjectType.getAllTypes().map(p => (
-                    <option value={p.frenchName}>{p.getTranslatedName(lang)}</option>
+                    <option value={p.frenchName} selected={searchParams.get("type") === p.frenchName}>{p.getTranslatedName(lang)}</option>
                 ))}
             </select>
         </div>
         <div>
             <label for="filter-date">{trans.projects.orderDate[lang]}</label>
             <select id="filter-date" name="filter-date">
-                <option value="recent" selected>{trans.common.mostRecent[lang]}</option>
-                <option value="oldest">{trans.common.mostOld[lang]}</option>
+                <option value="recent" selected={!hasInitialProjectFilter || searchParams.get("date") !== "oldest"}>{trans.common.mostRecent[lang]}</option>
+                <option value="oldest" selected={searchParams.get("date") === "oldest"}>{trans.common.mostOld[lang]}</option>
             </select>
         </div>
         <div>
@@ -63,7 +65,9 @@ function sortInitialProjects(projects: FullProject[]): FullProject[] {
         <p class="max-w-96 text-xs">{trans.projects.filteringSkills[lang]}</p>
         <div class="flex flex-wrap" />
     </div>
-    <ProjectsGrid {projects} id="projects-container" />
+    <div class={hasInitialProjectFilter ? "hidden" : ""} id="container-projects-grid">
+        <ProjectsGrid {projects} id="projects-container" />
+    </div>
     <div id="no-project-container" class="flex flex-col items-center justify-center w-full px-main space-y-6" style="display: none;">
         <img src="/logos/black-hole.svg" alt={trans.common.blackhole[lang]} class="w-80" loading="lazy" />
         <p class="text-center text-lg max-w-64">{trans.projects.noProjectFound[lang]}</p>
