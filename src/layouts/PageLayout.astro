@@ -7,6 +7,24 @@ interface Props {
 
 const { title } = Astro.props;
 const lang = Astro.locals.lang;
+const og = {
+    title: {
+        "fr": "Portfolio de Thomas Gysemans - webmaster et développeur d'applications",
+        "en": "Portfolio of Thomas Gysemans - webmaster and app developer",
+    },
+    locale: {
+        "fr": "fr_FR",
+        "en": "en_US",
+    },
+    site_name: {
+        "fr": "Portfolio de Thomas Gysemans",
+        "en": "Portfolio of Thomas Gysemans",
+    },
+    description: {
+        "fr": "Je suis développeur d'applications et de sites internet et je présente ici mes compétences et mes anciens projets.",
+        "en": "I am an application and website developer and I present here my skills and my past projects.",
+    },
+} satisfies Record<string, Record<App.LangCode, string>>;
 ---
 
 <!DOCTYPE html>
@@ -20,6 +38,21 @@ const lang = Astro.locals.lang;
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap">
         <title>{title}</title>
+
+        <meta property="og:title" content={og.title[lang]}>
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://thomasgysemans.dev">
+        <!-- <meta property="og:image" content="https://thomasgysemans.dev/og_image.png">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:alt" content="Portfolio">
+        <meta property="og:image:width" content="958">
+        <meta property="og:image:height" content="992"> -->
+        <meta property="og:locale" content={og.locale[lang]}>
+        <meta property="og:site_name" content={og.site_name[lang]}>
+        <meta property="og:description" content={og.description[lang]}>
+        <meta name="description" content={og.description[lang]}>
+        <meta name="keywords" content="portfolio, Thomas Gysemans, développeur, développeur web, développeur d'applications, webmaster, back-end, backend, frontend, front-end, designer">
+
     </head>
     <body class="overflow-x-hidden">
         <slot />
