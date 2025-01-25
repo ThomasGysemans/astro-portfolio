@@ -78,6 +78,7 @@ const trans = {
         "illustratingProject": text("Illustration du projet", "Illustration of the project"),
         "illustrationNumber": text("Illustration numéro", "Illustration number"),
         "ofProject": text("du projet", "of project"),
+        "teamOf": text("Équipe de", "Team of"),
     },
 } satisfies Record<string, Record<string, Text>>;
 
