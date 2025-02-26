@@ -8,7 +8,9 @@ const lang = Astro.locals.lang;
 ---
 
 <section class="relative z-0 -top-24 overflow-x-hidden flex flex-col justify-between h-full" id="space-section">
-    <img src="/space-background-top.svg" class="select-none pointer-events-none w-full relative -bottom-2 -z-10" alt="">
+    <svg viewBox="0 0 1280 388" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full relative -z-10 -bottom-1">
+        <path d="M0 272.821C0 272.821 307.356 369.946 582.518 225.76C705.681 161.222 1104.18 -95.6945 1287.78 38.0175C1288.28 38.3839 1287.78 272.821 1287.78 272.821V388C1287.78 388 1238.56 388 959.293 388C820.454 388 0 388 0 388V272.821Z" fill="#030F20"/>
+    </svg>
     <div class="flex flex-col space-y-8 lg:space-y-0 lg:flex-row w-full h-full bg-primary-darker py-32 relative" id="space-section-article">
         <article class="max-w-[100%] sm:max-w-[70%] lg:max-w-[50%] min-w-[250px] h-auto px-main space-y-8 bg-primary-darker">
             <p class="text-white leading-6 xl:leading-9 2xl:leading-10 text-xs md:text-sm xl:text-xl">{trans.homepage.spacesection[lang]}</p>
@@ -20,7 +22,9 @@ const lang = Astro.locals.lang;
         </article>
         <SpaceSectionTrailer />
     </div>
-    <img src="/space-background-bottom.svg" class="select-none pointer-events-none w-full relative -z-10" alt="">
+    <svg viewBox="0 0 1280 226" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full relative -z-10 bottom-1">
+        <path d="M0 0C0 0 294 0 569 0C707.351 0 1063.5 0 1280 0V54.4786V226C1280 226 1225.58 54.4786 948 54.4786C810 54.4786 0 54.4786 0 54.4786V0Z" fill="#030F20"/>
+    </svg>
 </section>
 
 <script type="module">
