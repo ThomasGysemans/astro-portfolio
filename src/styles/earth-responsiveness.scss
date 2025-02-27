@@ -1,0 +1,38 @@
+@media (max-width: 500px) {
+    .earth-container {
+        transform: scale(.85);
+        position: relative;
+        bottom: 60px;
+    }
+
+    .resolutions {
+        display: none;
+    }
+}
+
+@media (max-width: 415px) {
+    .dialog > p { font-size: 0.75rem; }
+
+    .earth-container {
+        transform: scale(.75);
+        position: relative;
+        right: -20px;
+    }
+}
+
+@media (max-width: 370px) {
+    .earth-container {
+        right: -30px;
+    }
+}
+
+@media (max-width: 350px) {
+    .earth-container {
+        transform: scale(.7);
+        right: -50px;
+    }
+}
+
+@media (max-width: 320px) {
+    .earth-container { right: -70px; }
+}

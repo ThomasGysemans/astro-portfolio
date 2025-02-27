@@ -1,4 +1,6 @@
 ---
+import "@styles/earth-responsiveness.scss";
+
 import { Icon } from "astro-icon/components";
 import { presentProjects } from "@db/projects";
 import { getRelativeLocaleUrl } from "astro:i18n";
@@ -9,6 +11,7 @@ import MainLayout from "@layouts/MainLayout.astro";
 import AboutMe from "@components/AboutMe.astro";
 import Button from "@components/Button.astro";
 import trans from "@trans";
+import EarthDialog from "@components/svelte/EarthDialog.svelte";
 
 const lang = Astro.locals.lang;
 const projects = await presentProjects(lang, 3);
@@ -28,6 +31,12 @@ const projects = await presentProjects(lang, 3);
                 <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" title={trans.common.mygithubaccount[lang]} href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
                 <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" title={trans.common.mylinkedinaccount[lang]} href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
             </div>
+        </div>
+        <div class="earth-dialog-container hidden">
+            <EarthDialog
+                resolution="2k"
+                lang={lang}
+            />
         </div>
         <div class="absolute z-10 top-12 2xl:top-32 right-0 planet-container max-md:flex max-md:justify-end">
             <div id="earth-loading-replacement" class="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
@@ -86,6 +95,10 @@ const projects = await presentProjects(lang, 3);
 </MainLayout>
 
 <style lang="scss">
+    .earth-dialog-container {
+        @media (max-width: 500px) { display: contents; }
+    }
+
     .planet-container {
         @media (max-width: 1024px) { transform: scale(.8); top: -4px; }
         @media (max-width: 900px) { transform: scale(.75); top: -40px; right: -60px; }
@@ -100,6 +113,10 @@ const projects = await presentProjects(lang, 3);
 
         @media (max-width: 550px) {
             left: 50px;
+        }
+
+        @media (max-width: 500px) {
+            margin-top: 0;
         }
     }
 </style>

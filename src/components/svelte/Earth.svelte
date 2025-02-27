@@ -2,8 +2,8 @@
     import { T, Canvas } from "@threlte/core";
     import { OrbitControls } from "@threlte/extras";
     import Grabbable from "@components/svelte/Grabbable.svelte";
+    import EarthDialog from "@components/svelte/EarthDialog.svelte";
     import Planet from "./Planet.svelte";
-    import trans from "@trans";
 
     export let lang: App.LangCode;
 
@@ -21,16 +21,12 @@
     };
 </script>
 
-<div class="dialog bg-primary max-w-96 py-2 px-3 rounded-md absolute -top-[12%] 2xl:-top-[32%] -left-[20%] sm:-left-[15%] md:-top-[14%] xl:-top-[16%]">
-    <div class="dialog-triangle absolute -bottom-[10px] xl:-bottom-[20px] right-12 w-0 h-0 border-l-[15px] border-l-transparent border-t-[20px] border-t-primary border-r-[15px] border-r-transparent" />
-    <p class="text-white font-light text-sm xl:text-base">{@html trans.homepage.dialog[lang]}</p>
-    <div class="resolutions absolute -bottom-10 left-0 text-white space-x-2 text-xs">
-        {#each ['2k', '8k'] as r (r)}
-            <button type="button" class="bg-primary rounded-sm py-1 px-2 {res === r ? 'opacity-100' : 'opacity-50 hover:opacity-70'}" on:click={() => res = r}>
-                {r.toUpperCase()}
-            </button>
-        {/each}
-    </div>
+<div class="container-dialog contents">
+    <EarthDialog
+        lang={lang}
+        resolution={res}
+        onResolutionChanged={(r) => res = r}
+    />
 </div>
 
 <div class="earth-container h-full 2xl:scale-125">
@@ -82,43 +78,9 @@
 </div>
 
 <style lang="scss">
-    // Responsiveness of the dialog box & the earth requires some highly precise adjustments.
-
     @media (max-width: 500px) {
-        .earth-container { transform: scale(.85); }
-        .dialog-triangle { right: 80px; }
-    }
-    
-    @media (max-width: 435px) {
-        .dialog { left: -25%; }
-    }
-
-    @media (max-width: 415px) {
-        .dialog > p { font-size: 0.75rem; }
-        .dialog { left: -30%; }
-
-        .earth-container {
-            transform: scale(.75);
-            position: relative;
-            right: -20px;
+        .container-dialog {
+            display: none;
         }
-    }
-
-    @media (max-width: 370px) {
-        .earth-container {
-            right: -30px;
-        }
-    }
-
-    @media (max-width: 350px) {
-        .earth-container {
-            transform: scale(.7);
-            right: -50px;
-        }
-    }
-
-    @media (max-width: 320px) {
-        .earth-container { right: -70px; }
-        .dialog { left: -40%; }
     }
 </style>
