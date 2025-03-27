@@ -12,7 +12,7 @@
     <div class="dialog-triangle absolute -bottom-[10px] xl:-bottom-[20px] {isUsingSpecialFormat ? 'right-12' : 'right-[50%] translate-x-[50%]'} w-0 h-0 border-l-[15px] border-l-transparent border-t-[20px] border-t-primary border-r-[15px] border-r-transparent" />
     <p class="text-white font-light {isUsingSpecialFormat ? "text-sm" : "text-xs"} xl:text-base">{@html trans.homepage.dialog[lang]}</p>
     {#if isUsingSpecialFormat}
-        <div class="resolutions absolute -bottom-10 left-0 text-white space-x-2 text-xs">
+        <div class="resolutions absolute -bottom-10 left-0 text-white space-x-2 text-xs z-20">
             {#each ['2k', '8k'] as r (r)}
                 <button type="button" class="bg-primary rounded-sm py-1 px-2 {resolution === r ? 'opacity-100' : 'opacity-50 hover:opacity-70'}" on:click={() => onResolutionChanged?.(r)}>
                     {r.toUpperCase()}
