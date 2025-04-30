@@ -5,8 +5,12 @@ interface Props {
     title: string;
 }
 
+const ALL_LANGUAGES = ["fr", "en"];
+const DOMAIN = "https://thomasgysemans.dev";
+
 const { title } = Astro.props;
 const lang = Astro.locals.lang;
+const otherLangs = ALL_LANGUAGES.filter(l => l !== lang);
 const og = {
     title: {
         "fr": "Portfolio de Thomas Gysemans - webmaster et développeur d'applications",
@@ -25,6 +29,13 @@ const og = {
         "en": "I am an application and website developer and I present here my skills and my past projects.",
     },
 } satisfies Record<string, Record<App.LangCode, string>>;
+
+const fullPathname = Astro.url.pathname.replace(/\/{2,}/g, "/");
+const langIncludedInPathname = ALL_LANGUAGES.map(l => `/${l}`).some(l => fullPathname.startsWith(l));
+const fullPathnameWithoutLeadingSlash = fullPathname.substring(1);
+const langlessPathname = langIncludedInPathname
+    ? (fullPathnameWithoutLeadingSlash.indexOf('/') === -1 ? "" : fullPathnameWithoutLeadingSlash.substring(fullPathnameWithoutLeadingSlash.indexOf('/') + 1))
+    : fullPathnameWithoutLeadingSlash;
 ---
 
 <!DOCTYPE html>
@@ -41,7 +52,7 @@ const og = {
 
         <meta property="og:title" content={og.title[lang]}>
         <meta property="og:type" content="website">
-        <meta property="og:url" content="https://thomasgysemans.dev">
+        <meta property="og:url" content={DOMAIN}>
         <!-- <meta property="og:image" content="https://thomasgysemans.dev/og_image.png">
         <meta property="og:image:type" content="image/png">
         <meta property="og:image:alt" content="Portfolio">
@@ -51,8 +62,14 @@ const og = {
         <meta property="og:site_name" content={og.site_name[lang]}>
         <meta property="og:description" content={og.description[lang]}>
         <meta name="description" content={og.description[lang]}>
-        <meta name="keywords" content="portfolio, Thomas Gysemans, développeur, développeur web, développeur d'applications, webmaster, back-end, backend, frontend, front-end, designer">
+        <meta name="keywords" content="portfolio, Thomas Gysemans, développeur, développeur web, développeur d'applications, web developer, mobile developer, developer, webmaster, back-end, backend, frontend, front-end, designer">
 
+        <meta http-equiv="content-language" content={lang} />
+
+        {otherLangs.map(l => {
+            const href = l === "fr" ? `${DOMAIN}/${langlessPathname}` : `${DOMAIN}/${l}/${langlessPathname}`;
+            return <link rel="alternate" hreflang={l} {href} />
+        })}
     </head>
     <body class="overflow-x-hidden">
         <slot />

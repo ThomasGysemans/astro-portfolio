@@ -2,8 +2,8 @@ import { defineMiddleware, sequence } from "astro:middleware";
 import { middleware } from "astro:i18n";
 
 export const userMiddleware = defineMiddleware((context, next) => {
-    const langCookie = context.cookies.get("lang") ;
-    const url = context.url.pathname;
+    const langCookie = context.cookies.get("lang");
+    const url = context.url.pathname.replace(/\/{2,}/g, "/");
 
     if (langCookie) {
         context.locals.lang = langCookie.value as App.LangCode;
@@ -31,4 +31,4 @@ export const onRequest = sequence(
         prefixDefaultLocale: false,
         fallbackType: "redirect",
     }),
-  )
+)
