@@ -77,6 +77,7 @@ export function mockProject(skillsPool?: Technology[]): FullProject {
         github: "ThomasGysemans/SpaceVisitor",
         link: "https://spacevisitor.sciencesky.fr/",
         showcase: Math.random() < 0.3,
+        interesting: true,
         languages,
     };
 }
