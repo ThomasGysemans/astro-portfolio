@@ -22,9 +22,22 @@ const [projects, skills] = await Promise.all([
 function sortInitialProjects(projects: FullProject[]): FullProject[] {
     return projects.toSorted((a, b) => getProjectTimestamp(b) - getProjectTimestamp(a));
 }
+
+const interestingProjects = projects.filter((p) => p.interesting);
 ---
 
 <MainLayout title={trans.projects.title[lang]}>
+    <h1 class="text-2xl lg:text-4xl text-center mt-32 mb-12 md:mb-32">Mes projets</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-main">
+        {interestingProjects.map((project) => {
+            const isMobile = project.type === ProjectType.APPLICATION.frenchName;
+            return (
+                <a href={`/projects/${project.slug}`} class={`block w-full h-auto border transition-transform hover:scale-105 cursor-pointer ${isMobile ? "bg-black flex items-center justify-center" : ""}`}>
+                    <img src={getImageURL(project, project.pictures[0])} class={`w-full h-full ${isMobile ? "object-contain bg-black h-60" : "object-cover"}`} />
+                </a>
+            );
+        })}
+    </div>
     <h1 class="text-2xl lg:text-4xl text-center mt-32">{trans.projects.myprojects[lang]}</h1>
     <div class="w-full px-main mt-20 mb-5 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20 max-lg:place-content-center text-sm lg:text-base">
         <div>

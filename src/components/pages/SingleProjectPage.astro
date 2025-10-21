@@ -87,6 +87,7 @@ function getLinkPresentation(): string {
                     src={getImageURL(project, p)}
                     alt={`${trans.singleProject.illustratingProject[lang]} ${project.name}`}
                     interactive={useCarousel}
+                    borderless={project.type === ProjectType.APPLICATION.frenchName}
                 />
             ))}
         </div>

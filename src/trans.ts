@@ -60,7 +60,7 @@ const trans = {
     },
     "projects": {
         "title": text("Portfolio de Thomas Gysemans - Mes projets", "Portfolio of Thomas Gysemans - My projects"),
-        "myprojects": text("Mes projets", "My projects"),
+        "myprojects": text("Tous mes projets", "All my projects"),
         "filterType": text("Filtrer selon le type", "Filter type"),
         "filterSkills": text("Filtrer selon les technologies", "Filter skills"),
         "orderDate": text("Trier selon la date", "Order based on date"),
