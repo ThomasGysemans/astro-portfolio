@@ -7,6 +7,7 @@ const trans = {
     "common": {
         "title": text("Portfolio de Thomas Gysemans", "Portfolio of Thomas Gysemans"),
         "knowmore": text("En savoir plus", "Learn more"),
+        "seemore": text("En voir plus", "See more"),
         "contact": text("Contact"),
         "status": text("Statut", "Status"),
         "mygithubaccount": text("Mon compte GitHub", "My GitHub account"),
@@ -30,7 +31,7 @@ const trans = {
         "webdev": text("Développeur web", "Web developer"),
         "appdev": text("Développeur d'applications", "Developer of mobile applications"),
         "designer": text("UI/UX Designer"),
-        "recentprojects": text("Mes projets récents", "My recent projects"),
+        "recentprojects": text("Mes projets", "My projects"),
         "aboutme": text("Quelques infos de<br>plus sur moi...", "Some additional<br>information on me..."),
         "mystudies": text("Mes études", "My studies"),
         "studies": text("J’ai appris énormément en autodidacte mais mes études à l’IUT A de Villeneuve-d’Ascq m’ont appris beaucoup sur le travail en équipe et ont énormément renforcé mes compétences en ce qui concerne les bases de données et <a href='https://sql.sh/' target='_blank' class='underline'>SQL</a>.", "I learned a lot on my own, but my studies at IUT A in Lille taught me a lot about teamwork and greatly strengthened my skills in databases and <a href='https://sql.sh/' target='_blank' class='underline'>SQL</a>."),

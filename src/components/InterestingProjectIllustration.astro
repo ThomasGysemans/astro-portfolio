@@ -1,0 +1,22 @@
+---
+import type { FullProject } from "@db/models";
+import { ProjectType } from "@lib/ProjectType";
+import { getImageURL } from "@db/projects";
+
+interface Props {
+    project: FullProject;
+}
+
+const { project } = Astro.props;
+const isMobile = project.type === ProjectType.APPLICATION.frenchName;
+---
+
+<a
+    href={`/projects/${project.slug}`}
+    class={`block w-full h-auto border transition-transform hover:scale-105 cursor-pointer ${isMobile ? "bg-black flex items-center justify-center" : ""}`}
+>
+    <img
+        src={getImageURL(project, project.pictures[0])}
+        class={`w-full h-full ${isMobile ? "object-contain bg-black h-60" : "object-cover"}`}
+    />
+</a>
