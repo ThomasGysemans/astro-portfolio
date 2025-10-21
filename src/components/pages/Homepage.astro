@@ -6,12 +6,12 @@ import { presentProjects } from "@db/projects";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import SpaceSection from "@components/SpaceSection.astro";
 import ProjectsGrid from "@components/ProjectsGrid.astro";
+import EarthDialog from "@components/svelte/EarthDialog.svelte";
 import Earth from "@components/svelte/Earth.svelte";
 import MainLayout from "@layouts/MainLayout.astro";
 import AboutMe from "@components/AboutMe.astro";
 import Button from "@components/Button.astro";
 import trans from "@trans";
-import EarthDialog from "@components/svelte/EarthDialog.svelte";
 
 const lang = Astro.locals.lang;
 const projects = await presentProjects(lang, 3);
@@ -26,10 +26,16 @@ const projects = await presentProjects(lang, 3);
                 <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.appdev[lang]}</strong><Icon name="smartphone" /></li>
                 <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.designer[lang]}</strong><Icon name="flower-2" /></li>
             </ul>
-            <div class="flex items-center space-x-6">
-                <Button as="a" href={getRelativeLocaleUrl(lang, "/projects")}>{trans.common.knowmore[lang]}</Button>
-                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" title={trans.common.mygithubaccount[lang]} href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
-                <a class="text-primary text-lg xl:text-2xl opacity-80 hover:opacity-100 transition-opacity" title={trans.common.mylinkedinaccount[lang]} href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
+            <p id="freelance-glow">{trans.homepage.infreelance[lang]}</p>
+            <div class="flex flex-col space-y-4 w-fit">
+                <div class="flex flex-col md:flex-row md:items-center md:space-x-6 max-md:space-y-3">
+                    <Button as="a" href={getRelativeLocaleUrl(lang, "/projects")}>{trans.common.knowmore[lang]}</Button>
+                    <Button as="a" href="https://malt.fr/profile/thomasgysemans">{trans.common.contact[lang]}</Button>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a class="text-primary text-lg xl:text-2xl opacity-70 hover:opacity-100 transition-opacity" title={trans.common.mygithubaccount[lang]} href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
+                    <a class="text-primary text-lg xl:text-2xl opacity-70 hover:opacity-100 transition-opacity" title={trans.common.mylinkedinaccount[lang]} href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
+                </div>
             </div>
         </div>
         <div class="earth-dialog-container hidden">
@@ -117,6 +123,30 @@ const projects = await presentProjects(lang, 3);
 
         @media (max-width: 500px) {
             margin-top: 0;
+        }
+    }
+    
+    $glow_ending_color: #0091ff;
+    $glow_starting_color: #ff005e;
+    $glow_text_shadow: 0 0 5px $glow_starting_color, 0 0 10px $glow_starting_color, 0 0 20px $glow_starting_color, 0 0 40px $glow_starting_color, 0 0 80px $glow_starting_color;
+
+    #freelance-glow {
+        font-size: 2rem;
+        color: #fff;
+        text-shadow: $glow_text_shadow;
+        animation: glow 1.5s infinite alternate;
+
+        @media (max-width: 768px) {
+            font-size: 1rem;
+        }
+    }
+
+    @keyframes glow {
+        0% {
+            text-shadow: $glow_text_shadow;
+        }
+        100% {
+            text-shadow: 0 0 10px $glow_ending_color, 0 0 20px $glow_ending_color, 0 0 40px $glow_ending_color, 0 0 80px $glow_ending_color, 0 0 160px $glow_ending_color;
         }
     }
 </style>

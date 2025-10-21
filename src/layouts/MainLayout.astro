@@ -40,7 +40,7 @@ const isEn = lang === "en";
                         <Icon name="french-flag" class={`text-xl lg:text-3xl ${isEn ? "grayscale group-hover:grayscale-0" : ""}`} />
                         <span class="font-bold">FR</span>
                     </a>
-                    <a href={`/en${pathname}`} class={`lang-link ${isEn ? "active" : "group"}`}>
+                    <a href={`/en${pathname.replace("/en", "")}`} class={`lang-link ${isEn ? "active" : "group"}`}>
                         <Icon name="uk-flag" class={`text-xl lg:text-3xl ${isEn ? "" : "grayscale group-hover:grayscale-0"}`} />
                         <span class="font-bold">EN</span>
                     </a>

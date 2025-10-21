@@ -21,6 +21,7 @@ export type FullProject = {
     link?: string,
     showcase: boolean,
     showcaseDescription?: string | null,
+    interesting: boolean,
 }
 
 export type PBCollection<T> = {
@@ -63,6 +64,7 @@ export type PBProject = PBCollection<{
     technologies: string[],
     french: string,
     english: string,
+    interesting: boolean,
     expand: {
         technologies?: PBCollection<Technology>[],
         french?: ProjectText,

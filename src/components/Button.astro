@@ -6,6 +6,6 @@ type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }>;
 const { as: Tag, ...props } = Astro.props;
 ---
 
-<Tag class="bg-primary hover:bg-primary-dark transition-all rounded-md block text-white text-xs xl:text-lg py-4 px-8" {...props}>
+<Tag class="bg-primary hover:bg-primary-dark transition-all rounded-md block text-white text-xs xl:text-lg py-4 px-8 text-center" {...props}>
     <slot />
 </Tag>
