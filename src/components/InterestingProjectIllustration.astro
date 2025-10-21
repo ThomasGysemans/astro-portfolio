@@ -17,6 +17,6 @@ const isMobile = project.type === ProjectType.APPLICATION.frenchName;
 >
     <img
         src={getImageURL(project, project.pictures[0])}
-        class={`w-full h-full ${isMobile ? "object-contain bg-black h-60" : "object-cover"}`}
+        class={`w-full ${isMobile ? "object-contain bg-black h-60" : "h-full object-cover"}`}
     />
 </a>

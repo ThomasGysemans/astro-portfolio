@@ -28,7 +28,7 @@ const interestingProjects = projects.filter((p) => p.interesting);
 ---
 
 <MainLayout title={trans.projects.title[lang]}>
-    <h1 class="text-2xl lg:text-4xl text-center mt-32 mb-12 md:mb-32">Mes projets</h1>
+    <h1 class="text-2xl lg:text-4xl text-center mt-32 mb-12 md:mb-32">{trans.projects.myprojects[lang]}</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-main">
         {interestingProjects.map((project) => {
             return (
