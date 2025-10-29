@@ -1,17 +1,25 @@
 ---
 import type { FullProject } from '@db/models';
 import InterestingProjectIllustration from './InterestingProjectIllustration.astro';
+import Project from './Project.astro';
 
 interface Props {
     id?: string,
     centered?: boolean,
     projects: FullProject[],
+    useInterestingProjects?: boolean,
 }
 
-const { projects, id, centered } = Astro.props;
+const { projects, id, centered, useInterestingProjects = false } = Astro.props;
 const centeredClass = centered ? "place-content-center" : "max-lg:place-content-center";
 ---
 
 <div {id} class={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 ${centeredClass} px-main my-12`}>
-    {projects.map((p) => <InterestingProjectIllustration project={p} />)}
+    {projects.map((p) => {
+        if (useInterestingProjects) {
+            return (<InterestingProjectIllustration project={p} />);
+        } else {
+            return (<Project project={p} />);
+        }
+    })}
 </div>

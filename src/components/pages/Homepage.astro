@@ -14,7 +14,7 @@ import Button from "@components/Button.astro";
 import trans from "@trans";
 
 const lang = Astro.locals.lang;
-const projects = await presentProjects(lang, 6);
+const projects = await presentProjects(lang, true, 6);
 ---
 
 <MainLayout title={trans.common.title[lang]} nav="px-20 xl:px-main">
@@ -59,7 +59,7 @@ const projects = await presentProjects(lang, 6);
     <SpaceSection />
     <section class="space-y-20 pb-40">
         <h2 class="font-bold text-primary text-2xl lg:text-3xl text-center">{trans.homepage.recentprojects[lang]}</h2>
-        <ProjectsGrid {projects} centered />
+        <ProjectsGrid {projects} useInterestingProjects centered />
         <div class="flex justify-center">
             <Button as="a" href="/projects">{trans.common.seemore[lang]}</Button>
         </div>

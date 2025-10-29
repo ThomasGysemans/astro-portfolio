@@ -22,10 +22,10 @@ function mapPocketbaseToFullProject(project: PBProject): FullProject {
     };
 }
 
-export async function presentProjects(lang: App.LangCode, limit?: number): Promise<FullProject[]> {
+export async function presentProjects(lang: App.LangCode, interestingOnly: boolean, limit?: number): Promise<FullProject[]> {
     try {
         const opt: RecordListOptions = {
-            filter: "interesting=true",
+            filter: interestingOnly ? "interesting=true" : "",
             sort: "-updated",
             expand: `technologies,${getLangTable(lang)}`,
         };

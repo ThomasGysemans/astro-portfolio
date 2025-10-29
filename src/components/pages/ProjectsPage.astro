@@ -16,7 +16,7 @@ const hasInitialProjectFilter = !!Astro.url.search;
 const searchParams = Astro.url.searchParams;
 const lang = Astro.locals.lang;
 const [projects, skills] = await Promise.all([
-    new Promise<FullProject[]>((resolve, reject) => presentProjects(lang).then(p => resolve(sortInitialProjects(p))).catch(reject)),
+    new Promise<FullProject[]>((resolve, reject) => presentProjects(lang, false).then(p => resolve(sortInitialProjects(p))).catch(reject)),
     listSkills()
 ]);
 
