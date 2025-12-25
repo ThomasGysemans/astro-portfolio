@@ -61,6 +61,7 @@ const trans = {
     },
     "projects": {
         "title": text("Portfolio de Thomas Gysemans - Mes projets", "Portfolio of Thomas Gysemans - My projects"),
+        "featuredProjects": text("Projets mis en valeur", "Featured projects"),
         "myprojects": text("Tous mes projets", "All my projects"),
         "filterType": text("Filtrer selon le type", "Filter type"),
         "filterSkills": text("Filtrer selon les technologies", "Filter skills"),
