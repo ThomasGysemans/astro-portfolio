@@ -2,17 +2,20 @@
 import type { FullProject } from "@db/models";
 import { ProjectType } from "@lib/ProjectType";
 import { getImageURL } from "@db/projects";
+import { getRelativeLocaleUrl } from "astro:i18n";
 
 interface Props {
     project: FullProject;
 }
 
 const { project } = Astro.props;
+const lang = Astro.locals.lang;
 const isMobile = project.type === ProjectType.APPLICATION.frenchName;
+const projectHref = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
 ---
 
 <a
-    href={`/projects/${project.slug}`}
+    href={projectHref}
     class={`block w-full h-auto border transition-transform hover:scale-105 cursor-pointer ${isMobile ? "bg-black flex items-center justify-center" : ""}`}
 >
     <img
