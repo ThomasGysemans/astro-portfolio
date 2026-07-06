@@ -25,16 +25,18 @@
         resume: string,
     };
 
-    export let project: ProjectInfo;
-    export let media: Media[];
-    export let labels: Labels;
+    let { project, media, labels }: {
+        project: ProjectInfo,
+        media: Media[],
+        labels: Labels,
+    } = $props();
 
     const AUTOPLAY_DELAY = 5000;
 
-    let index = 0;
-    let paused = false;
+    let index = $state(0);
+    let paused = $state(false);
     let timer: ReturnType<typeof setInterval> | undefined;
-    let videos: (HTMLVideoElement | undefined)[] = [];
+    let videos = $state<(HTMLVideoElement | undefined)[]>([]);
 
     function startTimer() {
         clearInterval(timer);
@@ -54,16 +56,18 @@
     }
 
     // Only the visible video plays; the hidden ones are rewound.
-    $: for (let i = 0; i < videos.length; i++) {
-        const video = videos[i];
-        if (!video) continue;
-        if (i === index) {
-            video.play().catch(() => {});
-        } else {
-            video.pause();
-            video.currentTime = 0;
+    $effect(() => {
+        for (let i = 0; i < videos.length; i++) {
+            const video = videos[i];
+            if (!video) continue;
+            if (i === index) {
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+                video.currentTime = 0;
+            }
         }
-    }
+    });
 
     onMount(startTimer);
     onDestroy(() => clearInterval(timer));
@@ -113,13 +117,13 @@
         <button
             type="button"
             aria-label={labels.prevPicture}
-            on:click={() => goTo(index - 1)}
+            onclick={() => goTo(index - 1)}
             class="carousel-arrow left-4"
         >‹</button>
         <button
             type="button"
             aria-label={labels.nextPicture}
-            on:click={() => goTo(index + 1)}
+            onclick={() => goTo(index + 1)}
             class="carousel-arrow right-4"
         >›</button>
 
@@ -131,7 +135,7 @@
                         type="button"
                         aria-label="{labels.gotoPicture} {i + 1}"
                         aria-current={i === index ? "true" : undefined}
-                        on:click={() => goTo(i)}
+                        onclick={() => goTo(i)}
                         class="h-[7px] rounded-full transition-all {i === index ? 'w-[26px] bg-accent-strong' : 'w-2 bg-white/30 hover:bg-white/50'}"
                     />
                 {/each}
@@ -140,7 +144,7 @@
                 type="button"
                 aria-label={paused ? labels.resume : labels.pause}
                 title={paused ? labels.resume : labels.pause}
-                on:click={() => paused = !paused}
+                onclick={() => paused = !paused}
                 class="w-[30px] h-[30px] rounded-full bg-[rgba(3,15,32,.72)] border border-white/25 text-white flex items-center justify-center text-[11px] transition-colors hover:border-accent-strong"
             >{paused ? "▶" : "❚❚"}</button>
         </div>

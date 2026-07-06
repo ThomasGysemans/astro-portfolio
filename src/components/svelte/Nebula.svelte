@@ -41,7 +41,7 @@
     const cloudGeo = new PlaneGeometry(500, 500);
     const cloudParticles: Mesh[] = [];
 
-    $: {
+    $effect(() => {
         if (cloudParticles.length === 0 && $smoke) {
             const cloudMat = new MeshLambertMaterial({
                 transparent: true,
@@ -65,7 +65,7 @@
         if ($stars) {
             setupEffectComposer($camera as PerspectiveCamera, $stars);
         }
-    }
+    });
 
     useTask(() => {
         cloudParticles.forEach(p => {

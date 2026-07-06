@@ -49,32 +49,49 @@
         techSkillsIntro: string,
     };
 
-    export let projects: ExplorerProject[];
-    export let pills: Pill[];
-    export let techColors: Record<string, string>;
-    export let skillHighlights: string[];
-    export let skillGroups: SkillGroup[];
-    export let labels: Labels;
-    export let initialFilter = "featured";
-    export let initialTech: string | null = null;
-    export let initialQuery = "";
+    interface Props {
+        projects: ExplorerProject[];
+        pills: Pill[];
+        techColors: Record<string, string>;
+        skillHighlights: string[];
+        skillGroups: SkillGroup[];
+        labels: Labels;
+        initialFilter?: string;
+        initialTech?: string | null;
+        initialQuery?: string;
+    }
 
-    let filter = initialFilter;
-    let tech = initialTech;
-    let query = initialQuery;
-    let sort: "recent" | "oldest" = "recent";
+    let {
+        projects,
+        pills,
+        techColors,
+        skillHighlights,
+        skillGroups,
+        labels,
+        initialFilter = "featured",
+        initialTech = null,
+        initialQuery = "",
+    }: Props = $props();
 
-    $: q = query.trim().toLowerCase();
-    $: filtered = projects
-        .filter(p =>
-            (filter === "all" || (filter === "featured" ? p.featured : p.category === filter)) &&
-            (!tech || p.techs.some(t => t.n === tech)) &&
-            (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)))
-        .sort((a, b) => sort === "oldest" ? a.year - b.year : b.year - a.year);
-    $: techDot = tech ? (techColors[tech] ?? "var(--accent)") : "var(--accent)";
+    let filter = $state(initialFilter);
+    let tech = $state<string | null>(initialTech);
+    let query = $state(initialQuery);
+    let sort = $state<"recent" | "oldest">("recent");
+
+    let q = $derived(query.trim().toLowerCase());
+    let filtered = $derived(
+        projects
+            .filter(p =>
+                (filter === "all" || (filter === "featured" ? p.featured : p.category === filter)) &&
+                (!tech || p.techs.some(t => t.n === tech)) &&
+                (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)))
+            .sort((a, b) => sort === "oldest" ? a.year - b.year : b.year - a.year)
+    );
+    let techDot = $derived(tech ? (techColors[tech] ?? "var(--accent)") : "var(--accent)");
 
     // Keep the URL shareable without polluting the history.
-    $: if (typeof window !== "undefined") {
+    // `$effect` only runs in the browser, so no explicit `window` guard is needed.
+    $effect(() => {
         const params = new URLSearchParams();
         // "featured" is the default state: keep it out of the URL.
         if (filter !== "featured") params.set("filter", filter);
@@ -82,7 +99,7 @@
         if (q) params.set("q", q);
         const search = params.toString();
         history.replaceState(null, "", `${location.pathname}${search ? `?${search}` : ""}`);
-    }
+    });
 
     function pickTech(name: string) {
         tech = name;
@@ -97,7 +114,7 @@
         <button
             type="button"
             aria-pressed={filter === pill.key}
-            on:click={() => filter = pill.key}
+            onclick={() => filter = pill.key}
             class="inline-flex items-center gap-[7px] text-[11.5px] font-bold rounded-full py-2 px-3.5 whitespace-nowrap border transition-colors {filter === pill.key ? 'bg-btn text-btn-text border-btn' : 'bg-chip text-chip-text border-edge-strong hover:border-accent'}"
         >
             <span class="w-[7px] h-[7px] rounded-full" style="background:{pill.dot}" />
@@ -118,7 +135,7 @@
     />
     <button
         type="button"
-        on:click={() => sort = sort === "oldest" ? "recent" : "oldest"}
+        onclick={() => sort = sort === "oldest" ? "recent" : "oldest"}
         class="text-[11.5px] font-semibold text-chip-text border border-edge-strong rounded-lg py-[7px] px-3 inline-flex items-center gap-1.5 whitespace-nowrap hover:border-accent transition-colors max-sm:hidden"
     >
         {sort === "oldest" ? labels.sortOldest : labels.sortNewest}
@@ -134,7 +151,7 @@
         <button
             type="button"
             aria-label="{labels.removeTechFilter} {tech}"
-            on:click={() => tech = null}
+            onclick={() => tech = null}
             class="inline-flex items-center gap-[7px] font-bold text-heading bg-chip border border-accent rounded-full py-1.5 px-3.5"
         >
             <span class="w-[7px] h-[7px] rounded-full" style="background:{techDot}" />
@@ -163,7 +180,7 @@
                     {#each p.techs as t (t.n)}
                         <button
                             type="button"
-                            on:click={() => pickTech(t.n)}
+                            onclick={() => pickTech(t.n)}
                             class="inline-flex items-center gap-[5px] text-[10.5px] font-semibold text-chip-text border border-edge-strong rounded-full py-1 px-2.5 hover:border-accent hover:text-heading transition-colors"
                         >
                             <span class="w-1.5 h-1.5 rounded-full" style="background:{t.c}" />
@@ -189,7 +206,7 @@
     <div class="flex justify-center px-page pb-12">
         <button
             type="button"
-            on:click={() => { filter = "all"; tech = null; query = ""; }}
+            onclick={() => { filter = "all"; tech = null; query = ""; }}
             class="btn-outline text-[12.5px] py-[11px] px-6"
         >{labels.showAll}</button>
     </div>
@@ -214,7 +231,7 @@
                 <div class="flex flex-col gap-[11px]">
                     {#each group.items as item (item.n)}
                         {#if item.count > 0}
-                            <button type="button" on:click={() => pickTech(item.n)} class="flex items-center gap-[9px] text-[12.5px] font-semibold text-heading hover:text-accent transition-colors text-left">
+                            <button type="button" onclick={() => pickTech(item.n)} class="flex items-center gap-[9px] text-[12.5px] font-semibold text-heading hover:text-accent transition-colors text-left">
                                 <span class="w-2 h-2 rounded-full shrink-0" style="background:{item.c}" />
                                 {item.n}
                                 <span class="ml-auto text-[10.5px] font-semibold text-accent">{item.countLabel}</span>

@@ -3,7 +3,7 @@
     // Fixed dark palette on purpose: the showcase is its own universe,
     // independent from the light/dark theme of the rest of the site.
     import { onDestroy, onMount } from "svelte";
-    import { spring } from "svelte/motion";
+    import { Spring } from "svelte/motion";
     import { Canvas, T } from "@threlte/core";
     import Nebula from "./Nebula.svelte";
 
@@ -26,24 +26,26 @@
         next: string,
     };
 
-    export let items: ShowcaseItem[];
-    export let labels: Labels;
-    export let exitHref: string;
+    let { items, labels, exitHref }: {
+        items: ShowcaseItem[],
+        labels: Labels,
+        exitHref: string,
+    } = $props();
 
-    let index = 0;
+    let index = $state(0);
 
     // The nebula canvas only makes sense on the client, and is skipped
     // entirely for users who prefer reduced motion (the static stars
     // background below remains as the backdrop).
-    let showNebula = false;
+    let showNebula = $state(false);
 
     // Tint of the nebula clouds, re-randomized on each navigation.
-    const ri = spring(0);
-    const gi = spring(0);
-    const bi = spring(0);
+    const ri = new Spring(0);
+    const gi = new Spring(0);
+    const bi = new Spring(0);
 
-    $: current = items[index];
-    $: counter = `${pad(index + 1)} / ${pad(items.length)}`;
+    let current = $derived(items[index]);
+    let counter = $derived(`${pad(index + 1)} / ${pad(items.length)}`);
 
     function pad(n: number): string {
         return n < 10 ? `0${n}` : `${n}`;
@@ -96,9 +98,9 @@
                     position={[0, 0, 1]}
                     rotation={[1.16, -0.12, 0.27]}
                 />
-                <T.PointLight args={[0xff0000, $ri, 0, 0]} position={[-0.8, 1.5, -0.5]} />
-                <T.PointLight args={[0x00ff00, $gi, 0, 0]} position={[-0.8, 1.5, -0.5]} />
-                <T.PointLight args={[0x0000ff, $bi, 0, 0]} position={[-0.8, 1.5, -0.5]} />
+                <T.PointLight args={[0xff0000, ri.current, 0, 0]} position={[-0.8, 1.5, -0.5]} />
+                <T.PointLight args={[0x00ff00, gi.current, 0, 0]} position={[-0.8, 1.5, -0.5]} />
+                <T.PointLight args={[0x0000ff, bi.current, 0, 0]} position={[-0.8, 1.5, -0.5]} />
                 <Nebula />
             </Canvas>
         </div>
@@ -119,7 +121,7 @@
                 <button
                     type="button"
                     aria-current={i === index ? "true" : undefined}
-                    on:click={() => select(i)}
+                    onclick={() => select(i)}
                     class="flex items-center gap-2.5 text-[12.5px] py-[9px] px-3 rounded-[9px] border text-left transition-colors {i === index ? 'text-white font-bold bg-[rgba(154,209,212,.12)] border-[rgba(154,209,212,.35)]' : 'text-[#8fb4ba] border-transparent hover:text-white'}"
                 >
                     <span class="text-[9.5px] font-bold {i === index ? 'text-[#9ad1d4]' : 'text-[rgba(143,180,186,.6)]'}">{pad(i + 1)}</span>
@@ -154,8 +156,8 @@
             </div>
             <div class="flex gap-2">
                 <a href={current.href} class="flex-1 text-center bg-white text-night text-xs font-bold py-[11px] rounded-lg hover:brightness-90 transition-[filter]">{labels.learnMore}</a>
-                <button type="button" aria-label={labels.previous} on:click={() => go(-1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">‹</button>
-                <button type="button" aria-label={labels.next} on:click={() => go(1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">›</button>
+                <button type="button" aria-label={labels.previous} onclick={() => go(-1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">‹</button>
+                <button type="button" aria-label={labels.next} onclick={() => go(1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">›</button>
             </div>
         </div>
     {/key}
