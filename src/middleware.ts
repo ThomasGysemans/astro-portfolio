@@ -53,8 +53,8 @@ export const onRequest = sequence(
     userMiddleware,
     adminMiddleware,
     middleware({
-        redirectToDefaultLocale: true,
         prefixDefaultLocale: false,
+        redirectToDefaultLocale: false,
         fallbackType: "rewrite",
     }),
 )

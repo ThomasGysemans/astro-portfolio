@@ -21,7 +21,7 @@ There is no test suite or linter configured.
 
 ## Architecture
 
-Astro 4 in SSR mode (`output: "server"`, Vercel serverless) + Svelte 4 islands + Tailwind 3/SCSS. The design comes from the "Portfolio Prototype v2" Claude Design project.
+Astro 7 in SSR mode (`output: "server"`, Vercel serverless adapter imported from `@astrojs/vercel`) + Svelte 5 islands + Tailwind 4/SCSS. The design comes from the "Portfolio Prototype v2" Claude Design project.
 
 ### i18n (unusual setup — read before touching routing)
 

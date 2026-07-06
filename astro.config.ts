@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 import tailwindcss from "@tailwindcss/vite";
 import svelte from "@astrojs/svelte";
 import icon from "astro-icon";
@@ -27,13 +27,6 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       host: true,
-    },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          api: "modern-compiler",
-        },
-      },
     },
   },
   security: {
