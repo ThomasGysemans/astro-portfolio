@@ -39,6 +39,10 @@
     // background below remains as the backdrop).
     let showNebula = $state(false);
 
+    // Cap the render resolution: the nebula is a soft, bloomed backdrop, so
+    // rendering it at the full Retina pixel ratio is wasted GPU work.
+    let nebulaDpr = $state(1);
+
     // Tint of the nebula clouds, re-randomized on each navigation.
     const ri = new Spring(0);
     const gi = new Spring(0);
@@ -79,6 +83,7 @@
     onMount(() => {
         document.addEventListener("keydown", onKeydown);
         showNebula = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        nebulaDpr = Math.min(window.devicePixelRatio || 1, 1.5);
         changeColors();
     });
     onDestroy(() => {
@@ -92,7 +97,11 @@
     <div class="absolute inset-0 bg-cover bg-center showcase-stars" style="background-image:url('/stars.jpg')" aria-hidden="true" />
     {#if showNebula}
         <div class="absolute inset-0 showcase-nebula" aria-hidden="true">
-            <Canvas>
+            <!-- The soft, blurry nebula doesn't need Retina crispness: cap the
+                 device pixel ratio (huge fill-rate saving on hi-DPI screens).
+                 autoRender is off because Nebula draws through its own
+                 EffectComposer — otherwise the scene would be rendered twice. -->
+            <Canvas autoRender={false} dpr={nebulaDpr}>
                 <T.PerspectiveCamera
                     makeDefault
                     position={[0, 0, 1]}

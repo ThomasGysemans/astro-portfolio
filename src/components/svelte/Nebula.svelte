@@ -47,7 +47,10 @@
                 transparent: true,
                 map: $smoke,
             });
-            for (let p = 0; p < 20; p++) {
+            // Fewer, still-overlapping planes: each is a large transparent
+            // quad blended with bloom, so cutting the count directly cuts the
+            // fill-rate cost with no perceptible change to the cloud density.
+            for (let p = 0; p < 12; p++) {
                 const cloud = new Mesh(cloudGeo, cloudMat);
                 cloud.position.set(
                     Math.random() * 800 - 400,
@@ -68,6 +71,9 @@
     });
 
     useTask(() => {
+        // Skip all GPU work while the tab is hidden: the nebula is purely
+        // decorative, so there's nothing to keep animating off-screen.
+        if (document.hidden) return;
         cloudParticles.forEach(p => {
             p.rotation.z -= 0.001;
         });
