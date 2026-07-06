@@ -56,7 +56,7 @@
     </Grabbable>
 
     <!-- Control pill: fixed dark colors on purpose, it floats over the dark canvas in both themes. -->
-    <div class="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-2.5 items-center bg-[rgba(3,15,32,.75)] border border-white/[.12] rounded-full py-[5px] pr-1.5 pl-4 text-[11px] text-[#a9b8d8] whitespace-nowrap">
+    <div class="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-2.5 items-center bg-[rgba(3,15,32,.75)] border border-white/12 rounded-full py-1.25 pr-1.5 pl-4 text-[11px] text-[#a9b8d8] whitespace-nowrap">
         <span class="inline-flex items-center gap-1.5">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#87b3f6" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
             {dragLabel}

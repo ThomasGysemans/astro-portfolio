@@ -96,7 +96,7 @@ const isVideo = (name: string) => /\.(mp4|mov|qt|webm)$/i.test(name);
                 </div>
                 <div class="adm-field">
                     <span class="adm-label">Langues du projet</span>
-                    <div class="flex gap-4 items-center min-h-[38px]">
+                    <div class="flex gap-4 items-center min-h-9.5">
                         {LOCALES.map(locale => (
                             <label class="adm-check">
                                 <input type="checkbox" name="languages" value={locale} checked={values.languages.includes(locale)}>
@@ -129,12 +129,12 @@ const isVideo = (name: string) => /\.(mp4|mov|qt|webm)$/i.test(name);
                     <span class="adm-label">Vignette {isNew ? "(requise)" : "(remplacée seulement si un fichier est choisi)"}</span>
                     <div id="thumb-figures" class:list={["flex items-start gap-3 flex-wrap mb-3", !thumbUrl && "hidden"]}>
                         {thumbUrl && (
-                            <figure id="thumb-current" class="adm-media-card w-[200px]">
+                            <figure id="thumb-current" class="adm-media-card w-50">
                                 <img src={thumbUrl} alt="Vignette actuelle" loading="lazy">
                                 <figcaption class="text-[11.5px] text-muted">Vignette actuelle</figcaption>
                             </figure>
                         )}
-                        <figure id="thumb-preview" class="adm-media-card w-[200px] hidden">
+                        <figure id="thumb-preview" class="adm-media-card w-50 hidden">
                             <img alt="Nouvelle vignette">
                             <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vignette</figcaption>
                         </figure>
@@ -151,7 +151,7 @@ const isVideo = (name: string) => /\.(mp4|mov|qt|webm)$/i.test(name);
                                         ? <video src={picture.url} muted playsinline preload="metadata" />
                                         : <img src={picture.url} alt={picture.name} loading="lazy" />}
                                     <a href={picture.url} target="_blank" rel="noopener" class="text-[11.5px] text-accent hover:underline truncate">{picture.name}</a>
-                                    <label class="adm-check !text-[12px]">
+                                    <label class="adm-check text-[12px]!">
                                         <input type="checkbox" name="remove_pictures" value={picture.name}>
                                         supprimer
                                     </label>
@@ -249,28 +249,28 @@ const isVideo = (name: string) => /\.(mp4|mov|qt|webm)$/i.test(name);
                     {techs.map(tech => (
                         <li class="adm-row" data-tech={tech.technologyId} data-name={tech.name}>
                             <input type="hidden" name="tech_ref" value={tech.id}>
-                            <span class="adm-tech-name font-bold text-heading text-[14px] flex-1 min-w-[120px]">{tech.name}</span>
-                            <select name="tech_role" class="adm-input !w-auto" aria-label={`Rôle de ${tech.name}`}>
+                            <span class="adm-tech-name font-bold text-heading text-[14px] flex-1 min-w-30">{tech.name}</span>
+                            <select name="tech_role" class="adm-input w-auto!" aria-label={`Rôle de ${tech.name}`}>
                                 {Object.entries(TECH_ROLES).map(([roleId, label]) => (
                                     <option value={roleId} selected={tech.role === roleId}>{label.fr}</option>
                                 ))}
                             </select>
                             <div class="flex gap-1.5">
-                                <button type="button" class="adm-btn-outline !px-2.5" data-move="up" aria-label={`Monter ${tech.name}`}>↑</button>
-                                <button type="button" class="adm-btn-outline !px-2.5" data-move="down" aria-label={`Descendre ${tech.name}`}>↓</button>
-                                <button type="button" class="adm-btn-danger !px-2.5" data-remove aria-label={`Retirer ${tech.name}`}>✕</button>
+                                <button type="button" class="adm-btn-outline px-2.5!" data-move="up" aria-label={`Monter ${tech.name}`}>↑</button>
+                                <button type="button" class="adm-btn-outline px-2.5!" data-move="down" aria-label={`Descendre ${tech.name}`}>↓</button>
+                                <button type="button" class="adm-btn-danger px-2.5!" data-remove aria-label={`Retirer ${tech.name}`}>✕</button>
                             </div>
                         </li>
                     ))}
                 </ul>
 
                 <div class="adm-row">
-                    <select id="tech-add-select" class="adm-input !w-auto" aria-label="Technologie à ajouter" disabled={availableTechs.length === 0}>
+                    <select id="tech-add-select" class="adm-input w-auto!" aria-label="Technologie à ajouter" disabled={availableTechs.length === 0}>
                         {availableTechs.map(tech => (
                             <option value={tech.id}>{tech.name}</option>
                         ))}
                     </select>
-                    <select id="tech-add-role" class="adm-input !w-auto" aria-label="Rôle de la technologie à ajouter">
+                    <select id="tech-add-role" class="adm-input w-auto!" aria-label="Rôle de la technologie à ajouter">
                         {Object.entries(TECH_ROLES).map(([roleId, label]) => (
                             <option value={roleId}>{label.fr}</option>
                         ))}
@@ -284,16 +284,16 @@ const isVideo = (name: string) => /\.(mp4|mov|qt|webm)$/i.test(name);
             <template id="tech-row-template">
                 <li class="adm-row">
                     <input type="hidden" name="tech_ref" value="">
-                    <span class="adm-tech-name font-bold text-heading text-[14px] flex-1 min-w-[120px]"></span>
-                    <select name="tech_role" class="adm-input !w-auto" aria-label="Rôle">
+                    <span class="adm-tech-name font-bold text-heading text-[14px] flex-1 min-w-30"></span>
+                    <select name="tech_role" class="adm-input w-auto!" aria-label="Rôle">
                         {Object.entries(TECH_ROLES).map(([roleId, label]) => (
                             <option value={roleId}>{label.fr}</option>
                         ))}
                     </select>
                     <div class="flex gap-1.5">
-                        <button type="button" class="adm-btn-outline !px-2.5" data-move="up" aria-label="Monter">↑</button>
-                        <button type="button" class="adm-btn-outline !px-2.5" data-move="down" aria-label="Descendre">↓</button>
-                        <button type="button" class="adm-btn-danger !px-2.5" data-remove aria-label="Retirer">✕</button>
+                        <button type="button" class="adm-btn-outline px-2.5!" data-move="up" aria-label="Monter">↑</button>
+                        <button type="button" class="adm-btn-outline px-2.5!" data-move="down" aria-label="Descendre">↓</button>
+                        <button type="button" class="adm-btn-danger px-2.5!" data-remove aria-label="Retirer">✕</button>
                     </div>
                 </li>
             </template>

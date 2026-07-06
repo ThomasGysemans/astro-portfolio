@@ -1,8 +1,8 @@
 ---
 // Layout of the back-office. Deliberately minimal: no SEO tags (the pages
 // are private and noindex), French only, same design tokens as the site.
-import "@styles/tailwind.scss";
-import "@styles/admin.scss";
+import "@styles/tailwind.css";
+import "@styles/admin.css";
 
 interface Props {
     title: string;
@@ -42,7 +42,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
         {notice && <div class="adm-toast" role="status">{notice}</div>}
         {nav && (
             <header class="border-b border-edge bg-card">
-                <nav class="max-w-[1100px] mx-auto px-page py-3.5 flex items-center gap-5 flex-wrap">
+                <nav class="max-w-275 mx-auto px-page py-3.5 flex items-center gap-5 flex-wrap">
                     <a href="/admin/projects" class="text-[15px] font-bold text-heading">Admin</a>
                     {links.map(link => (
                         <a
@@ -62,7 +62,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
                 </nav>
             </header>
         )}
-        <main class="max-w-[1100px] mx-auto px-page py-9">
+        <main class="max-w-275 mx-auto px-page py-9">
             <slot />
         </main>
 

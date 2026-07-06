@@ -109,15 +109,15 @@
 </script>
 
 <!-- filter pills -->
-<div class="flex gap-2 flex-wrap px-page mt-[18px]">
+<div class="flex gap-2 flex-wrap px-page mt-4.5">
     {#each pills as pill (pill.key)}
         <button
             type="button"
             aria-pressed={filter === pill.key}
             onclick={() => filter = pill.key}
-            class="inline-flex items-center gap-[7px] text-[11.5px] font-bold rounded-full py-2 px-3.5 whitespace-nowrap border transition-colors {filter === pill.key ? 'bg-btn text-btn-text border-btn' : 'bg-chip text-chip-text border-edge-strong hover:border-accent'}"
+            class="inline-flex items-center gap-1.75 text-[11.5px] font-bold rounded-full py-2 px-3.5 whitespace-nowrap border transition-colors {filter === pill.key ? 'bg-btn text-btn-text border-btn' : 'bg-chip text-chip-text border-edge-strong hover:border-accent'}"
         >
-            <span class="w-[7px] h-[7px] rounded-full" style="background:{pill.dot}" />
+            <span class="w-1.75 h-1.75 rounded-full" style="background:{pill.dot}" />
             {pill.label}
             <span class="text-[10px] opacity-65">{pill.count}</span>
         </button>
@@ -131,12 +131,12 @@
         type="search"
         bind:value={query}
         placeholder={labels.searchPlaceholder}
-        class="flex-1 min-w-0 bg-transparent border-none outline-none text-text text-[12.5px] font-sans placeholder:text-muted"
+        class="flex-1 min-w-0 bg-transparent border-none outline-hidden text-text text-[12.5px] font-sans placeholder:text-muted"
     />
     <button
         type="button"
         onclick={() => sort = sort === "oldest" ? "recent" : "oldest"}
-        class="text-[11.5px] font-semibold text-chip-text border border-edge-strong rounded-lg py-[7px] px-3 inline-flex items-center gap-1.5 whitespace-nowrap hover:border-accent transition-colors max-sm:hidden"
+        class="text-[11.5px] font-semibold text-chip-text border border-edge-strong rounded-lg py-1.75 px-3 inline-flex items-center gap-1.5 whitespace-nowrap hover:border-accent transition-colors max-sm:hidden"
     >
         {sort === "oldest" ? labels.sortOldest : labels.sortNewest}
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M8 7l4-4 4 4M8 17l4 4 4-4" /></svg>
@@ -152,9 +152,9 @@
             type="button"
             aria-label="{labels.removeTechFilter} {tech}"
             onclick={() => tech = null}
-            class="inline-flex items-center gap-[7px] font-bold text-heading bg-chip border border-accent rounded-full py-1.5 px-3.5"
+            class="inline-flex items-center gap-1.75 font-bold text-heading bg-chip border border-accent rounded-full py-1.5 px-3.5"
         >
-            <span class="w-[7px] h-[7px] rounded-full" style="background:{techDot}" />
+            <span class="w-1.75 h-1.75 rounded-full" style="background:{techDot}" />
             {tech}
             <span class="opacity-60">✕</span>
         </button>
@@ -168,9 +168,9 @@
         <article class="explorer-card relative rounded-[13px] overflow-hidden border border-edge flex flex-col">
             <div class="relative">
                 <img src={p.thumb} alt={p.name} loading="lazy" decoding="async" class="w-full aspect-video object-cover" />
-                <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-[5px] px-2.5 rounded-md">{p.badge}</span>
+                <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1.25 px-2.5 rounded-md">{p.badge}</span>
             </div>
-            <div class="bg-card-solid pt-[15px] px-[17px] pb-[13px] flex flex-col gap-[9px] flex-1">
+            <div class="bg-card-solid pt-3.75 px-4.25 pb-3.25 flex flex-col gap-2.25 flex-1">
                 <div class="flex justify-between items-baseline gap-2">
                     <h3 class="m-0"><a href={p.href} class="card-link text-[15px] font-bold text-heading">{p.name}</a></h3>
                     <span class="text-[11px] font-bold text-muted">{p.date}</span>
@@ -181,7 +181,7 @@
                         <button
                             type="button"
                             onclick={() => pickTech(t.n)}
-                            class="inline-flex items-center gap-[5px] text-[10.5px] font-semibold text-chip-text border border-edge-strong rounded-full py-1 px-2.5 hover:border-accent hover:text-heading transition-colors"
+                            class="inline-flex items-center gap-1.25 text-[10.5px] font-semibold text-chip-text border border-edge-strong rounded-full py-1 px-2.5 hover:border-accent hover:text-heading transition-colors"
                         >
                             <span class="w-1.5 h-1.5 rounded-full" style="background:{t.c}" />
                             {t.n}
@@ -207,37 +207,37 @@
         <button
             type="button"
             onclick={() => { filter = "all"; tech = null; query = ""; }}
-            class="btn-outline text-[12.5px] py-[11px] px-6"
+            class="btn-outline text-[12.5px] py-2.75 px-6"
         >{labels.showAll}</button>
     </div>
 {/if}
 
 <!-- tech skills -->
-<section class="border-t border-edge mx-page-margin pt-[42px] pb-1.5">
+<section class="border-t border-edge mx-page-margin pt-10.5 pb-1.5">
     <h2 class="text-[26px] font-bold m-0 text-heading glow">{labels.techSkillsTitle}</h2>
-    <p class="text-[13px] text-body mt-2 max-w-[620px] leading-[1.7]">{labels.techSkillsIntro}</p>
+    <p class="text-[13px] text-body mt-2 max-w-155 leading-[1.7]">{labels.techSkillsIntro}</p>
     <div class="flex gap-2.5 flex-wrap mt-6">
         {#each skillHighlights as highlight (highlight)}
-            <span class="inline-flex items-center gap-2 text-xs font-semibold leading-normal text-heading bg-card border border-edge-strong rounded-full py-2.5 px-[18px]">🏅 {highlight}</span>
+            <span class="inline-flex items-center gap-2 text-xs font-semibold leading-normal text-heading bg-card border border-edge-strong rounded-full py-2.5 px-4.5">🏅 {highlight}</span>
         {/each}
     </div>
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-4 mt-[26px]">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-4 mt-6.5">
         {#each skillGroups as group (group.title)}
-            <div class="surface-card py-5 px-[22px]">
+            <div class="surface-card py-5 px-5.5">
                 <div class="flex justify-between items-baseline mb-3.5">
                     <span class="text-[13px] font-bold text-accent-heading">{group.title}</span>
                     <span class="text-[10.5px] text-muted">{group.countLabel}</span>
                 </div>
-                <div class="flex flex-col gap-[11px]">
+                <div class="flex flex-col gap-2.75">
                     {#each group.items as item (item.n)}
                         {#if item.count > 0}
-                            <button type="button" onclick={() => pickTech(item.n)} class="flex items-center gap-[9px] text-[12.5px] font-semibold text-heading hover:text-accent transition-colors text-left">
+                            <button type="button" onclick={() => pickTech(item.n)} class="flex items-center gap-2.25 text-[12.5px] font-semibold text-heading hover:text-accent transition-colors text-left">
                                 <span class="w-2 h-2 rounded-full shrink-0" style="background:{item.c}" />
                                 {item.n}
                                 <span class="ml-auto text-[10.5px] font-semibold text-accent">{item.countLabel}</span>
                             </button>
                         {:else}
-                            <div class="flex items-center gap-[9px] text-[12.5px] font-semibold text-heading">
+                            <div class="flex items-center gap-2.25 text-[12.5px] font-semibold text-heading">
                                 <span class="w-2 h-2 rounded-full shrink-0" style="background:{item.c}" />
                                 {item.n}
                                 <span class="ml-auto text-[10.5px] font-semibold text-muted">0</span>

@@ -30,7 +30,7 @@ const contactHref = getRelativeLocaleUrl(lang, "/freelance");
 const themeIcon = theme === "dark" ? "☀️" : "🌙";
 ---
 
-<header class="relative z-30 flex items-center justify-between gap-4 flex-wrap py-4 px-page border-b border-edge bg-[var(--header-bg)] transition-colors">
+<header class="relative z-30 flex items-center justify-between gap-4 flex-wrap py-4 px-page border-b border-edge bg-(--header-bg) transition-colors">
     <a href={getRelativeLocaleUrl(lang, "/")} class="flex items-center gap-3">
         <Logo />
         <span class="font-bold text-heading text-sm leading-tight">Thomas<br />Gysemans</span>
@@ -54,9 +54,9 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
             data-theme-toggle
             title={trans.common.switchtheme[lang]}
             aria-label={trans.common.switchtheme[lang]}
-            class="w-[38px] h-[38px] rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] hover:border-accent transition-colors"
+            class="w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] hover:border-accent transition-colors"
         >{themeIcon}</button>
-        <div class="flex items-center h-[38px] gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-[6px]">
+        <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
             {localeLinks.map(link => (
                 <a href={link.href} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
             ))}
@@ -68,7 +68,7 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
         type="button"
         data-drawer-open
         aria-label={trans.common.openmenu[lang]}
-        class="hdr-burger w-[42px] h-[42px] rounded-[10px] border border-edge-strong bg-chip items-center justify-center"
+        class="hdr-burger w-10.5 h-10.5 rounded-[10px] border border-edge-strong bg-chip items-center justify-center"
     >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="stroke-heading" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
     </button>
@@ -95,9 +95,9 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
                 type="button"
                 data-theme-toggle
                 aria-label={trans.common.switchtheme[lang]}
-                class="w-[38px] h-[38px] rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px]"
+                class="w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px]"
             >{themeIcon}</button>
-            <div class="flex items-center h-[38px] gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-[6px]">
+            <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
                 {localeLinks.map(link => (
                     <a href={link.href} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
                 ))}

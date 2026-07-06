@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import vercel from "@astrojs/vercel/serverless";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import svelte from "@astrojs/svelte";
 import icon from "astro-icon";
 
@@ -11,7 +11,7 @@ export default defineConfig({
   output: "server",
   adapter: vercel(),
   site: "https://portfolio.sciencesky.fr",
-  integrations: [tailwind(), icon({ iconDir: "./public/icons" }), svelte()],
+  integrations: [icon({ iconDir: "./public/icons" }), svelte()],
   i18n: {
     locales: [...LOCALES],
     defaultLocale: DEFAULT_LOCALE,
@@ -24,6 +24,7 @@ export default defineConfig({
     },
   },
   vite: {
+    plugins: [tailwindcss()],
     server: {
       host: true,
     },

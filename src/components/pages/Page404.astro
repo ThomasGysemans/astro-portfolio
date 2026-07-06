@@ -10,6 +10,6 @@ const lang = Astro.locals.lang;
     <main class="flex-1 flex flex-col gap-6 justify-center items-center py-16 px-page">
         <img src="/logos/black-hole.svg" alt={trans.common.blackhole[lang]} class="w-60" />
         <h1 class="text-center text-xl text-heading font-bold glow">{trans.error.notfound[lang]} (404)</h1>
-        <a href={getRelativeLocaleUrl(lang, "/")} class="btn-outline text-[13px] py-3 px-[26px]">{trans.error.backhome[lang]}</a>
+        <a href={getRelativeLocaleUrl(lang, "/")} class="btn-outline text-[13px] py-3 px-6.5">{trans.error.backhome[lang]}</a>
     </main>
 </MainLayout>

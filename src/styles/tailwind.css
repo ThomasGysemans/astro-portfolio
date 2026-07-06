@@ -1,11 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Keep the existing v3-style JavaScript config (color tokens, fontFamily,
+   hocus variant) as the single source of truth for the theme. */
+@config "../../tailwind.config.mjs";
 
 @layer base {
-    // Design tokens of the "Portfolio Prototype v2" design.
-    // Dark is the default theme; light overrides are applied
-    // through the `data-theme` attribute set on <html> by the middleware.
+    /* Tailwind v4 compatibility shims: restore the v3 Preflight defaults so
+       the upgrade does not change any rendered style.
+       - default border color (v4 uses currentColor)
+       - placeholder color (v4 uses currentColor at 50% opacity)
+       - pointer cursor on buttons (v4 uses the default cursor) */
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--color-gray-400, #9ca3af);
+    }
+
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
+
+    /* Design tokens of the "Portfolio Prototype v2" design.
+       Dark is the default theme; light overrides are applied
+       through the `data-theme` attribute set on <html> by the middleware. */
     :root {
         --bg: #030F20;
         --heading: #ffffff;
@@ -71,7 +96,7 @@
         @apply text-heading font-bold;
     }
 
-    // RGAA: visible keyboard focus
+    /* RGAA: visible keyboard focus */
     a:focus-visible,
     button:focus-visible,
     [role="button"]:focus-visible {
@@ -80,7 +105,7 @@
         border-radius: 4px;
     }
 
-    // RGAA: respect reduced-motion preference
+    /* RGAA: respect reduced-motion preference */
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -92,12 +117,12 @@
 }
 
 @layer components {
-    // Main horizontal padding of every page section.
+    /* Main horizontal padding of every page section. */
     .px-page {
         padding-inline: clamp(20px, 3.5vw, 44px);
     }
 
-    // Headings glow in dark mode only (--glow is "none" in light mode).
+    /* Headings glow in dark mode only (--glow is "none" in light mode). */
     .glow {
         text-shadow: var(--glow);
     }

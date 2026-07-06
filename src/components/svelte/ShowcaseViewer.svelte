@@ -109,20 +109,20 @@
 
     <a
         href={exitHref}
-        class="absolute top-5 right-5 lg:top-[26px] lg:right-8 z-30 inline-flex items-center gap-2 text-xs font-bold text-[#c4dfe2] bg-[rgba(3,17,26,.72)] border border-[rgba(154,209,212,.3)] rounded-full py-2.5 px-[18px] backdrop-blur-lg hover:border-[#9ad1d4] hover:text-white transition-colors"
+        class="absolute top-5 right-5 lg:top-6.5 lg:right-8 z-30 inline-flex items-center gap-2 text-xs font-bold text-[#c4dfe2] bg-[rgba(3,17,26,.72)] border border-[rgba(154,209,212,.3)] rounded-full py-2.5 px-4.5 backdrop-blur-lg hover:border-[#9ad1d4] hover:text-white transition-colors"
     >{labels.exit}</a>
 
     <!-- left rail -->
-    <nav class="absolute left-8 top-7 bottom-7 w-[250px] z-20 max-lg:hidden flex flex-col" aria-label={labels.title}>
+    <nav class="absolute left-8 top-7 bottom-7 w-62.5 z-20 max-lg:hidden flex flex-col" aria-label={labels.title}>
         <div class="text-[10.5px] font-bold tracking-[.22em] text-[#9ad1d4] mb-1.5">{labels.label}</div>
-        <div class="text-[19px] font-bold leading-[1.35] mb-[18px]">{labels.title}</div>
+        <div class="text-[19px] font-bold leading-[1.35] mb-4.5">{labels.title}</div>
         <div class="flex flex-col gap-1">
             {#each items as item, i (item.href)}
                 <button
                     type="button"
                     aria-current={i === index ? "true" : undefined}
                     onclick={() => select(i)}
-                    class="flex items-center gap-2.5 text-[12.5px] py-[9px] px-3 rounded-[9px] border text-left transition-colors {i === index ? 'text-white font-bold bg-[rgba(154,209,212,.12)] border-[rgba(154,209,212,.35)]' : 'text-[#8fb4ba] border-transparent hover:text-white'}"
+                    class="flex items-center gap-2.5 text-[12.5px] py-2.25 px-3 rounded-[9px] border text-left transition-colors {i === index ? 'text-white font-bold bg-[rgba(154,209,212,.12)] border-[rgba(154,209,212,.35)]' : 'text-[#8fb4ba] border-transparent hover:text-white'}"
                 >
                     <span class="text-[9.5px] font-bold {i === index ? 'text-[#9ad1d4]' : 'text-[rgba(143,180,186,.6)]'}">{pad(i + 1)}</span>
                     {item.name}
@@ -142,20 +142,20 @@
 
     <!-- info card -->
     {#key index}
-        <div class="absolute z-20 bottom-5 left-4 right-4 sm:left-auto sm:right-8 sm:bottom-8 sm:w-[360px] bg-[rgba(3,17,26,.78)] border border-[rgba(154,209,212,.28)] rounded-[15px] p-4 backdrop-blur-xl showcase-fade-card">
-            <img src={current.thumb} alt={current.name} loading="lazy" decoding="async" class="w-full aspect-video object-cover rounded-[10px] mb-[13px] max-sm:hidden" />
-            <div class="flex justify-between items-baseline mb-[7px]">
+        <div class="absolute z-20 bottom-5 left-4 right-4 sm:left-auto sm:right-8 sm:bottom-8 sm:w-90 bg-[rgba(3,17,26,.78)] border border-[rgba(154,209,212,.28)] rounded-[15px] p-4 backdrop-blur-xl showcase-fade-card">
+            <img src={current.thumb} alt={current.name} loading="lazy" decoding="async" class="w-full aspect-video object-cover rounded-[10px] mb-3.25 max-sm:hidden" />
+            <div class="flex justify-between items-baseline mb-1.75">
                 <span class="text-base font-bold">{current.name}</span>
                 <span class="text-[10.5px] text-[#9ad1d4] font-bold">{counter}</span>
             </div>
             <p class="text-[11.5px] leading-[1.65] text-[#b8d6da] mb-3">{current.desc}</p>
             <div class="flex gap-1.5 mb-3.5 flex-wrap">
                 {#each current.techs as tech (tech)}
-                    <span class="text-[10px] font-semibold text-[#c4dfe2] border border-white/20 rounded-full py-1 px-[11px]">{tech}</span>
+                    <span class="text-[10px] font-semibold text-[#c4dfe2] border border-white/20 rounded-full py-1 px-2.75">{tech}</span>
                 {/each}
             </div>
             <div class="flex gap-2">
-                <a href={current.href} class="flex-1 text-center bg-white text-night text-xs font-bold py-[11px] rounded-lg hover:brightness-90 transition-[filter]">{labels.learnMore}</a>
+                <a href={current.href} class="flex-1 text-center bg-white text-night text-xs font-bold py-2.75 rounded-lg hover:brightness-90 transition-[filter]">{labels.learnMore}</a>
                 <button type="button" aria-label={labels.previous} onclick={() => go(-1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">‹</button>
                 <button type="button" aria-label={labels.next} onclick={() => go(1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">›</button>
             </div>
@@ -188,11 +188,13 @@
             radial-gradient(ellipse 70% 60% at 60% 45%, transparent 30%, rgba(2, 10, 16, .5) 100%);
     }
 
-    /* The "to" step omits the transform so that each element
-       lands back on its own Tailwind translate classes. */
+    /* Only animates the 8px vertical offset via `transform`. Centering is
+       handled by the `-translate-x-1/2`/`-translate-y-1/2` utilities, which
+       in Tailwind v4 use the independent `translate` property, so the two no
+       longer share the `transform` property and must not restate the -50%. */
     @keyframes showcase-fade-title {
-        from { opacity: 0; transform: translate(-50%, 8px); }
-        to { opacity: 1; }
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .showcase-fade-title {

@@ -40,17 +40,17 @@ const aiPoints = [
     <main class="relative overflow-hidden">
         <div class="hero-scene absolute inset-0 pointer-events-none" aria-hidden="true" />
 
-        <div class="relative max-w-[1660px] mx-auto">
+        <div class="relative max-w-415 mx-auto">
             <!-- hero + process timeline -->
             <section class="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-[clamp(28px,4vw,72px)] pt-[clamp(40px,6vw,88px)] px-page pb-12 items-center">
                 <div>
-                    <div class="mb-[26px]">
+                    <div class="mb-6.5">
                         <AvailabilityBadge />
                     </div>
                     <h1 class="text-[clamp(30px,3vw,48px)] font-bold leading-[1.18] m-0 text-heading glow" set:html={trans.freelance.herotitle[lang]} />
-                    <p class="text-[15px] leading-[1.8] text-body mt-[18px] max-w-[440px]">{trans.freelance.herointro[lang]}</p>
-                    <div class="flex items-center gap-3 mt-[34px] flex-wrap">
-                        <a href={`mailto:${EMAIL}`} class="btn-primary text-[13px] py-[13px] px-[26px] shadow-btn-glow">{trans.freelance.emailme[lang]}</a>
+                    <p class="text-[15px] leading-[1.8] text-body mt-4.5 max-w-110">{trans.freelance.herointro[lang]}</p>
+                    <div class="flex items-center gap-3 mt-8.5 flex-wrap">
+                        <a href={`mailto:${EMAIL}`} class="btn-primary text-[13px] py-3.25 px-6.5 shadow-btn-glow">{trans.freelance.emailme[lang]}</a>
                         <a href={MALT_URL} target="_blank" rel="noopener" class="malt-btn">
                             <Icon name="malt" class="text-base text-malt" />
                             {trans.freelance.hireonmalt[lang]}
@@ -59,16 +59,16 @@ const aiPoints = [
                     <p class="text-[12.5px] text-muted mt-4">{trans.freelance.freequote[lang]}</p>
                 </div>
 
-                <div class="fl-timeline relative max-w-[400px] w-full justify-self-center py-2.5">
-                    <div class="fl-timeline-line absolute left-[23px] top-3.5 bottom-3.5 w-0.5 bg-edge-strong" aria-hidden="true" />
-                    <div class="fl-timeline-line fl-timeline-progress absolute left-[23px] top-3.5 bottom-3.5 w-0.5" aria-hidden="true" />
+                <div class="fl-timeline relative max-w-100 w-full justify-self-center py-2.5">
+                    <div class="fl-timeline-line absolute left-5.75 top-3.5 bottom-3.5 w-0.5 bg-edge-strong" aria-hidden="true" />
+                    <div class="fl-timeline-line fl-timeline-progress absolute left-5.75 top-3.5 bottom-3.5 w-0.5" aria-hidden="true" />
                     <ol class="fl-steps relative flex flex-col gap-11">
                         {steps.map(step => (
-                            <li class="fl-step flex gap-[18px] items-center" style={`animation-delay:${step.fade}`}>
+                            <li class="fl-step flex gap-4.5 items-center" style={`animation-delay:${step.fade}`}>
                                 <span class="fl-step-icon" style={`border-color:${step.border};animation-delay:${step.pulse}`}>{step.emoji}</span>
                                 <div>
                                     <div class="text-[15px] font-bold text-heading">{step.title}</div>
-                                    <div class="text-xs text-body mt-[3px] leading-[1.55]">{step.text}</div>
+                                    <div class="text-xs text-body mt-0.75 leading-[1.55]">{step.text}</div>
                                 </div>
                             </li>
                         ))}
@@ -77,7 +77,7 @@ const aiPoints = [
             </section>
 
             <!-- stats -->
-            <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-5 px-page pt-8 pb-[72px]">
+            <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-5 px-page pt-8 pb-18">
                 <StatCard value={trans.freelance.stat1num[lang]}>{trans.freelance.stat1[lang]}</StatCard>
                 <StatCard value={trans.freelance.stat2num[lang]}>{trans.freelance.stat2[lang]}</StatCard>
                 <StatCard value={trans.freelance.stat3num[lang]}>{trans.freelance.stat3[lang]}</StatCard>
@@ -86,14 +86,14 @@ const aiPoints = [
 
             <!-- guarantee + AI -->
             <section class="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-5 px-page pb-20">
-                <div class="bg-[rgba(47,168,102,.1)] border border-[rgba(47,168,102,.4)] rounded-[13px] py-8 px-[34px] flex gap-[22px] items-center">
+                <div class="bg-[rgba(47,168,102,.1)] border border-[rgba(47,168,102,.4)] rounded-[13px] py-8 px-8.5 flex gap-5.5 items-center">
                     <span class="w-14 h-14 rounded-full bg-card-solid border-2 border-[#2fa866] flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🛡</span>
                     <div>
                         <h2 class="text-[17px] font-bold m-0 text-heading">{trans.freelance.guaranteetitle[lang]}</h2>
-                        <p class="text-[12.5px] text-body leading-[1.7] mt-[5px]">{trans.freelance.guarantee[lang]}</p>
+                        <p class="text-[12.5px] text-body leading-[1.7] mt-1.25">{trans.freelance.guarantee[lang]}</p>
                     </div>
                 </div>
-                <div class="surface-card py-7 px-[34px]">
+                <div class="surface-card py-7 px-8.5">
                     <h2 class="text-base font-bold mb-4 text-heading">{trans.freelance.aititle[lang]}</h2>
                     <ul class="flex flex-col gap-3 text-[13px] font-semibold text-body">
                         {aiPoints.map(point => (
@@ -145,14 +145,14 @@ const aiPoints = [
             </section>
 
             <!-- contact -->
-            <section class="px-page pb-[88px]">
-                <div class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-2xl py-10 px-[44px] flex items-center justify-between gap-6 flex-wrap">
+            <section class="px-page pb-22">
+                <div class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-2xl py-10 px-11 flex items-center justify-between gap-6 flex-wrap">
                     <div>
                         <h2 class="text-[21px] font-bold text-heading m-0">{trans.freelance.ctatitle[lang]}</h2>
-                        <p class="text-[12.5px] text-body mt-[5px]">{trans.freelance.ctasubtitle[lang]}</p>
+                        <p class="text-[12.5px] text-body mt-1.25">{trans.freelance.ctasubtitle[lang]}</p>
                     </div>
                     <div class="flex gap-3 flex-wrap">
-                        <a href={`mailto:${EMAIL}`} class="btn-primary text-[13px] py-[13px] px-6 shadow-btn-glow">✉ {EMAIL}</a>
+                        <a href={`mailto:${EMAIL}`} class="btn-primary text-[13px] py-3.25 px-6 shadow-btn-glow">✉ {EMAIL}</a>
                         <a href={MALT_URL} target="_blank" rel="noopener" class="malt-btn">
                             <Icon name="malt" class="text-base text-malt" />
                             {trans.freelance.onmalt[lang]}
@@ -164,7 +164,9 @@ const aiPoints = [
     </main>
 </MainLayout>
 
-<style lang="scss">
+<style>
+    @reference "../../styles/tailwind.css";
+
     .hero-scene {
         opacity: var(--hero-scene);
         transition: opacity .3s;
@@ -174,7 +176,7 @@ const aiPoints = [
     }
 
     .malt-btn {
-        @apply inline-flex items-center gap-2 border-[1.5px] border-malt text-heading text-[13px] font-bold py-3 px-[22px] rounded-[9px] whitespace-nowrap;
+        @apply inline-flex items-center gap-2 border-[1.5px] border-malt text-heading text-[13px] font-bold py-3 px-5.5 rounded-[9px] whitespace-nowrap;
         transition: background .2s, transform .2s;
 
         &:hover {

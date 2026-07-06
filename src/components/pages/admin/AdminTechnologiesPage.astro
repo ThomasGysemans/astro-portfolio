@@ -25,17 +25,17 @@ const { technologies, notice, error } = Astro.props;
 
     <form method="POST" class="adm-card flex flex-wrap items-end gap-4 mb-8">
         <input type="hidden" name="action" value="create">
-        <div class="flex-1 min-w-[160px]">
+        <div class="flex-1 min-w-40">
             <label for="new-name" class="adm-label">Nom</label>
             <input id="new-name" name="name" class="adm-input" required placeholder="Svelte, Rust…">
         </div>
         <div>
             <label for="new-color" class="adm-label">Couleur</label>
-            <input id="new-color" name="color" type="color" value="#619cf3" class="adm-input !w-[64px] !p-1 h-[38px] cursor-pointer">
+            <input id="new-color" name="color" type="color" value="#619cf3" class="adm-input w-16! p-1! h-9.5 cursor-pointer">
         </div>
         <div>
             <label for="new-group" class="adm-label">Groupe</label>
-            <select id="new-group" name="group" class="adm-input !w-auto" required>
+            <select id="new-group" name="group" class="adm-input w-auto!" required>
                 {GROUP_ORDER.map(groupId => (
                     <option value={groupId}>{GROUP_TITLES[groupId].fr}</option>
                 ))}
@@ -49,9 +49,9 @@ const { technologies, notice, error } = Astro.props;
             <form method="POST" class="adm-row">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="id" value={tech.id}>
-                <input name="name" value={tech.name} class="adm-input !w-[180px] font-bold" required aria-label={`Nom de ${tech.name}`}>
-                <input name="color" type="color" value={tech.color} class="adm-input !w-[52px] !p-1 h-[38px] cursor-pointer" aria-label={`Couleur de ${tech.name}`}>
-                <select name="group" class="adm-input !w-auto" required aria-label={`Groupe de ${tech.name}`}>
+                <input name="name" value={tech.name} class="adm-input w-45! font-bold" required aria-label={`Nom de ${tech.name}`}>
+                <input name="color" type="color" value={tech.color} class="adm-input w-13! p-1! h-9.5 cursor-pointer" aria-label={`Couleur de ${tech.name}`}>
+                <select name="group" class="adm-input w-auto!" required aria-label={`Groupe de ${tech.name}`}>
                     {GROUP_ORDER.map(groupId => (
                         <option value={groupId} selected={tech.group === groupId}>{GROUP_TITLES[groupId].fr}</option>
                     ))}

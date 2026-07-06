@@ -101,7 +101,7 @@ const subtitle = trans.projects.subtitle[lang].replace("{count}", `${projects.le
 ---
 
 <MainLayout title={trans.projects.title[lang]} description={trans.projects.description[lang]}>
-    <main class="max-w-[1660px] mx-auto">
+    <main class="max-w-415 mx-auto">
         <div class="px-page pt-11">
             <h1 class="text-3xl font-bold m-0 text-heading glow">{trans.projects.allmyprojects[lang]}</h1>
             <p class="text-[13px] text-body mt-1.5">{subtitle}</p>
@@ -123,11 +123,11 @@ const subtitle = trans.projects.subtitle[lang].replace("{count}", `${projects.le
         <!-- education & teamwork -->
         <section class="px-page pt-8 pb-14">
             <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4">
-                <div class="surface-card py-[22px] px-6">
+                <div class="surface-card py-5.5 px-6">
                     <h2 class="text-[13px] font-bold text-accent-heading mb-2.5">{trans.projects.educationtitle[lang]}</h2>
                     <p class="text-[12.5px] leading-[1.85] text-body">{trans.projects.education[lang]}</p>
                 </div>
-                <div class="surface-card py-[22px] px-6">
+                <div class="surface-card py-5.5 px-6">
                     <h2 class="text-[13px] font-bold text-accent-heading mb-3">{trans.projects.teamskillstitle[lang]}</h2>
                     <ul class="flex flex-col gap-2.5">
                         {schoolSkills.map(skill => (

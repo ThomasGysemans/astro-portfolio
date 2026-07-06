@@ -1,5 +1,8 @@
 {
   "svelte.plugin.svelte.compilerWarnings": {
     "element_invalid_self_closing_tag": "ignore"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
   }
 }

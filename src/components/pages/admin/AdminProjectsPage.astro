@@ -27,12 +27,12 @@ const contextLabel = (id: string) => CONTEXTS[id as ProjectContext]?.fr ?? id;
     <div class="flex flex-col gap-2.5">
         {projects.map(project => (
             <div class="adm-row">
-                <img src={project.thumbUrl} alt="" class="w-16 h-16 rounded object-cover flex-none" loading="lazy">
-                <div class="flex-1 min-w-[220px]">
+                <img src={project.thumbUrl} alt="" class="w-16 h-16 rounded-sm object-cover flex-none" loading="lazy">
+                <div class="flex-1 min-w-55">
                     <div class="text-[15px] font-bold text-heading">
                         {project.name}
-                        {project.featured && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-accent border border-accent rounded px-1.5 py-0.5 align-middle">vitrine</span>}
-                        {project.carousel && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-heading border border-edge rounded px-1.5 py-0.5 align-middle">carousel</span>}
+                        {project.featured && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-accent border border-accent rounded-sm px-1.5 py-0.5 align-middle">vitrine</span>}
+                        {project.carousel && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-heading border border-edge rounded-sm px-1.5 py-0.5 align-middle">carousel</span>}
                     </div>
                     <div class="text-[12.5px] text-muted mt-0.5">
                         /{project.slug} · {project.year} · {categoryLabel(project.category)} · {contextLabel(project.context)}

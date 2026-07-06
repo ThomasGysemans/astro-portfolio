@@ -31,7 +31,7 @@ const excerpt = (quote: string) => quote.length > 120 ? quote.slice(0, 120) + "�
     <div class="flex flex-col gap-2.5">
         {reviews.map(review => (
             <div class="adm-row">
-                <div class="flex-1 min-w-[240px]">
+                <div class="flex-1 min-w-60">
                     <div class="text-[14px] font-bold text-heading">{review.company} <span class="text-muted font-normal">· {review.role} · {review.year}</span></div>
                     <p class="text-[13px] text-body mt-1 italic">« {excerpt(review.quote)} »</p>
                 </div>
