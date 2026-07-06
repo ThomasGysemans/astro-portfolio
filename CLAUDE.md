@@ -25,10 +25,12 @@ Astro 7 in SSR mode (`output: "server"`, Vercel serverless adapter imported from
 
 ### i18n (unusual setup — read before touching routing)
 
-- **There is no `src/pages/en/` folder.** Pages exist once, without locale prefix. `/en/*` URLs work because `src/middleware.ts` computes the locale from the URL and calls `context.rewrite()` for non-default locales. The `if (!context.locals.lang)` guard is required because the rewrite re-runs the middleware chain. Astro's native i18n `fallback` does **not** work with `routing: "manual"` (returns 404s) — this custom rewrite replaces it.
-- Everything i18n lives in `src/i18n/`: `config.ts` is the single source of truth for locales (imported by `astro.config.ts`, the middleware, and `App.LangCode` in `env.d.ts`); copy is split per page namespace in `translations/` and consumed as `trans.section.key[lang]` via `import trans from "@i18n"`.
+- **There is no `src/pages/en/` folder.** Pages exist once, without locale prefix. `/en/*` URLs work through Astro's **native** i18n: `astro.config.ts` sets `routing: { prefixDefaultLocale: false, fallbackType: "rewrite" }` with `fallback: { en: "fr" }`, so Astro renders the shared (fr) pages in place at the `/en/*` URLs while `Astro.currentLocale`/`locals.lang` stay `en`. **This is not `routing: "manual"`** — Astro's i18n middleware runs automatically and is no longer added to the `sequence()` by hand.
+- **Language redirection** (in `userMiddleware`): only the prefix-less URLs are ambiguous entry points that may be redirected. A first-time visitor on a default URL is sent to their preferred locale — the `lang` cookie (their past explicit choice) first, else the browser's `Accept-Language` (parsed by `preferredLocale` in `config.ts`). A `/en/*` URL is an explicit request and is **never** redirected (crawlers included → both versions stay indexable). `/admin`, non-GET, non-HTML and `/_*` requests are skipped. The `if (context.locals.lang) return next()` guard avoids re-processing when the fallback rewrite re-runs the chain.
+- **The `lang` cookie is the explicit choice**, set for a year: written by the language switch client-side (`[data-set-lang]` in `Header.astro`, before navigation) so the switch is authoritative and never bounced, and mirrored server-side to the locale actually served.
+- Everything i18n lives in `src/i18n/`: `config.ts` is the single source of truth for locales + `preferredLocale` (imported by `astro.config.ts`, the middleware, and `App.LangCode` in `env.d.ts`); copy is split per page namespace in `translations/` and consumed as `trans.section.key[lang]` via `import trans from "@i18n"`.
 - Data files must import from the `@i18n/text` subpath (not `@i18n`), because the index re-exports `paths.ts` which depends on the `astro:i18n` virtual module.
-- The `lang` cookie mirrors the URL locale; `Astro.locals.lang` is the only way pages know the language.
+- `Astro.locals.lang` is the only way pages know the language.
 
 ### Theming
 

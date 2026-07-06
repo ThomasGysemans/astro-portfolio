@@ -10,15 +10,19 @@ import { LOCALES, DEFAULT_LOCALE } from "./src/i18n/config";
 export default defineConfig({
   output: "server",
   adapter: vercel(),
-  site: "https://portfolio.sciencesky.fr",
+  site: "https://thomasgysemans.dev",
   integrations: [icon({ iconDir: "./public/icons" }), svelte()],
   i18n: {
     locales: [...LOCALES],
     defaultLocale: DEFAULT_LOCALE,
-    routing: "manual",
-    // Non-default locales have no page files of their own:
-    // their URLs are rewritten to the shared pages, and the middleware
-    // keeps `locals.lang` based on the original URL.
+    // Non-default locales have no page files of their own. Astro's native
+    // fallback renders the shared (default-locale) pages in place at the
+    // `/en/*` URLs — no `src/pages/en/` folder and no manual routing needed.
+    // `Astro.currentLocale` stays the requested locale (en) under `rewrite`.
+    routing: {
+      prefixDefaultLocale: false,
+      fallbackType: "rewrite",
+    },
     fallback: {
       en: "fr",
     },

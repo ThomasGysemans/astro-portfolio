@@ -58,7 +58,7 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
         >{themeIcon}</button>
         <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
             {localeLinks.map(link => (
-                <a href={link.href} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
+                <a href={link.href} data-set-lang={link.locale} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
             ))}
         </div>
         <a href={contactHref} class="btn-primary text-[12.5px] px-5 py-2.5">{trans.common.contactme[lang]}</a>
@@ -99,7 +99,7 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
             >{themeIcon}</button>
             <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
                 {localeLinks.map(link => (
-                    <a href={link.href} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
+                    <a href={link.href} data-set-lang={link.locale} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
                 ))}
             </div>
         </div>
@@ -160,6 +160,16 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
                 document.querySelectorAll("[data-theme-toggle]").forEach(b => {
                     b.textContent = theme === "dark" ? "☀️" : "🌙";
                 });
+            });
+        });
+
+        // Record an explicit language choice before navigating: the cookie
+        // becomes authoritative, so the middleware never auto-redirects the
+        // visitor away from the language they just picked.
+        document.querySelectorAll<HTMLAnchorElement>("[data-set-lang]").forEach(link => {
+            link.addEventListener("click", () => {
+                const locale = link.dataset.setLang;
+                document.cookie = `lang=${locale};path=/;max-age=31536000;samesite=lax`;
             });
         });
 
