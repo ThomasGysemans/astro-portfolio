@@ -1,93 +1,24 @@
 ---
-import { Icon } from "astro-icon/components";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import PolygonBackground from "@components/PolygonBackground.astro";
 import PageLayout from "./PageLayout.astro";
-import trans from "@trans";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
 
 interface Props {
     title: string;
-    nested?: boolean;
-    nav?: string;
+    description?: string;
+    footerCta?: boolean; // hide the "get in touch" button (404 page)
 }
 
-const { title, nested = false, nav = "px-main", } = Astro.props;
-const lang = Astro.locals.lang;
-const pathname = Astro.url.pathname;
-const isEn = lang === "en";
+const { title, description, footerCta = true } = Astro.props;
 ---
 
-<PageLayout title={title}>
-    <div class="pt-16 text-primary">
-        <PolygonBackground />
-        <nav class={"flex justify-between flex-col items-center space-y-10 md:space-y-0 md:flex-row " + nav}>
-            <div class="flex items-center space-x-6">
-                {nested ? (
-                    <a href={getRelativeLocaleUrl(lang, "/projects")} class="flex items-center space-x-2 text-lg">
-                        <Icon name="chevron-left" />
-                        <span class="underline">{trans.common.back[lang]}</span>
-                    </a>
-                ) : (
-                    <a href={getRelativeLocaleUrl(lang, "/")}>
-                        <img src="/logo.png" alt={trans.common.logo[lang]} class="max-w-20 lg:max-w-28" />
-                    </a>
-                    <h1 class="font-extrabold text-xl lg:text-3xl leading-normal">Thomas<br />Gysemans</h1>
-                )}
-            </div>
-            <div class="flex items-center flex-col sm:flex-row sm:space-x-8 sm:space-y-0 space-y-8">
-                <div class="flex items-center space-x-5">
-                    <a href={pathname.replace("/en", "")} class={`lang-link ${isEn ? "group" : "active"}`}>
-                        <Icon name="french-flag" class={`text-xl lg:text-3xl ${isEn ? "grayscale group-hover:grayscale-0" : ""}`} />
-                        <span class="font-bold">FR</span>
-                    </a>
-                    <a href={`/en${pathname.replace("/en", "")}`} class={`lang-link ${isEn ? "active" : "group"}`}>
-                        <Icon name="uk-flag" class={`text-xl lg:text-3xl ${isEn ? "" : "grayscale group-hover:grayscale-0"}`} />
-                        <span class="font-bold">EN</span>
-                    </a>
-                </div>
-                <a href={getRelativeLocaleUrl(lang, "/showcase")} class="py-2 rounded-md text-primary text-center font-bold lg:text-lg work-btn">
-                    {trans.homepage.showcase[lang]}
-                </a>
-            </div>
-        </nav>
-        <div>
+<PageLayout {title} {description}>
+    <!-- Full-height column so the footer reaches the bottom on short pages (404). -->
+    <div class="min-h-dvh flex flex-col">
+        <Header />
+        <div class="flex-1 flex flex-col">
             <slot />
         </div>
+        <Footer cta={footerCta} />
     </div>
 </PageLayout>
-
-<style lang="scss">
-    .lang-link {
-        @apply flex items-center space-x-2 opacity-40 hover:opacity-100 transition-opacity;
-
-        &.active {
-            @apply opacity-100;
-        }
-    }
-
-    .work-btn {
-        display: inline-block;
-        position: relative;
-        text-decoration: none;
-        z-index: 1;
-
-        &::after {
-            content: '';
-            position: absolute;
-            z-index: -1;
-            left: 0;
-            bottom: .07em;
-            height: .15em;
-            width: 100%;
-            border-radius: 10px;
-            transition: background-size 300ms ease;
-            background-size: 100% 100%;
-
-            @apply bg-gradient-to-r from-primary via-primary-light to-primary;
-        }
-
-        &:hover::after {
-            background-size: 200% 200%;
-        }
-    }
-</style>

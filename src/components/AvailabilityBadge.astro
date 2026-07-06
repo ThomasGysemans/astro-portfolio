@@ -1,0 +1,14 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import trans from "@i18n";
+
+const lang = Astro.locals.lang;
+---
+
+<a
+    href={getRelativeLocaleUrl(lang, "/freelance")}
+    class="inline-flex items-center gap-2 text-[11px] font-bold tracking-[.12em] text-avail bg-avail-bg border border-avail-bd rounded-full py-1.5 px-3.5"
+>
+    <span class="w-[7px] h-[7px] rounded-full bg-[#2fa866] inline-block shadow-[0_0_8px_#2fa866]" />
+    {trans.common.availableforfreelance[lang]}
+</a>

@@ -1,0 +1,35 @@
+---
+import AdminReviewsPage from "@components/pages/admin/AdminReviewsPage.astro";
+import { pbErrorMessage } from "@data/admin/forms";
+import { invalidateCache } from "@data/pb";
+
+const pb = Astro.locals.admin!;
+let error: string | undefined;
+
+if (Astro.request.method === "POST") {
+    const data = await Astro.request.formData();
+    if (data.get("action") === "delete") {
+        try {
+            await pb.collection("reviews").delete(String(data.get("id")));
+            invalidateCache();
+            return Astro.redirect("/admin/reviews?deleted=1");
+        } catch (err) {
+            error = pbErrorMessage(err);
+        }
+    }
+}
+
+const records = await pb.collection("reviews").getFullList({ sort: "-year" });
+const reviews = records.map(r => ({
+    id: r.id,
+    quote: r.quote_fr,
+    role: r.role_fr,
+    company: r.company_fr,
+    year: r.year,
+}));
+
+const notice = Astro.url.searchParams.has("deleted") ? "Avis supprimé."
+    : Astro.url.searchParams.has("saved") ? "Enregistré." : undefined;
+---
+
+<AdminReviewsPage {reviews} {notice} {error} />

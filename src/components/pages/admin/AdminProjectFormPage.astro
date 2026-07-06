@@ -1,0 +1,449 @@
+---
+import AdminLayout from "@layouts/AdminLayout.astro";
+import type { ProjectFormState } from "@data/admin/projects";
+import { CATEGORIES, CONTEXTS, PROJECT_TYPES, TECH_ROLES } from "@data/categories";
+import { LOCALES } from "@i18n/config";
+
+interface Props {
+    id?: string;
+    state: ProjectFormState;
+    notice?: string;
+    error?: string;
+}
+
+const { id, state, notice, error } = Astro.props;
+const { values, thumbUrl, pictures, techs, availableTechs } = state;
+const isNew = !id;
+const title = isNew ? "Nouveau projet" : `Projet : ${values.name || values.slug}`;
+
+const isVideo = (name: string) => /\.(mp4|mov|qt|webm)$/i.test(name);
+---
+
+<AdminLayout {title} {notice}>
+    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
+        <h1 class="text-[24px] font-bold text-heading glow">{isNew ? "Nouveau projet" : values.name || values.slug}</h1>
+        <a href="/admin/projects" class="text-[13px] text-muted hover:text-accent transition-colors">← Retour à la liste</a>
+    </div>
+
+    {error && <p class="adm-banner adm-banner-error">{error}</p>}
+
+    <form method="POST" enctype="multipart/form-data" class="flex flex-col gap-6">
+        <input type="hidden" name="action" value="save">
+
+        <section class="adm-card">
+            <h2 class="text-[16px] font-bold text-heading mb-4">Identité</h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+                <div class="adm-field">
+                    <label for="slug" class="adm-label">Slug</label>
+                    <input id="slug" name="slug" class="adm-input" value={values.slug} required minlength="2" maxlength="100">
+                </div>
+                <div class="adm-field">
+                    <label for="badge" class="adm-label">Badge (optionnel)</label>
+                    <input id="badge" name="badge" class="adm-input" value={values.badge} maxlength="50" placeholder="Déduit de la catégorie si vide">
+                </div>
+                <div class="adm-field">
+                    <label class="adm-check pb-2.5">
+                        <input type="checkbox" name="featured" checked={values.featured}>
+                        Projet vitrine (accueil + showcase)
+                    </label>
+                    <label class="adm-check pb-2.5">
+                        <input type="checkbox" name="carousel" checked={values.carousel}>
+                        Projet du carrousel d'accueil (décoche automatiquement les autres)
+                    </label>
+                </div>
+            </div>
+            {!isNew && <p class="text-[12px] text-muted mt-3">⚠ Le slug est l'URL publique du projet (SEO) : ne le changez pas après publication.</p>}
+        </section>
+
+        <section class="adm-card">
+            <h2 class="text-[16px] font-bold text-heading mb-4">Classement</h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+                <div class="adm-field">
+                    <label for="category" class="adm-label">Catégorie</label>
+                    <select id="category" name="category" class="adm-input" required>
+                        {Object.entries(CATEGORIES).map(([catId, meta]) => (
+                            <option value={catId} selected={values.category === catId}>{meta.label.fr}</option>
+                        ))}
+                    </select>
+                </div>
+                <div class="adm-field">
+                    <label for="type" class="adm-label">Type</label>
+                    <select id="type" name="type" class="adm-input" required>
+                        {Object.entries(PROJECT_TYPES).map(([typeId, label]) => (
+                            <option value={typeId} selected={values.type === typeId}>{label.fr}</option>
+                        ))}
+                    </select>
+                </div>
+                <div class="adm-field">
+                    <label for="context" class="adm-label">Contexte</label>
+                    <select id="context" name="context" class="adm-input" required>
+                        {Object.entries(CONTEXTS).map(([ctxId, label]) => (
+                            <option value={ctxId} selected={values.context === ctxId}>{label.fr}</option>
+                        ))}
+                    </select>
+                </div>
+                <div class="adm-field">
+                    <label for="year" class="adm-label">Année (tri)</label>
+                    <input id="year" name="year" type="number" class="adm-input" value={values.year} required>
+                </div>
+                <div class="adm-field">
+                    <label for="date" class="adm-label">Date affichée</label>
+                    <input id="date" name="date" class="adm-input" value={values.date} placeholder="2023 ou 2018 → 2025">
+                </div>
+                <div class="adm-field">
+                    <label for="teamSize" class="adm-label">Taille d'équipe</label>
+                    <input id="teamSize" name="teamSize" type="number" min="1" class="adm-input" value={values.teamSize} required>
+                </div>
+                <div class="adm-field">
+                    <span class="adm-label">Langues du projet</span>
+                    <div class="flex gap-4 items-center min-h-[38px]">
+                        {LOCALES.map(locale => (
+                            <label class="adm-check">
+                                <input type="checkbox" name="languages" value={locale} checked={values.languages.includes(locale)}>
+                                {locale.toUpperCase()}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="adm-card">
+            <h2 class="text-[16px] font-bold text-heading mb-4">Liens</h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
+                <div class="adm-field">
+                    <label for="github" class="adm-label">GitHub (optionnel)</label>
+                    <input id="github" name="github" type="url" class="adm-input" value={values.github} placeholder="https://github.com/…">
+                </div>
+                <div class="adm-field">
+                    <label for="link" class="adm-label">Lien du projet (optionnel)</label>
+                    <input id="link" name="link" type="url" class="adm-input" value={values.link} placeholder="https://…">
+                </div>
+            </div>
+        </section>
+
+        <section class="adm-card">
+            <h2 class="text-[16px] font-bold text-heading mb-4">Médias</h2>
+            <div class="flex flex-col gap-6">
+                <div>
+                    <span class="adm-label">Vignette {isNew ? "(requise)" : "(remplacée seulement si un fichier est choisi)"}</span>
+                    <div id="thumb-figures" class:list={["flex items-start gap-3 flex-wrap mb-3", !thumbUrl && "hidden"]}>
+                        {thumbUrl && (
+                            <figure id="thumb-current" class="adm-media-card w-[200px]">
+                                <img src={thumbUrl} alt="Vignette actuelle" loading="lazy">
+                                <figcaption class="text-[11.5px] text-muted">Vignette actuelle</figcaption>
+                            </figure>
+                        )}
+                        <figure id="thumb-preview" class="adm-media-card w-[200px] hidden">
+                            <img alt="Nouvelle vignette">
+                            <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vignette</figcaption>
+                        </figure>
+                    </div>
+                    <input id="thumb" name="thumb" type="file" accept="image/*" class="adm-input" required={isNew}>
+                </div>
+                <div>
+                    <span class="adm-label">Images & vidéos ({pictures.length})</span>
+                    {pictures.length > 0 && (
+                        <ul class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 mb-4 list-none p-0">
+                            {pictures.map(picture => (
+                                <li class="adm-media-card">
+                                    {isVideo(picture.name)
+                                        ? <video src={picture.url} muted playsinline preload="metadata" />
+                                        : <img src={picture.url} alt={picture.name} loading="lazy" />}
+                                    <a href={picture.url} target="_blank" rel="noopener" class="text-[11.5px] text-accent hover:underline truncate">{picture.name}</a>
+                                    <label class="adm-check !text-[12px]">
+                                        <input type="checkbox" name="remove_pictures" value={picture.name}>
+                                        supprimer
+                                    </label>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    <label for="pictures" class="text-[12.5px] text-muted block mb-1.5">Ajouter des fichiers (10 max au total ; si vide à la création, la vignette est utilisée) :</label>
+                    <input id="pictures" name="pictures" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif,image/avif,video/mp4,video/quicktime" class="adm-input">
+                    <ul id="new-pictures" class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 mt-3 list-none p-0"></ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="adm-card">
+            <h2 class="text-[16px] font-bold text-heading mb-4">Textes (français)</h2>
+            <div class="flex flex-col gap-4">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+                    <div class="adm-field">
+                        <label for="name" class="adm-label">Nom</label>
+                        <input id="name" name="name" class="adm-input" value={values.name} required maxlength="150">
+                    </div>
+                    <div class="adm-field">
+                        <label for="sub" class="adm-label">Sous-titre (cartes compactes)</label>
+                        <input id="sub" name="sub" class="adm-input" value={values.sub} required maxlength="200">
+                    </div>
+                    <div class="adm-field">
+                        <label for="tagline" class="adm-label">Tagline (carrousel / showcase)</label>
+                        <input id="tagline" name="tagline" class="adm-input" value={values.tagline}>
+                    </div>
+                    <div class="adm-field">
+                        <label for="caption" class="adm-label">Légende de la vignette</label>
+                        <input id="caption" name="caption" class="adm-input" value={values.caption}>
+                    </div>
+                </div>
+                <div>
+                    <label for="description" class="adm-label">Description (cartes)</label>
+                    <textarea id="description" name="description" class="adm-input" required>{values.description}</textarea>
+                </div>
+                <div>
+                    <label for="about" class="adm-label">À propos (page détail)</label>
+                    <textarea id="about" name="about" class="adm-input" rows="8">{values.about}</textarea>
+                </div>
+            </div>
+        </section>
+
+        <section class="adm-card">
+            <h2 class="text-[16px] font-bold text-heading mb-1">Textes (anglais)</h2>
+            <p class="text-[12.5px] text-muted mb-4">Facultatif : tant qu'un champ est vide, le site anglais retombe sur le texte français correspondant.</p>
+            <div class="flex flex-col gap-4">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+                    <div class="adm-field">
+                        <label for="name_en" class="adm-label">Nom</label>
+                        <input id="name_en" name="name_en" class="adm-input" value={values.nameEn} maxlength="150">
+                    </div>
+                    <div class="adm-field">
+                        <label for="sub_en" class="adm-label">Sous-titre (cartes compactes)</label>
+                        <input id="sub_en" name="sub_en" class="adm-input" value={values.subEn} maxlength="200">
+                    </div>
+                    <div class="adm-field">
+                        <label for="tagline_en" class="adm-label">Tagline (carrousel / showcase)</label>
+                        <input id="tagline_en" name="tagline_en" class="adm-input" value={values.taglineEn}>
+                    </div>
+                    <div class="adm-field">
+                        <label for="caption_en" class="adm-label">Légende de la vignette</label>
+                        <input id="caption_en" name="caption_en" class="adm-input" value={values.captionEn}>
+                    </div>
+                </div>
+                <div>
+                    <label for="description_en" class="adm-label">Description (cartes)</label>
+                    <textarea id="description_en" name="description_en" class="adm-input">{values.descriptionEn}</textarea>
+                </div>
+                <div>
+                    <label for="about_en" class="adm-label">À propos (page détail)</label>
+                    <textarea id="about_en" name="about_en" class="adm-input" rows="8">{values.aboutEn}</textarea>
+                </div>
+            </div>
+        </section>
+
+        <div>
+            <button type="submit" class="adm-btn">{isNew ? "Créer le projet" : "Enregistrer"}</button>
+        </div>
+    </form>
+
+    {!isNew && (
+        <section class="mt-10">
+            <h2 class="text-[18px] font-bold text-heading mb-1">Technologies</h2>
+            <p class="text-[12.5px] text-muted mb-4">L'ordre de la liste définit l'ordre d'affichage sur la page du projet : réordonnez avec les flèches, puis enregistrez.</p>
+
+            <form method="POST" id="techs-form" class="flex flex-col gap-4">
+                <input type="hidden" name="action" value="save-techs">
+                <div id="techs-removed"></div>
+
+                <ul id="techs-list" class="flex flex-col gap-2.5 list-none p-0 m-0">
+                    {techs.map(tech => (
+                        <li class="adm-row" data-tech={tech.technologyId} data-name={tech.name}>
+                            <input type="hidden" name="tech_ref" value={tech.id}>
+                            <span class="adm-tech-name font-bold text-heading text-[14px] flex-1 min-w-[120px]">{tech.name}</span>
+                            <select name="tech_role" class="adm-input !w-auto" aria-label={`Rôle de ${tech.name}`}>
+                                {Object.entries(TECH_ROLES).map(([roleId, label]) => (
+                                    <option value={roleId} selected={tech.role === roleId}>{label.fr}</option>
+                                ))}
+                            </select>
+                            <div class="flex gap-1.5">
+                                <button type="button" class="adm-btn-outline !px-2.5" data-move="up" aria-label={`Monter ${tech.name}`}>↑</button>
+                                <button type="button" class="adm-btn-outline !px-2.5" data-move="down" aria-label={`Descendre ${tech.name}`}>↓</button>
+                                <button type="button" class="adm-btn-danger !px-2.5" data-remove aria-label={`Retirer ${tech.name}`}>✕</button>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+
+                <div class="adm-row">
+                    <select id="tech-add-select" class="adm-input !w-auto" aria-label="Technologie à ajouter" disabled={availableTechs.length === 0}>
+                        {availableTechs.map(tech => (
+                            <option value={tech.id}>{tech.name}</option>
+                        ))}
+                    </select>
+                    <select id="tech-add-role" class="adm-input !w-auto" aria-label="Rôle de la technologie à ajouter">
+                        {Object.entries(TECH_ROLES).map(([roleId, label]) => (
+                            <option value={roleId}>{label.fr}</option>
+                        ))}
+                    </select>
+                    <button type="button" id="tech-add" class="adm-btn-outline" disabled={availableTechs.length === 0}>Ajouter</button>
+                    <span class="flex-1" />
+                    <button type="submit" class="adm-btn">Enregistrer les technologies</button>
+                </div>
+            </form>
+
+            <template id="tech-row-template">
+                <li class="adm-row">
+                    <input type="hidden" name="tech_ref" value="">
+                    <span class="adm-tech-name font-bold text-heading text-[14px] flex-1 min-w-[120px]"></span>
+                    <select name="tech_role" class="adm-input !w-auto" aria-label="Rôle">
+                        {Object.entries(TECH_ROLES).map(([roleId, label]) => (
+                            <option value={roleId}>{label.fr}</option>
+                        ))}
+                    </select>
+                    <div class="flex gap-1.5">
+                        <button type="button" class="adm-btn-outline !px-2.5" data-move="up" aria-label="Monter">↑</button>
+                        <button type="button" class="adm-btn-outline !px-2.5" data-move="down" aria-label="Descendre">↓</button>
+                        <button type="button" class="adm-btn-danger !px-2.5" data-remove aria-label="Retirer">✕</button>
+                    </div>
+                </li>
+            </template>
+        </section>
+    )}
+
+    <script>
+        // --- Live previews of the media inputs.
+        const thumbInput = document.getElementById("thumb") as HTMLInputElement | null;
+        thumbInput?.addEventListener("change", () => {
+            const file = thumbInput.files?.[0];
+            const preview = document.getElementById("thumb-preview");
+            const previewImg = preview?.querySelector("img");
+            if (!file || !preview || !previewImg) return;
+            previewImg.src = URL.createObjectURL(file);
+            preview.classList.remove("hidden");
+            document.getElementById("thumb-figures")?.classList.remove("hidden");
+            const current = document.getElementById("thumb-current");
+            current?.classList.add("adm-media-removed");
+            const caption = current?.querySelector("figcaption");
+            if (caption) caption.textContent = "Remplacée à l'enregistrement";
+        });
+
+        // Gray out the existing pictures ticked for removal.
+        for (const checkbox of document.querySelectorAll<HTMLInputElement>('input[name="remove_pictures"]')) {
+            checkbox.addEventListener("change", () => {
+                checkbox.closest(".adm-media-card")?.classList.toggle("adm-media-removed", checkbox.checked);
+            });
+        }
+
+        // Files staged for upload. A DataTransfer accumulates the picks so
+        // the admin can add files in several batches and remove one before
+        // saving; the input's FileList is kept in sync, so the form still
+        // submits exactly what the cards show.
+        const picturesInput = document.getElementById("pictures") as HTMLInputElement | null;
+        const stagedList = document.getElementById("new-pictures");
+        const staged = typeof DataTransfer === "undefined" ? null : new DataTransfer();
+        let stagedUrls: string[] = [];
+
+        function renderStagedPictures(): void {
+            if (!picturesInput || !stagedList || !staged) return;
+            for (const url of stagedUrls) URL.revokeObjectURL(url);
+            stagedUrls = [];
+            stagedList.innerHTML = "";
+
+            Array.from(staged.files).forEach((file, index) => {
+                const card = document.createElement("li");
+                card.className = "adm-media-card";
+                const url = URL.createObjectURL(file);
+                stagedUrls.push(url);
+                if (file.type.startsWith("video/")) {
+                    const video = document.createElement("video");
+                    video.src = url;
+                    video.muted = true;
+                    card.append(video);
+                } else {
+                    const img = document.createElement("img");
+                    img.src = url;
+                    img.alt = file.name;
+                    card.append(img);
+                }
+                const name = document.createElement("span");
+                name.className = "text-[11.5px] text-muted truncate";
+                name.textContent = file.name;
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "adm-btn-danger !px-2 !py-1 !text-[11px]";
+                remove.textContent = "✕ Retirer";
+                remove.addEventListener("click", () => {
+                    staged.items.remove(index);
+                    if (picturesInput) picturesInput.files = staged.files;
+                    renderStagedPictures();
+                });
+                card.append(name, remove);
+                stagedList.append(card);
+            });
+        }
+
+        picturesInput?.addEventListener("change", () => {
+            if (!staged) return;
+            for (const file of Array.from(picturesInput.files ?? [])) {
+                const duplicate = Array.from(staged.files)
+                    .some(f => f.name === file.name && f.size === file.size);
+                if (!duplicate) staged.items.add(file);
+            }
+            picturesInput.files = staged.files;
+            renderStagedPictures();
+        });
+
+        // --- Techs list: client-side ordering, addition and removal;
+        // everything is persisted at once by the "save-techs" submit,
+        // the DOM order of the rows giving the positions.
+        const techsList = document.getElementById("techs-list");
+        const techsRemoved = document.getElementById("techs-removed");
+        const addSelect = document.getElementById("tech-add-select") as HTMLSelectElement | null;
+        const addRole = document.getElementById("tech-add-role") as HTMLSelectElement | null;
+        const addButton = document.getElementById("tech-add") as HTMLButtonElement | null;
+        const rowTemplate = document.getElementById("tech-row-template") as HTMLTemplateElement | null;
+
+        function refreshAddState(): void {
+            const empty = !addSelect || addSelect.options.length === 0;
+            if (addSelect) addSelect.disabled = empty;
+            if (addButton) addButton.disabled = empty;
+        }
+
+        techsList?.addEventListener("click", event => {
+            const target = event.target as HTMLElement;
+            const row = target.closest("li");
+            if (!row) return;
+
+            const move = target.closest("[data-move]")?.getAttribute("data-move");
+            if (move === "up") row.previousElementSibling?.before(row);
+            if (move === "down") row.nextElementSibling?.after(row);
+
+            if (target.closest("[data-remove]")) {
+                const ref = row.querySelector<HTMLInputElement>('input[name="tech_ref"]')?.value ?? "";
+                // Existing junctions are deleted server-side on save;
+                // rows added in this session just disappear.
+                if (!ref.startsWith("new:") && techsRemoved) {
+                    const removed = document.createElement("input");
+                    removed.type = "hidden";
+                    removed.name = "tech_removed";
+                    removed.value = ref;
+                    techsRemoved.append(removed);
+                }
+                if (addSelect && row.dataset.tech) {
+                    addSelect.add(new Option(row.dataset.name ?? "?", row.dataset.tech));
+                }
+                row.remove();
+                refreshAddState();
+            }
+        });
+
+        addButton?.addEventListener("click", () => {
+            const option = addSelect?.selectedOptions[0];
+            const row = rowTemplate?.content.firstElementChild?.cloneNode(true) as HTMLLIElement | undefined;
+            if (!option || !row || !techsList) return;
+
+            row.dataset.tech = option.value;
+            row.dataset.name = option.text;
+            const ref = row.querySelector<HTMLInputElement>('input[name="tech_ref"]');
+            if (ref) ref.value = `new:${option.value}`;
+            const name = row.querySelector(".adm-tech-name");
+            if (name) name.textContent = option.text;
+            const role = row.querySelector<HTMLSelectElement>('select[name="tech_role"]');
+            if (role && addRole) role.value = addRole.value;
+
+            techsList.append(row);
+            option.remove();
+            refreshAddState();
+        });
+    </script>
+</AdminLayout>

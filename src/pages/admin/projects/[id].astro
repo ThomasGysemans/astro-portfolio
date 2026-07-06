@@ -1,0 +1,27 @@
+---
+import AdminProjectFormPage from "@components/pages/admin/AdminProjectFormPage.astro";
+import { handleProjectPost, projectFormState } from "@data/admin/projects";
+
+const pb = Astro.locals.admin!;
+const id = Astro.params.id!;
+let error: string | undefined;
+let submitted;
+
+if (Astro.request.method === "POST") {
+    const result = await handleProjectPost(pb, await Astro.request.formData(), id);
+    if ("redirect" in result) return Astro.redirect(result.redirect);
+    error = result.error;
+    submitted = result.values;
+}
+
+const state = await projectFormState(pb, id);
+if (!state) return Astro.redirect("/admin/projects");
+// On error, re-render the form with what was submitted instead of the record.
+if (submitted) state.values = submitted;
+
+const notice = Astro.url.searchParams.has("created")
+    ? "Projet créé : ajoutez maintenant ses technologies ci-dessous."
+    : Astro.url.searchParams.has("saved") ? "Modifications enregistrées." : undefined;
+---
+
+<AdminProjectFormPage {id} {state} {notice} {error} />

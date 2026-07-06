@@ -1,0 +1,255 @@
+---
+import { Icon } from "astro-icon/components";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { getProfessionalProjects, getAllProjects } from "@data/projects";
+import AvailabilityBadge from "@components/AvailabilityBadge.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import MainLayout from "@layouts/MainLayout.astro";
+import StatCard from "@components/StatCard.astro";
+import { getReviews } from "@data/reviews";
+import trans from "@i18n";
+
+const EMAIL = "contact@thomasgysemans.dev";
+const MALT_URL = "https://malt.fr/profile/thomasgysemans";
+
+const lang = Astro.locals.lang;
+const [freelanceProjects, allProjects, reviews] = await Promise.all([
+    getProfessionalProjects(),
+    getAllProjects(),
+    getReviews(),
+]);
+const totalProjects = allProjects.length;
+const allProjectsLabel = trans.home.allprojectscount[lang].replace("{count}", `${totalProjects}`);
+const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
+
+const steps = [
+    { emoji: "🎨", border: "#619cf3", title: trans.freelance.step1title[lang], text: trans.freelance.step1[lang], fade: ".2s", pulse: ".4s" },
+    { emoji: "🧪", border: "#87b3f6", title: trans.freelance.step2title[lang], text: trans.freelance.step2[lang], fade: "1.1s", pulse: "1.3s" },
+    { emoji: "🚀", border: "#2fa866", title: trans.freelance.step3title[lang], text: trans.freelance.step3[lang], fade: "2s", pulse: "2.2s" },
+];
+
+const aiPoints = [
+    { emoji: "⚡", label: trans.freelance.ai1a[lang], result: trans.freelance.ai1b[lang] },
+    { emoji: "🔍", label: trans.freelance.ai2a[lang], result: trans.freelance.ai2b[lang] },
+    { emoji: "👁", label: trans.freelance.ai3a[lang], result: trans.freelance.ai3b[lang] },
+    { emoji: "💶", label: trans.freelance.ai4a[lang], result: trans.freelance.ai4b[lang] },
+];
+---
+
+<MainLayout title={trans.freelance.title[lang]} description={trans.freelance.description[lang]}>
+    <main class="relative overflow-hidden">
+        <div class="hero-scene absolute inset-0 pointer-events-none" aria-hidden="true" />
+
+        <div class="relative max-w-[1660px] mx-auto">
+            <!-- hero + process timeline -->
+            <section class="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-[clamp(28px,4vw,72px)] pt-[clamp(40px,6vw,88px)] px-page pb-12 items-center">
+                <div>
+                    <div class="mb-[26px]">
+                        <AvailabilityBadge />
+                    </div>
+                    <h1 class="text-[clamp(30px,3vw,48px)] font-bold leading-[1.18] m-0 text-heading glow" set:html={trans.freelance.herotitle[lang]} />
+                    <p class="text-[15px] leading-[1.8] text-body mt-[18px] max-w-[440px]">{trans.freelance.herointro[lang]}</p>
+                    <div class="flex items-center gap-3 mt-[34px] flex-wrap">
+                        <a href={`mailto:${EMAIL}`} class="btn-primary text-[13px] py-[13px] px-[26px] shadow-btn-glow">{trans.freelance.emailme[lang]}</a>
+                        <a href={MALT_URL} target="_blank" rel="noopener" class="malt-btn">
+                            <Icon name="malt" class="text-base text-malt" />
+                            {trans.freelance.hireonmalt[lang]}
+                        </a>
+                    </div>
+                    <p class="text-[12.5px] text-muted mt-4">{trans.freelance.freequote[lang]}</p>
+                </div>
+
+                <div class="fl-timeline relative max-w-[400px] w-full justify-self-center py-2.5">
+                    <div class="fl-timeline-line absolute left-[23px] top-3.5 bottom-3.5 w-0.5 bg-edge-strong" aria-hidden="true" />
+                    <div class="fl-timeline-line fl-timeline-progress absolute left-[23px] top-3.5 bottom-3.5 w-0.5" aria-hidden="true" />
+                    <ol class="fl-steps relative flex flex-col gap-11">
+                        {steps.map(step => (
+                            <li class="fl-step flex gap-[18px] items-center" style={`animation-delay:${step.fade}`}>
+                                <span class="fl-step-icon" style={`border-color:${step.border};animation-delay:${step.pulse}`}>{step.emoji}</span>
+                                <div>
+                                    <div class="text-[15px] font-bold text-heading">{step.title}</div>
+                                    <div class="text-xs text-body mt-[3px] leading-[1.55]">{step.text}</div>
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            </section>
+
+            <!-- stats -->
+            <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-5 px-page pt-8 pb-[72px]">
+                <StatCard value={trans.freelance.stat1num[lang]}>{trans.freelance.stat1[lang]}</StatCard>
+                <StatCard value={trans.freelance.stat2num[lang]}>{trans.freelance.stat2[lang]}</StatCard>
+                <StatCard value={trans.freelance.stat3num[lang]}>{trans.freelance.stat3[lang]}</StatCard>
+                <StatCard value={trans.freelance.stat4num[lang]}>{trans.freelance.stat4[lang]}</StatCard>
+            </section>
+
+            <!-- guarantee + AI -->
+            <section class="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-5 px-page pb-20">
+                <div class="bg-[rgba(47,168,102,.1)] border border-[rgba(47,168,102,.4)] rounded-[13px] py-8 px-[34px] flex gap-[22px] items-center">
+                    <span class="w-14 h-14 rounded-full bg-card-solid border-2 border-[#2fa866] flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🛡</span>
+                    <div>
+                        <h2 class="text-[17px] font-bold m-0 text-heading">{trans.freelance.guaranteetitle[lang]}</h2>
+                        <p class="text-[12.5px] text-body leading-[1.7] mt-[5px]">{trans.freelance.guarantee[lang]}</p>
+                    </div>
+                </div>
+                <div class="surface-card py-7 px-[34px]">
+                    <h2 class="text-base font-bold mb-4 text-heading">{trans.freelance.aititle[lang]}</h2>
+                    <ul class="flex flex-col gap-3 text-[13px] font-semibold text-body">
+                        {aiPoints.map(point => (
+                            <li class="flex items-center gap-2.5 flex-wrap">
+                                <span aria-hidden="true">{point.emoji}</span>
+                                <span class="text-heading">{point.label}</span>
+                                <span class="text-accent">{point.result}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </section>
+
+            <!-- freelance projects -->
+            <section class="px-page pb-20">
+                <div class="flex justify-between items-baseline mb-7 gap-4 flex-wrap">
+                    <h2 class="text-[23px] font-bold m-0 text-heading">{trans.freelance.deliveredforclients[lang]}</h2>
+                    <a href={projectsUrl} class="text-[13px] font-bold text-accent hover:underline hover:brightness-110">{allProjectsLabel}</a>
+                </div>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+                    {freelanceProjects.map(project => (
+                        <ProjectCard {project} variant="freelance" />
+                    ))}
+                </div>
+            </section>
+
+            <!-- reviews -->
+            <section class="px-page pb-20">
+                <h2 class="text-[23px] font-bold mb-7 text-heading">{trans.freelance.reviewstitle[lang]}</h2>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+                    {reviews.map(review => (
+                        <figure class="surface-card py-7 px-7 flex flex-col gap-3.5">
+                            <div class="text-accent text-[13px] tracking-[2px]" aria-hidden="true">★★★★★</div>
+                            <!-- The quotation marks come from the page, not the data (localized style). -->
+                            <blockquote class="text-[13.5px] leading-[1.7] text-body">{lang === "fr" ? `« ${review.quote[lang]} »` : `“${review.quote[lang]}”`}</blockquote>
+                            <figcaption class="mt-auto border-t border-edge pt-3 flex justify-between items-center gap-2.5">
+                                <div class="text-[11px] text-muted leading-normal">
+                                    {review.role[lang]}<br />
+                                    <span class="font-bold text-heading text-xs">{review.company[lang]}</span>
+                                    {lang === "en" && (
+                                        <span class="block text-[10px] italic text-muted">Translated from French</span>
+                                    )}
+                                </div>
+                                <span class="text-[10px] font-bold text-accent border border-edge-strong rounded-full py-1 px-2.5 whitespace-nowrap">{review.year}</span>
+                            </figcaption>
+                        </figure>
+                    ))}
+                </div>
+            </section>
+
+            <!-- contact -->
+            <section class="px-page pb-[88px]">
+                <div class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-2xl py-10 px-[44px] flex items-center justify-between gap-6 flex-wrap">
+                    <div>
+                        <h2 class="text-[21px] font-bold text-heading m-0">{trans.freelance.ctatitle[lang]}</h2>
+                        <p class="text-[12.5px] text-body mt-[5px]">{trans.freelance.ctasubtitle[lang]}</p>
+                    </div>
+                    <div class="flex gap-3 flex-wrap">
+                        <a href={`mailto:${EMAIL}`} class="btn-primary text-[13px] py-[13px] px-6 shadow-btn-glow">✉ {EMAIL}</a>
+                        <a href={MALT_URL} target="_blank" rel="noopener" class="malt-btn">
+                            <Icon name="malt" class="text-base text-malt" />
+                            {trans.freelance.onmalt[lang]}
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</MainLayout>
+
+<style lang="scss">
+    .hero-scene {
+        opacity: var(--hero-scene);
+        transition: opacity .3s;
+        background:
+            radial-gradient(ellipse 60% 50% at 75% 30%, rgba(97, 156, 243, .14), transparent 65%),
+            linear-gradient(180deg, rgba(3, 15, 32, .3), #030F20 82%);
+    }
+
+    .malt-btn {
+        @apply inline-flex items-center gap-2 border-[1.5px] border-malt text-heading text-[13px] font-bold py-3 px-[22px] rounded-[9px] whitespace-nowrap;
+        transition: background .2s, transform .2s;
+
+        &:hover {
+            background: rgba(252, 87, 87, .12);
+            transform: translateY(-2px);
+        }
+    }
+
+    @keyframes fl-grow {
+        from { transform: scaleY(0); }
+        to { transform: scaleY(1); }
+    }
+
+    @keyframes fl-fade {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fl-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(97, 156, 243, .55); }
+        100% { box-shadow: 0 0 0 14px rgba(97, 156, 243, 0); }
+    }
+
+    .fl-timeline-progress {
+        background: linear-gradient(180deg, #619cf3, #2fa866);
+        transform-origin: top;
+        animation: fl-grow 2.2s ease .4s both;
+    }
+
+    .fl-step {
+        animation: fl-fade .6s ease both;
+    }
+
+    .fl-step-icon {
+        @apply w-12 h-12 rounded-full bg-card-solid border-2 flex items-center justify-center text-[19px] shrink-0;
+        animation: fl-pulse 1.4s ease;
+    }
+
+    // Compact horizontal strip on small screens.
+    @media (max-width: 900px) {
+        .fl-timeline {
+            max-width: 100%;
+            justify-self: stretch;
+        }
+
+        .fl-timeline-line {
+            display: none;
+        }
+
+        .fl-steps {
+            flex-direction: row;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .fl-step {
+            flex: 1;
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+    }
+
+    // Very small screens: the steps stack vertically again.
+    @media (max-width: 520px) {
+        .fl-steps {
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .fl-step {
+            flex-direction: row;
+            text-align: left;
+            gap: 16px;
+            align-items: center;
+        }
+    }
+</style>

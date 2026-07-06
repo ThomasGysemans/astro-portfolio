@@ -1,156 +1,181 @@
 ---
-import "@styles/earth-responsiveness.scss";
-
 import { Icon } from "astro-icon/components";
-import { presentProjects } from "@db/projects";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import SpaceSection from "@components/SpaceSection.astro";
-import ProjectsGrid from "@components/ProjectsGrid.astro";
-import EarthDialog from "@components/svelte/EarthDialog.svelte";
-import Earth from "@components/svelte/Earth.svelte";
+import { getAllProjects, getCarouselProject, getFeaturedProjects } from "@data/projects";
+import FeaturedCarousel from "@components/svelte/FeaturedCarousel.svelte";
+import AvailabilityBadge from "@components/AvailabilityBadge.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+import StatCard from "@components/StatCard.astro";
 import MainLayout from "@layouts/MainLayout.astro";
-import AboutMe from "@components/AboutMe.astro";
-import Button from "@components/Button.astro";
-import trans from "@trans";
+import Earth from "@components/svelte/Earth.svelte";
+import trans from "@i18n";
 
 const lang = Astro.locals.lang;
-const projects = await presentProjects(lang, true, 6);
+const [featured, allProjects, carouselProject] = await Promise.all([getFeaturedProjects(), getAllProjects(), getCarouselProject()]);
+const totalProjects = allProjects.length;
+const allProjectsLabel = trans.home.allprojectscount[lang].replace("{count}", `${totalProjects}`);
+const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
+const showcaseUrl = getRelativeLocaleUrl(lang, "/showcase");
+const freelanceUrl = getRelativeLocaleUrl(lang, "/freelance");
+
+// The carousel explores the pictures of a single project (picked in the back-office).
+const isVideo = (url: string) => /\.(mp4|mov|qt|webm)(\?|$)/i.test(url);
+const carouselMedia = (carouselProject?.pictures ?? []).map(src => ({ src, video: isVideo(src) }));
+const carouselInfo = carouselProject && {
+    name: carouselProject.name[lang],
+    tagline: carouselProject.tagline[lang],
+    caption: carouselProject.caption[lang],
+    href: getRelativeLocaleUrl(lang, `/projects/${carouselProject.slug}`),
+};
+
+const carouselLabels = {
+    details: trans.common.details[lang],
+    prevPicture: trans.carousel.previouspicture[lang],
+    nextPicture: trans.carousel.nextpicture[lang],
+    gotoPicture: trans.carousel.gotopicture[lang],
+    pause: trans.carousel.pause[lang],
+    resume: trans.carousel.resume[lang],
+};
+
+const roleChips = [
+    { label: trans.home.webdev[lang], icon: "globe" },
+    { label: trans.home.appdev[lang], icon: "smartphone" },
+    { label: trans.home.designer[lang], icon: "flower-2" },
+];
+
+const aboutCards = [
+    { title: trans.home.studiestitle[lang], text: trans.home.studies[lang] },
+    { title: trans.home.experiencetitle[lang], text: trans.home.experience[lang] },
+    { title: trans.home.freelancetitle[lang], text: trans.home.freelance[lang] },
+    { title: trans.home.teamskillstitle[lang], text: trans.home.teamskills[lang] },
+];
 ---
 
-<MainLayout title={trans.common.title[lang]} nav="px-20 xl:px-main">
-    <main class="mt-16 2xl:mt-32 px-12 md:px-20 xl:px-32 2xl:px-64 relative z-50">
-        <div class="space-y-8">
-            <b class="text-lg md:text-xl xl:text-2xl">{trans.homepage.iam[lang]}</b>
-            <ul class="list-disc list-inside space-y-4 2xl:space-y-6 text-sm md:text-lg lg:text-xl">
-                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.webdev[lang]}</strong><Icon name="globe" /></li>
-                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.appdev[lang]}</strong><Icon name="smartphone" /></li>
-                <li class="flex items-center space-x-2"><span class="text-lg xl:text-2xl">&bull;</span><strong>{trans.homepage.designer[lang]}</strong><Icon name="flower-2" /></li>
-            </ul>
-            <p id="freelance-glow">{trans.homepage.infreelance[lang]}</p>
-            <div class="flex flex-col space-y-4 w-fit">
-                <div class="flex flex-col md:flex-row md:items-center md:space-x-6 max-md:space-y-3">
-                    <Button as="a" href={getRelativeLocaleUrl(lang, "/projects")}>{trans.common.knowmore[lang]}</Button>
-                    <Button as="a" href="https://malt.fr/profile/thomasgysemans">{trans.common.contact[lang]}</Button>
+<MainLayout title={trans.common.title[lang]}>
+    <main class="relative overflow-hidden">
+        <!-- Nebula-like scene, faded out in light mode through --hero-scene. -->
+        <div class="hero-scene absolute inset-0 pointer-events-none" aria-hidden="true" />
+
+        <div class="relative max-w-[1660px] mx-auto">
+            <!-- hero -->
+            <section class="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-5 px-page pt-[clamp(32px,7vh,110px)] pb-8 items-center min-h-[min(660px,calc(100vh-320px))]">
+                <div>
+                    <div class="mb-[22px]">
+                        <AvailabilityBadge />
+                    </div>
+                    <h1 class="text-[clamp(34px,3.4vw,60px)] font-bold leading-[1.16] mb-4 text-heading glow" set:html={trans.home.herotitle[lang]} />
+                    <p class="text-[clamp(14.5px,1vw,16.5px)] leading-[1.7] text-body max-w-[480px] mb-6" set:html={trans.home.herointro[lang]} />
+                    <div class="flex items-center gap-3 mb-[26px] flex-wrap">
+                        <a href={freelanceUrl} class="cta-pulse text-sm font-extrabold py-[15px] px-[30px] rounded-[10px] whitespace-nowrap">{trans.home.createproject[lang]}</a>
+                        <a href={showcaseUrl} class="btn-outline text-[13px] py-3 px-[22px]">{trans.home.showcasemode[lang]}</a>
+                        <div class="flex gap-2 ml-1.5">
+                            <a href="https://github.com/ThomasGysemans" target="_blank" rel="noopener" aria-label={`${trans.common.mygithubaccount[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="github" class="text-lg text-heading" /></a>
+                            <a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" rel="noopener" aria-label={`${trans.common.mylinkedinaccount[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="linkedin" class="text-lg text-heading" /></a>
+                            <a href="https://malt.fr/profile/thomasgysemans" target="_blank" rel="noopener" aria-label={`${trans.common.mymaltprofile[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="malt" class="text-lg text-malt" /></a>
+                        </div>
+                    </div>
+                    <div class="flex gap-2.5 flex-wrap">
+                        {roleChips.map(chip => (
+                            <span class="token-chip text-[12.5px] py-2 px-4">
+                                <Icon name={chip.icon} class="text-sm text-accent-strong" />
+                                {chip.label}
+                            </span>
+                        ))}
+                    </div>
                 </div>
-                <div class="flex items-center space-x-6">
-                    <a class="text-primary text-lg xl:text-2xl opacity-70 hover:opacity-100 transition-opacity" title={trans.common.mygithubaccount[lang]} href="https://github.com/ThomasGysemans" target="_blank"><Icon name="github" /></a>
-                    <a class="text-primary text-lg xl:text-2xl opacity-70 hover:opacity-100 transition-opacity" title={trans.common.mylinkedinaccount[lang]} href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank"><Icon name="linkedin" /></a>
+                <div class="relative flex justify-center">
+                    <div class="relative w-[clamp(260px,32vw,540px)] max-w-full aspect-square">
+                        <div class="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(97,156,243,.28),transparent_70%)]" aria-hidden="true" />
+                        <Earth dragLabel={trans.home.dragtoorbit[lang]} client:idle />
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="earth-dialog-container hidden">
-            <EarthDialog
-                resolution="2k"
-                lang={lang}
-            />
-        </div>
-        <div class="absolute z-10 top-12 2xl:top-32 right-0 planet-container max-md:flex max-md:justify-end">
-            <div id="earth-loading-replacement" class="absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
-                <svg aria-hidden="true" class="w-14 h-14 text-gray-200 animate-spin dark:text-gray-500 fill-blue-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                </svg>
-            </div>
-            <div class="w-[450px] sm:w-[500px] xl:w-[700px] 2xl:w-[800px] h-[500px]">
-                <Earth {lang} client:idle />
-            </div> 
+            </section>
+
+            <!-- stats -->
+            <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 px-page pt-2.5 pb-[34px]">
+                <StatCard value={trans.home.stat1num[lang]}>{trans.home.stat1[lang]}</StatCard>
+                <StatCard value={trans.home.stat2num[lang]}>{trans.home.stat2[lang]}</StatCard>
+                <StatCard value={trans.home.stat3num[lang]}>{trans.home.stat3[lang]}</StatCard>
+                <StatCard value={trans.home.stat4num[lang]}>{trans.home.stat4[lang]}</StatCard>
+            </section>
+
+            <!-- featured carousel: the pictures of the project picked in the back-office -->
+            {carouselInfo && carouselMedia.length > 0 && (
+                <section class="px-page pt-1.5 pb-10">
+                    <div class="flex justify-between items-baseline mb-4 gap-4 flex-wrap">
+                        <h2 class="text-[23px] font-bold m-0 text-heading">{trans.home.featuredprojects[lang]}</h2>
+                        <a href={showcaseUrl} class="text-[13px] font-bold text-accent hover:underline hover:brightness-110">{trans.home.opentheshowcase[lang]}</a>
+                    </div>
+                    <FeaturedCarousel project={carouselInfo} media={carouselMedia} labels={carouselLabels} client:visible />
+                </section>
+            )}
+
+            <!-- selected projects -->
+            <section class="px-page pb-10">
+                <div class="flex justify-between items-baseline mb-5 gap-4 flex-wrap">
+                    <h2 class="text-[23px] font-bold m-0 text-heading">{trans.home.selectedprojects[lang]}</h2>
+                    <a href={projectsUrl} class="text-[13px] font-bold text-accent hover:underline hover:brightness-110">{allProjectsLabel}</a>
+                </div>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(min(380px,100%),1fr))] gap-5">
+                    {featured.map(project => (
+                        <ProjectCard {project} />
+                    ))}
+                </div>
+                <div class="flex justify-center mt-6">
+                    <a href={projectsUrl} class="btn-outline text-[13px] py-3 px-[26px]">{trans.common.seemore[lang]}</a>
+                </div>
+            </section>
+
+            <!-- about -->
+            <section class="px-page pt-1 pb-11">
+                <h2 class="text-[23px] font-bold mb-5 text-heading">{trans.home.aboutme[lang]}</h2>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-4">
+                    {aboutCards.map(card => (
+                        <div class="surface-card p-5">
+                            <h3 class="text-[13px] font-bold text-accent-heading mb-2">{card.title}</h3>
+                            <p class="text-[11.5px] leading-[1.7] text-body" set:html={card.text} />
+                        </div>
+                    ))}
+                </div>
+            </section>
         </div>
     </main>
-    <SpaceSection />
-    <section class="space-y-20 pb-40">
-        <h2 class="font-bold text-primary text-2xl lg:text-3xl text-center">{trans.homepage.recentprojects[lang]}</h2>
-        <ProjectsGrid {projects} useInterestingProjects centered />
-        <div class="flex justify-center">
-            <Button as="a" href="/projects">{trans.common.seemore[lang]}</Button>
-        </div>
-    </section>
-    <section class="px-main space-y-20 pb-40">
-        <h2 class="font-bold text-primary text-center text-2xl lg:text-3xl" set:html={trans.homepage.aboutme[lang]} />
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(250px,450px))] gap-20 place-content-center">
-            <AboutMe title={trans.homepage.mystudies[lang]} icon="graduation-cap" set:html={trans.homepage.studies[lang]} />
-            <AboutMe title={trans.homepage.myproxp[lang]} icon="briefcase" set:html={trans.homepage.proxp[lang]} />
-            <AboutMe title={trans.homepage.myfreelance[lang]} icon="hard-hat" set:html={trans.homepage.freelance[lang]} />
-            <AboutMe title={trans.homepage.myteamskills[lang]} icon="team" set:html={trans.homepage.teamskills[lang]} />
-        </div>
-    </section>
-    <footer class="min-h-96 bg-primary-darker text-white py-20 px-main grid grid-cols-[repeat(auto-fit,minmax(250px,400px))] gap-20 md:gap-32 2xl:gap-40 place-content-center">
-        <div>
-            <h3 class="font-bold text-lg xl:text-2xl pb-4">{trans.common.contact[lang]}</h3>
-            <table class="w-min [&_td]:pr-4 [&_td]:pb-4">
-                <tbody>
-                    <tr>
-                        <td><a href="https://malt.fr/profile/thomasgysemans" target="_blank" class="underline">Malt</a></td>
-                        <td><Icon name="malt" class="text-xl" /></td>
-                    </tr>
-                    <tr>
-                        <td><a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" class="underline">LinkedIn</a></td>
-                        <td><Icon name="linkedin" class="text-xl" /></td>
-                    </tr>
-                    <tr>
-                        <td><a href="https://github.com/ThomasGysemans/" target="_blank" class="underline">GitHub</a></td>
-                        <td><Icon name="github" class="text-xl" /></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <h3 class="font-bold text-lg xl:text-2xl pb-4">{trans.common.status[lang]}</h3>
-            <p class="text-sm md:text-base">{trans.homepage.status[lang]}</p>
-        </div>
-        <div class="[&_a]:underline">
-            <h3 class="font-bold text-lg xl:text-2xl pb-4">{trans.homepage.aboutthissite[lang]}</h3>
-            <p class="text-sm md:text-base" set:html={trans.homepage.thissite[lang]} />
-        </div>
-    </footer>
 </MainLayout>
 
 <style lang="scss">
-    .earth-dialog-container {
-        @media (max-width: 500px) { display: contents; }
+    .hero-scene {
+        opacity: var(--hero-scene);
+        transition: opacity .3s;
+        background:
+            radial-gradient(ellipse 60% 50% at 70% 30%, rgba(97, 156, 243, .17), transparent 65%),
+            radial-gradient(ellipse 40% 35% at 20% 65%, rgba(97, 156, 243, .07), transparent 70%),
+            linear-gradient(180deg, rgba(3, 15, 32, .25), #030F20 78%);
     }
 
-    .planet-container {
-        @media (max-width: 1024px) { transform: scale(.8); top: -4px; }
-        @media (max-width: 900px) { transform: scale(.75); top: -40px; right: -60px; }
-
-        @media (max-width: 768px) {
-            margin-top: 90px;
-            transform: scale(0.9);
-            position: relative;
-            right: -70px;
-            top: 0;
-        }
-
-        @media (max-width: 550px) {
-            left: 50px;
-        }
-
-        @media (max-width: 500px) {
-            margin-top: 0;
-        }
+    @keyframes cta-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(97, 156, 243, .55); }
+        100% { box-shadow: 0 0 0 14px rgba(97, 156, 243, 0); }
     }
-    
-    $glow_ending_color: #0091ff;
-    $glow_starting_color: #ff005e;
-    $glow_text_shadow: 0 0 5px $glow_starting_color, 0 0 10px $glow_starting_color, 0 0 20px $glow_starting_color, 0 0 40px $glow_starting_color, 0 0 80px $glow_starting_color;
 
-    #freelance-glow {
-        font-size: 2rem;
-        color: #fff;
-        text-shadow: $glow_text_shadow;
-        animation: glow 1.5s infinite alternate;
+    .cta-pulse {
+        background: linear-gradient(135deg, #87b3f6, #a9c8f9);
+        color: #02101f;
+        animation: cta-pulse 2.2s ease-out infinite;
+        transition: transform .25s, filter .25s;
 
-        @media (max-width: 768px) {
-            font-size: 1rem;
+        &:hover {
+            transform: translateY(-3px) scale(1.05);
+            filter: brightness(1.08);
         }
     }
 
-    @keyframes glow {
-        0% {
-            text-shadow: $glow_text_shadow;
-        }
-        100% {
-            text-shadow: 0 0 10px $glow_ending_color, 0 0 20px $glow_ending_color, 0 0 40px $glow_ending_color, 0 0 80px $glow_ending_color, 0 0 160px $glow_ending_color;
+    .social-circle {
+        @apply w-10 h-10 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center;
+        transition: transform .2s, border-color .2s;
+
+        &:hover {
+            @apply border-accent;
+            transform: translateY(-3px);
         }
     }
 </style>

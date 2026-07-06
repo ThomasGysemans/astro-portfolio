@@ -3,11 +3,131 @@
 @tailwind utilities;
 
 @layer base {
-    .px-main {
-        @apply px-10 sm:px-12 lg:px-32 2xl:px-64;
+    // Design tokens of the "Portfolio Prototype v2" design.
+    // Dark is the default theme; light overrides are applied
+    // through the `data-theme` attribute set on <html> by the middleware.
+    :root {
+        --bg: #030F20;
+        --heading: #ffffff;
+        --text: #ffffff;
+        --body: #a9b8d8;
+        --muted: #8fa2c6;
+        --faint: #7b8fb5;
+        --card: rgba(255, 255, 255, .045);
+        --card-solid: #0A1D38;
+        --edge: rgba(255, 255, 255, .1);
+        --edge-strong: rgba(255, 255, 255, .18);
+        --accent: #87b3f6;
+        --accent-heading: #87b3f6;
+        --btn-bg: #619cf3;
+        --btn-text: #030F20;
+        --btn-glow: 0 0 26px rgba(97, 156, 243, .45);
+        --outline-bd: rgba(255, 255, 255, .3);
+        --chip: rgba(255, 255, 255, .05);
+        --chip-text: #c9d6ef;
+        --glow: 0 0 40px rgba(97, 156, 243, .35);
+        --hero-scene: 1;
+        --header-bg: transparent;
+        --avail-bg: rgba(47, 168, 102, .12);
+        --avail-bd: rgba(47, 168, 102, .4);
+        --avail-c: #7fe0a7;
+        --logo-stroke: #87b3f6;
     }
 
-    .carousel-btn {
-        @apply bg-primary-darker hocus:bg-black transition-colors py-2 px-5 rounded-md block text-white text-sm text-center;
+    html[data-theme="light"] {
+        --bg: #F4F7FB;
+        --heading: #062451;
+        --text: #030F20;
+        --body: #4d5e82;
+        --muted: #5f6f93;
+        --faint: #5f6f93;
+        --card: #ffffff;
+        --card-solid: #ffffff;
+        --edge: rgba(6, 36, 81, .1);
+        --edge-strong: rgba(6, 36, 81, .15);
+        --accent: #2f66c4;
+        --accent-heading: #062451;
+        --btn-bg: #062451;
+        --btn-text: #ffffff;
+        --btn-glow: none;
+        --outline-bd: #062451;
+        --chip: #ffffff;
+        --chip-text: #062451;
+        --glow: none;
+        --hero-scene: 0;
+        --header-bg: #ffffff;
+        --avail-bg: #e9f7ef;
+        --avail-bd: #bfe6cd;
+        --avail-c: #2c7a4b;
+        --logo-stroke: #062451;
+    }
+
+    body {
+        @apply bg-page text-text font-sans;
+        transition: background-color .3s, color .3s;
+    }
+
+    strong {
+        @apply text-heading font-bold;
+    }
+
+    // RGAA: visible keyboard focus
+    a:focus-visible,
+    button:focus-visible,
+    [role="button"]:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    // RGAA: respect reduced-motion preference
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+}
+
+@layer components {
+    // Main horizontal padding of every page section.
+    .px-page {
+        padding-inline: clamp(20px, 3.5vw, 44px);
+    }
+
+    // Headings glow in dark mode only (--glow is "none" in light mode).
+    .glow {
+        text-shadow: var(--glow);
+    }
+
+    .btn-primary {
+        @apply inline-block bg-btn text-btn-text font-bold rounded-lg cursor-pointer text-center whitespace-nowrap;
+        box-shadow: var(--btn-glow);
+        transition: filter .2s, transform .2s;
+
+        &:hover {
+            filter: brightness(1.12);
+            transform: translateY(-2px);
+        }
+    }
+
+    .btn-outline {
+        @apply inline-block border-[1.5px] border-outline text-heading font-bold rounded-lg cursor-pointer text-center whitespace-nowrap;
+        transition: border-color .2s, color .2s, transform .2s;
+
+        &:hover {
+            @apply border-accent text-accent;
+            transform: translateY(-2px);
+        }
+    }
+
+    .token-chip {
+        @apply inline-flex items-center gap-2 font-semibold text-heading border border-edge-strong rounded-full bg-chip;
+    }
+
+    .surface-card {
+        @apply bg-card border border-edge rounded-[13px];
     }
 }

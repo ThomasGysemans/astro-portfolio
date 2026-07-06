@@ -1,0 +1,19 @@
+---
+// The constellation-like logo of the new design.
+// The stroke color follows the current theme through the --logo-stroke variable.
+interface Props {
+    size?: number;
+}
+
+const { size = 36 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 34 34" aria-hidden="true">
+    <line x1="17" y1="17" x2="7" y2="7" style="stroke:var(--logo-stroke)" stroke-width="2.5" />
+    <line x1="17" y1="17" x2="27" y2="9" style="stroke:var(--logo-stroke)" stroke-width="2.5" />
+    <line x1="17" y1="17" x2="13" y2="28" style="stroke:var(--logo-stroke)" stroke-width="2.5" />
+    <circle cx="17" cy="17" r="7" fill="#D93025" />
+    <circle cx="7" cy="7" r="4" fill="#619cf3" />
+    <circle cx="27" cy="9" r="3.5" fill="#87b3f6" />
+    <circle cx="13" cy="28" r="3.5" fill="#4a7fd6" />
+</svg>

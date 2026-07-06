@@ -1,0 +1,66 @@
+---
+import AdminLayout from "@layouts/AdminLayout.astro";
+import { GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
+
+export type AdminTechnologyRow = {
+    id: string,
+    name: string,
+    color: string,
+    group: string,
+};
+
+interface Props {
+    technologies: AdminTechnologyRow[];
+    notice?: string;
+    error?: string;
+}
+
+const { technologies, notice, error } = Astro.props;
+---
+
+<AdminLayout title="Technologies" {notice}>
+    <h1 class="text-[24px] font-bold text-heading glow mb-7">Technologies <span class="text-muted text-[15px] font-normal">({technologies.length})</span></h1>
+
+    {error && <p class="adm-banner adm-banner-error">{error}</p>}
+
+    <form method="POST" class="adm-card flex flex-wrap items-end gap-4 mb-8">
+        <input type="hidden" name="action" value="create">
+        <div class="flex-1 min-w-[160px]">
+            <label for="new-name" class="adm-label">Nom</label>
+            <input id="new-name" name="name" class="adm-input" required placeholder="Svelte, Rust…">
+        </div>
+        <div>
+            <label for="new-color" class="adm-label">Couleur</label>
+            <input id="new-color" name="color" type="color" value="#619cf3" class="adm-input !w-[64px] !p-1 h-[38px] cursor-pointer">
+        </div>
+        <div>
+            <label for="new-group" class="adm-label">Groupe</label>
+            <select id="new-group" name="group" class="adm-input !w-auto" required>
+                {GROUP_ORDER.map(groupId => (
+                    <option value={groupId}>{GROUP_TITLES[groupId].fr}</option>
+                ))}
+            </select>
+        </div>
+        <button type="submit" class="adm-btn">Créer</button>
+    </form>
+
+    <div class="flex flex-col gap-2.5">
+        {technologies.map(tech => (
+            <form method="POST" class="adm-row">
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="id" value={tech.id}>
+                <input name="name" value={tech.name} class="adm-input !w-[180px] font-bold" required aria-label={`Nom de ${tech.name}`}>
+                <input name="color" type="color" value={tech.color} class="adm-input !w-[52px] !p-1 h-[38px] cursor-pointer" aria-label={`Couleur de ${tech.name}`}>
+                <select name="group" class="adm-input !w-auto" required aria-label={`Groupe de ${tech.name}`}>
+                    {GROUP_ORDER.map(groupId => (
+                        <option value={groupId} selected={tech.group === groupId}>{GROUP_TITLES[groupId].fr}</option>
+                    ))}
+                </select>
+                <span class="flex-1" />
+                <button type="submit" class="adm-btn-outline">Enregistrer</button>
+                <button type="submit" name="action" value="delete" class="adm-btn-danger" data-confirm={`Supprimer ${tech.name} ? Elle sera retirée de tous les projets qui l'utilisent.`}>Supprimer</button>
+            </form>
+        ))}
+        {technologies.length === 0 && <p class="text-[14px] text-body">Aucune technologie pour le moment.</p>}
+    </div>
+</AdminLayout>

@@ -1,14 +1,13 @@
 ---
 import SingleProjectPage from "@components/pages/SingleProjectPage.astro";
-import { findProject } from "@db/projects";
+import { findProject } from "@data/projects";
 
 const { slug } = Astro.params;
-const lang = Astro.locals.lang;
-const project = (!!slug ? await findProject(lang, slug) : undefined)!;
+const project = slug ? await findProject(slug) : undefined;
 
 if (project === undefined) {
     return Astro.rewrite("/404");
 }
 ---
 
-<SingleProjectPage {lang} {project} />
+<SingleProjectPage {project} />

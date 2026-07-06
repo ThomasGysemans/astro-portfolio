@@ -1,0 +1,48 @@
+---
+import AdminLayout from "@layouts/AdminLayout.astro";
+
+export type AdminReviewRow = {
+    id: string,
+    quote: string,
+    role: string,
+    company: string,
+    year: number,
+};
+
+interface Props {
+    reviews: AdminReviewRow[];
+    notice?: string;
+    error?: string;
+}
+
+const { reviews, notice, error } = Astro.props;
+
+const excerpt = (quote: string) => quote.length > 120 ? quote.slice(0, 120) + "…" : quote;
+---
+
+<AdminLayout title="Avis" {notice}>
+    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
+        <h1 class="text-[24px] font-bold text-heading glow">Avis clients <span class="text-muted text-[15px] font-normal">({reviews.length})</span></h1>
+        <a href="/admin/reviews/new" class="adm-btn">+ Nouvel avis</a>
+    </div>
+
+    {error && <p class="adm-banner adm-banner-error">{error}</p>}
+
+    <div class="flex flex-col gap-2.5">
+        {reviews.map(review => (
+            <div class="adm-row">
+                <div class="flex-1 min-w-[240px]">
+                    <div class="text-[14px] font-bold text-heading">{review.company} <span class="text-muted font-normal">· {review.role} · {review.year}</span></div>
+                    <p class="text-[13px] text-body mt-1 italic">« {excerpt(review.quote)} »</p>
+                </div>
+                <a href={`/admin/reviews/${review.id}`} class="adm-btn-outline">Modifier</a>
+                <form method="POST" data-confirm={`Supprimer l'avis de ${review.company} ?`}>
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value={review.id}>
+                    <button type="submit" class="adm-btn-danger">Supprimer</button>
+                </form>
+            </div>
+        ))}
+        {reviews.length === 0 && <p class="text-[14px] text-body">Aucun avis pour le moment.</p>}
+    </div>
+</AdminLayout>

@@ -1,0 +1,28 @@
+---
+import AdminProjectsPage from "@components/pages/admin/AdminProjectsPage.astro";
+import { listAdminProjects } from "@data/admin/projects";
+import { pbErrorMessage } from "@data/admin/forms";
+import { invalidateCache } from "@data/pb";
+
+const pb = Astro.locals.admin!;
+let error: string | undefined;
+
+if (Astro.request.method === "POST") {
+    const data = await Astro.request.formData();
+    if (data.get("action") === "delete") {
+        try {
+            // Translations and tech junctions follow through the cascade.
+            await pb.collection("projects").delete(String(data.get("id")));
+            invalidateCache();
+            return Astro.redirect("/admin/projects?deleted=1");
+        } catch (err) {
+            error = pbErrorMessage(err);
+        }
+    }
+}
+
+const projects = await listAdminProjects(pb);
+const notice = Astro.url.searchParams.has("deleted") ? "Projet supprimé." : undefined;
+---
+
+<AdminProjectsPage {projects} {notice} {error} />

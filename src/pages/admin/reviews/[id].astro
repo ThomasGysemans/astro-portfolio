@@ -1,0 +1,21 @@
+---
+import AdminReviewFormPage from "@components/pages/admin/AdminReviewFormPage.astro";
+import { handleReviewPost, reviewFormValues } from "@data/admin/reviews";
+
+const pb = Astro.locals.admin!;
+const id = Astro.params.id!;
+let error: string | undefined;
+let submitted;
+
+if (Astro.request.method === "POST") {
+    const result = await handleReviewPost(pb, await Astro.request.formData(), id);
+    if ("redirect" in result) return Astro.redirect(result.redirect);
+    error = result.error;
+    submitted = result.values;
+}
+
+const values = submitted ?? await reviewFormValues(pb, id);
+if (!values) return Astro.redirect("/admin/reviews");
+---
+
+<AdminReviewFormPage {id} {values} {error} />

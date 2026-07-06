@@ -1,0 +1,40 @@
+---
+import AdminTechnologiesPage from "@components/pages/admin/AdminTechnologiesPage.astro";
+import { pbErrorMessage, text } from "@data/admin/forms";
+import { invalidateCache } from "@data/pb";
+
+const pb = Astro.locals.admin!;
+let error: string | undefined;
+
+if (Astro.request.method === "POST") {
+    const data = await Astro.request.formData();
+    const action = String(data.get("action") ?? "");
+    // The collection's pattern only accepts lowercase hex colors.
+    const fields = {
+        name: text(data, "name"),
+        color: text(data, "color").toLowerCase(),
+        group: text(data, "group"),
+    };
+
+    try {
+        if (action === "create") {
+            await pb.collection("technologies").create(fields);
+        } else if (action === "update") {
+            await pb.collection("technologies").update(String(data.get("id")), fields);
+        } else if (action === "delete") {
+            // The project_techs junctions follow through the cascade.
+            await pb.collection("technologies").delete(String(data.get("id")));
+        }
+        invalidateCache();
+        return Astro.redirect("/admin/technologies?saved=1");
+    } catch (err) {
+        error = pbErrorMessage(err);
+    }
+}
+
+const records = await pb.collection("technologies").getFullList({ sort: "name" });
+const technologies = records.map(r => ({ id: r.id, name: r.name, color: r.color, group: r.group }));
+const notice = Astro.url.searchParams.has("saved") ? "Enregistré." : undefined;
+---
+
+<AdminTechnologiesPage {technologies} {notice} {error} />

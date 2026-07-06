@@ -1,142 +1,141 @@
 ---
-import type { FullProject } from "@db/models";
-import { ProjectType } from "@lib/ProjectType";
-import { Icon } from "astro-icon/components";
-import { presentProjects, getImageURL } from "@db/projects";
-import { getProjectTimestamp } from "@lib/getProjectTimestamp";
-import { listSkills } from "@db/skills";
-import InterestingProjectIllustration from "@components/InterestingProjectIllustration.astro";
-import ProjectsGrid from "@components/ProjectsGrid.astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { getAllProjects, getProjectBadge, countProjectsUsing } from "@data/projects";
+import { getTechnologies, GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
+import { CATEGORIES, CONTEXTS } from "@data/categories";
+import ProjectsExplorer from "@components/svelte/ProjectsExplorer.svelte";
 import MainLayout from "@layouts/MainLayout.astro";
-import Skill from "@components/Skill.astro";
-import Medal from "@components/Medal.astro";
-import trans, { techSkills, schoolSkills } from "@trans";
+import trans, { techSkills, schoolSkills } from "@i18n";
 
-const hasInitialProjectFilter = !!Astro.url.search;
-const searchParams = Astro.url.searchParams;
 const lang = Astro.locals.lang;
-const [projects, skills] = await Promise.all([
-    new Promise<FullProject[]>((resolve, reject) => presentProjects(lang, false).then(p => resolve(sortInitialProjects(p))).catch(reject)),
-    listSkills()
-]);
+const [projects, technologies] = await Promise.all([getAllProjects(), getTechnologies()]);
+const searchParams = Astro.url.searchParams;
+const techColors = Object.fromEntries(technologies.map(t => [t.name, t.color]));
 
-function sortInitialProjects(projects: FullProject[]): FullProject[] {
-    return projects.toSorted((a, b) => getProjectTimestamp(b) - getProjectTimestamp(a));
-}
+const explorerProjects = projects.map(p => ({
+    slug: p.slug,
+    href: getRelativeLocaleUrl(lang, `/projects/${p.slug}`),
+    name: p.name[lang],
+    year: p.year,
+    date: p.date,
+    desc: p.description[lang],
+    thumb: p.thumb,
+    badge: getProjectBadge(p),
+    category: p.category,
+    featured: p.featured,
+    teamIcon: p.teamSize === 1 ? "👤" : "👥",
+    teamLabel: p.teamSize === 1 ? trans.common.solo[lang] : `${trans.common.teamof[lang]} ${p.teamSize}`,
+    contextLabel: CONTEXTS[p.context][lang],
+    techs: p.techs.map(t => ({ n: t.name, c: t.color })),
+}));
 
-const interestingProjects = projects.filter((p) => p.interesting);
+const pills = [
+    {
+        key: "featured",
+        label: trans.projects.featuredpill[lang],
+        dot: "#F9DA08",
+        count: projects.filter(p => p.featured).length,
+    },
+    {
+        key: "all",
+        label: trans.projects.allpill[lang],
+        dot: "#87b3f6",
+        count: projects.length,
+    },
+    ...Object.entries(CATEGORIES).map(([key, meta]) => ({
+        key,
+        label: meta.label[lang],
+        dot: meta.dot,
+        count: projects.filter(p => p.category === key).length,
+    })),
+];
+
+const projectCountLabel = (count: number) =>
+    `${count} ${count === 1 ? trans.projects.project[lang] : trans.projects.projectcount[lang]}`;
+
+const skillGroups = GROUP_ORDER.map(group => {
+    const items = technologies
+        .filter(t => t.group === group)
+        .map(t => {
+            const count = countProjectsUsing(projects, t.name);
+            return {
+                n: t.name,
+                c: t.color,
+                count,
+                countLabel: projectCountLabel(count),
+            };
+        })
+        .sort((a, b) => b.count - a.count || a.n.localeCompare(b.n));
+    return {
+        title: GROUP_TITLES[group][lang],
+        countLabel: `${items.length} ${trans.projects.technologies[lang]}`,
+        items,
+    };
+});
+
+const labels = {
+    searchPlaceholder: trans.projects.searchplaceholder[lang],
+    sortNewest: trans.projects.sortnewest[lang],
+    sortOldest: trans.projects.sortoldest[lang],
+    result: trans.projects.result[lang],
+    results: trans.projects.results[lang],
+    builtWith: trans.projects.builtwith[lang],
+    clickToFilter: trans.projects.clicktofilter[lang],
+    removeTechFilter: trans.projects.removetechfilter[lang],
+    noProject: trans.projects.noprojectfound[lang],
+    showAll: trans.projects.showallprojects[lang],
+    details: trans.common.details[lang],
+    techSkillsTitle: trans.projects.mytechskills[lang],
+    techSkillsIntro: trans.projects.techskillsintro[lang],
+};
+
+// Restore a shareable state from the URL (?filter=web&tech=Svelte&q=...).
+const validFilters = pills.map(p => p.key);
+const filterParam = searchParams.get("filter") ?? "";
+const techParam = searchParams.get("tech") ?? "";
+const initialFilter = validFilters.includes(filterParam) ? filterParam : "featured";
+const initialTech = technologies.some(t => t.name === techParam) ? techParam : null;
+const initialQuery = searchParams.get("q") ?? "";
+
+const subtitle = trans.projects.subtitle[lang].replace("{count}", `${projects.length}`);
 ---
 
-<MainLayout title={trans.projects.title[lang]}>
-    <h1 class="text-2xl lg:text-4xl text-center mt-32 mb-12 md:mb-32">{trans.projects.featuredProjects[lang]}</h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 px-main">
-        {interestingProjects.map((project) => {
-            return (
-                <InterestingProjectIllustration {project} />
-            );
-        })}
-    </div>
-    <h1 class="text-2xl lg:text-4xl text-center mt-32">{trans.projects.myprojects[lang]}</h1>
-    <div class="w-full px-main mt-20 mb-5 grid grid-cols-[repeat(auto-fit,minmax(100px,240px))] gap-20 max-lg:place-content-center text-sm lg:text-base">
-        <div>
-            <label for="filter-type">{trans.projects.filterType[lang]}</label>
-            <select id="filter-type" name="filter-type">
-                <option value="all" selected>{trans.common.all[lang]}</option>
-                {ProjectType.getAllTypes().map(p => (
-                    <option value={p.frenchName} selected={searchParams.get("type") === p.frenchName}>{p.getTranslatedName(lang)}</option>
-                ))}
-            </select>
+<MainLayout title={trans.projects.title[lang]} description={trans.projects.description[lang]}>
+    <main class="max-w-[1660px] mx-auto">
+        <div class="px-page pt-11">
+            <h1 class="text-3xl font-bold m-0 text-heading glow">{trans.projects.allmyprojects[lang]}</h1>
+            <p class="text-[13px] text-body mt-1.5">{subtitle}</p>
         </div>
-        <div>
-            <label for="filter-date">{trans.projects.orderDate[lang]}</label>
-            <select id="filter-date" name="filter-date">
-                <option value="recent" selected={!hasInitialProjectFilter || searchParams.get("date") !== "oldest"}>{trans.common.mostRecent[lang]}</option>
-                <option value="oldest" selected={searchParams.get("date") === "oldest"}>{trans.common.mostOld[lang]}</option>
-            </select>
-        </div>
-        <div>
-            <label for="filter-techno">{trans.projects.filterSkills[lang]}</label>
-            <select id="filter-techno" name="filter-techno">
-                <option value="all" selected>{trans.common.allFeminine[lang]}</option>
-                {skills.sort((a,b) => a.name.localeCompare(b.name)).map(s => (
-                    <option value={s.name}>{s.name}</option>
-                ))}
-            </select>
-        </div>
-        <div class="relative flex items-end">
-            <Icon name="search" class="absolute bottom-4 left-3.5 text-primary/50" />
-            <input
-                type="search"
-                placeholder={trans.projects.searchProject[lang]}
-                class="text-primary bg-white border-2 border-primary/50 rounded-md pr-4 pl-9 py-3 w-full text-sm"
-            />
-        </div>
-    </div>
-    <div id="technologies-filter-container" class="px-main space-y-4" style="display: none;">
-        <p class="max-w-96 text-xs">{trans.projects.filteringSkills[lang]}</p>
-        <div class="flex flex-wrap" />
-    </div>
-    <div class={hasInitialProjectFilter ? "hidden" : ""} id="container-projects-grid">
-        <ProjectsGrid {projects} id="projects-container" />
-    </div>
-    <div id="no-project-container" class="flex flex-col items-center justify-center w-full px-main space-y-6" style="display: none;">
-        <img src="/logos/black-hole.svg" alt={trans.common.blackhole[lang]} class="w-80" loading="lazy" />
-        <p class="text-center text-lg max-w-64">{trans.projects.noProjectFound[lang]}</p>
-    </div>
-    <section class="px-main my-40 space-y-12">
-        <h1 class="text-2xl lg:text-4xl text-center">{trans.projects.myTechSkills[lang]}</h1>
-        <div class="pt-12 flex flex-wrap justify-center *:mx-4 *:mb-12">
-            {techSkills.map(skill => (
-                <Medal>{skill[lang]}</Medal>
-            ))}
-        </div>
-        <div class="flex justify-center items-center w-full pb-12">
-            <p class="text-center font-light leading-9 max-w-[600px] max-lg:text-sm max-lg:leading-8">{trans.projects.listingSkills[lang]}</p>
-        </div>
-        <div class="flex flex-wrap justify-center items-center *:mb-4 *:mx-2 sm:*:mb-8 sm:*:mx-4">
-            {skills.map(s => (
-                <Skill logo={getImageURL(s, s.logo)} name={s.name} loved={s.loved} />
-            ))}
-        </div>
-    </section>
-    <section class="px-main my-40 space-y-12">
-        <h1 class="text-2xl lg:text-4xl text-center">{trans.projects.educationalBackground[lang]}</h1>
-        <div class="pt-12 flex flex-wrap justify-center *:mx-4 *:mb-12">
-            {schoolSkills.map(skill => (
-                <Medal>{skill[lang]}</Medal>
-            ))}
-        </div>
-        <div class="flex justify-center items-center w-full mb-20">
-            <p class="text-center font-light leading-9 max-w-[800px] max-lg:text-sm max-lg:leading-8" set:html={trans.projects.school[lang]} />
-        </div>
-    </section>
+
+        <ProjectsExplorer
+            projects={explorerProjects}
+            {pills}
+            {techColors}
+            skillHighlights={techSkills.map(s => s[lang])}
+            {skillGroups}
+            {labels}
+            {initialFilter}
+            {initialTech}
+            {initialQuery}
+            client:idle
+        />
+
+        <!-- education & teamwork -->
+        <section class="px-page pt-8 pb-14">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4">
+                <div class="surface-card py-[22px] px-6">
+                    <h2 class="text-[13px] font-bold text-accent-heading mb-2.5">{trans.projects.educationtitle[lang]}</h2>
+                    <p class="text-[12.5px] leading-[1.85] text-body">{trans.projects.education[lang]}</p>
+                </div>
+                <div class="surface-card py-[22px] px-6">
+                    <h2 class="text-[13px] font-bold text-accent-heading mb-3">{trans.projects.teamskillstitle[lang]}</h2>
+                    <ul class="flex flex-col gap-2.5">
+                        {schoolSkills.map(skill => (
+                            <li class="flex gap-2 text-xs leading-[1.6] text-body"><span aria-hidden="true">🏅</span><span>{skill[lang]}</span></li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
 </MainLayout>
-
-<script is:inline define:vars={{ projects }}>window.projects = projects;</script>
-<script src="../../lib/pages/projects.ts"></script>
-
-<style lang="scss">
-    label {
-        @apply block mb-3 font-light opacity-60;
-    }
-
-    select {
-        @apply w-full text-primary border-b-[1px] border-b-primary/10 bg-transparent;
-    }
-
-    :global(.filtered-skill) {
-        @apply rounded-md bg-primary/75 px-4 py-2 mb-4 mr-4 flex items-center;
-
-        :global(span) {
-            @apply text-white text-xs mr-4;
-        }
-
-        :global(button) {
-            @apply text-white opacity-50 hover:opacity-100;
-        }
-    }
-
-    :global([data-hidden="true"]) {
-        display: none;
-    }
-</style>

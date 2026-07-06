@@ -1,0 +1,157 @@
+// Shared classes of the back-office pages. Loaded by AdminLayout only,
+// so none of this ships with the public pages.
+
+.adm-label {
+    @apply block text-[12px] font-bold text-muted uppercase tracking-wider mb-1.5;
+}
+
+.adm-input {
+    @apply block w-full bg-card border border-edge rounded-lg px-3 py-2 text-[14px] text-text;
+    transition: border-color .2s;
+
+    &:focus {
+        @apply border-accent outline-none;
+    }
+}
+
+textarea.adm-input {
+    @apply leading-relaxed;
+    min-height: 110px;
+    resize: vertical;
+}
+
+select.adm-input {
+    // The options open in a native widget: force readable colors on the
+    // translucent card background.
+    background-color: var(--card-solid);
+}
+
+// Same look as the site's btn-primary/btn-outline, restated here because
+// @apply cannot reference classes declared in another stylesheet.
+.adm-btn {
+    @apply inline-block bg-btn text-btn-text font-bold rounded-lg cursor-pointer text-center whitespace-nowrap text-[13px] py-2 px-4;
+    transition: filter .2s;
+
+    &:hover {
+        filter: brightness(1.12);
+    }
+}
+
+.adm-btn-outline {
+    @apply inline-block border-[1.5px] border-outline text-heading font-bold rounded-lg cursor-pointer text-center whitespace-nowrap text-[13px] py-2 px-4;
+    transition: border-color .2s, color .2s;
+
+    &:hover {
+        @apply border-accent text-accent;
+    }
+}
+
+.adm-btn-danger {
+    @apply inline-block font-bold rounded-lg cursor-pointer text-center whitespace-nowrap text-[13px] py-2 px-4;
+    border: 1.5px solid rgba(236, 50, 59, .55);
+    color: #f27b81;
+    transition: border-color .2s, background-color .2s;
+
+    &:hover {
+        border-color: #ec323b;
+        background-color: rgba(236, 50, 59, .12);
+    }
+}
+
+.adm-card {
+    @apply bg-card border border-edge rounded-2xl p-5;
+}
+
+.adm-row {
+    @apply flex flex-wrap items-center gap-3 bg-card border border-edge rounded-xl px-4 py-3;
+}
+
+.adm-check {
+    @apply flex items-center gap-2 text-[14px] text-body cursor-pointer;
+
+    input {
+        @apply w-4 h-4 accent-accent;
+    }
+}
+
+.adm-banner {
+    @apply rounded-lg px-4 py-3 text-[14px] mb-6;
+}
+
+.adm-banner-success {
+    background: var(--avail-bg);
+    border: 1px solid var(--avail-bd);
+    color: var(--avail-c);
+}
+
+.adm-banner-error {
+    background: rgba(236, 50, 59, .12);
+    border: 1px solid rgba(236, 50, 59, .5);
+    color: #f27b81;
+}
+
+// Bottom-aligns the control of a grid cell so a label wrapping on two
+// lines doesn't push its input out of line with the neighbouring fields.
+.adm-field {
+    @apply flex flex-col justify-end;
+}
+
+.adm-toast {
+    @apply fixed top-5 right-5 z-50 rounded-lg px-4 py-3 text-[13.5px] font-bold shadow-lg max-w-[340px];
+    background: var(--card-solid);
+    border: 1px solid var(--avail-bd);
+    color: var(--avail-c);
+    animation: adm-toast-in .25s ease;
+    transition: opacity .3s, transform .3s;
+
+    &.adm-toast-hide {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes adm-toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+}
+
+.adm-modal {
+    @apply rounded-2xl p-6 max-w-[420px] w-[calc(100%-40px)];
+    background: var(--card-solid);
+    border: 1px solid var(--edge-strong);
+    color: var(--text);
+
+    &::backdrop {
+        background: rgba(3, 15, 32, .65);
+        backdrop-filter: blur(2px);
+    }
+}
+
+.adm-media-card {
+    @apply flex flex-col gap-1.5 bg-card border border-edge rounded-xl p-2.5;
+    transition: opacity .2s, border-color .2s;
+
+    // This rule comes after Tailwind's utilities in the cascade, so the
+    // `flex` above would silently defeat the `hidden` utility without it.
+    &.hidden {
+        display: none;
+    }
+
+    img,
+    video {
+        @apply w-full h-[90px] object-cover rounded-lg bg-night;
+    }
+
+    // Marked for removal (existing picture) or replacement (thumbnail).
+    &.adm-media-removed {
+        opacity: .45;
+        border-color: rgba(236, 50, 59, .6);
+
+        img,
+        video {
+            filter: grayscale(1);
+        }
+    }
+}
