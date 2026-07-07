@@ -24,6 +24,30 @@ textarea.adm-input {
     resize: vertical;
 }
 
+/* File inputs: the native "choose file" chrome is replaced by a picker button
+   matching the primary button, with the selected file name shown beside it. */
+.adm-file {
+    @apply block w-full bg-card border border-edge rounded-lg text-[13px] text-muted cursor-pointer;
+    padding: 0.3rem 0.75rem 0.3rem 0.3rem;
+    transition: border-color .2s, background-color .2s;
+
+    &:hover,
+    &:focus-visible {
+        @apply border-accent outline-hidden;
+    }
+
+    &::file-selector-button {
+        @apply bg-btn text-btn-text font-bold rounded-lg cursor-pointer text-[13px] mr-3;
+        border: 0;
+        padding: 0.45rem 0.9rem;
+        transition: filter .2s;
+    }
+
+    &::file-selector-button:hover {
+        filter: brightness(1.12);
+    }
+}
+
 select.adm-input {
     /* The options open in a native widget: force readable colors on the
        translucent card background. */
