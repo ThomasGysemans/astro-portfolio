@@ -1,8 +1,10 @@
 {
     "extends": "astro/tsconfigs/strict",
     // The PocketBase migrations reference a types.d.ts that only exists
-    // inside the container's data directory.
-    "exclude": ["dist", "db/pb_migrations"],
+    // inside the container's data directory. The test-runner config files use
+    // their runners' own type augmentations (e.g. Vitest's `test` key on the
+    // Vite config), so they are transpiled by those tools, not by astro check.
+    "exclude": ["dist", "db/pb_migrations", "vitest.config.ts", "playwright.config.ts"],
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
