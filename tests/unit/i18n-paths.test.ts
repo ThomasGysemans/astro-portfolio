@@ -43,21 +43,22 @@ describe("localeOfPath", () => {
 });
 
 describe("pathInLocale", () => {
-    // `getRelativeLocaleUrl` normalises with a trailing slash.
+    // The trailing slash is dropped (except at the root) so the canonical URL,
+    // the hreflang alternates and the sitemap all share one URL form.
     it("switches an English URL to its French (prefix-less) equivalent", () => {
-        expect(pathInLocale("fr", "/en/projects")).toBe("/projects/");
+        expect(pathInLocale("fr", "/en/projects")).toBe("/projects");
     });
 
     it("switches a French URL to its English (prefixed) equivalent", () => {
-        expect(pathInLocale("en", "/projects")).toBe("/en/projects/");
+        expect(pathInLocale("en", "/projects")).toBe("/en/projects");
     });
 
-    it("is idempotent (modulo trailing slash) when the locale already matches", () => {
-        expect(pathInLocale("en", "/en/projects")).toBe("/en/projects/");
+    it("is idempotent when the locale already matches", () => {
+        expect(pathInLocale("en", "/en/projects")).toBe("/en/projects");
     });
 
     it("keeps the English prefix on the root but drops it for French", () => {
-        expect(pathInLocale("en", "/")).toBe("/en/");
+        expect(pathInLocale("en", "/")).toBe("/en");
         expect(pathInLocale("fr", "/en")).toBe("/");
     });
 });
@@ -76,12 +77,12 @@ describe("alternateLinks", () => {
 
     it("points every href at the same page in the right locale", () => {
         const by = Object.fromEntries(links.map(l => [l.hreflang, l.href]));
-        expect(by.fr).toBe(`${domain}/projects/`);
-        expect(by.en).toBe(`${domain}/en/projects/`);
+        expect(by.fr).toBe(`${domain}/projects`);
+        expect(by.en).toBe(`${domain}/en/projects`);
     });
 
     it("points x-default at the default locale", () => {
         const xDefault = links.find(l => l.hreflang === "x-default");
-        expect(xDefault?.href).toBe(`${domain}/projects/`);
+        expect(xDefault?.href).toBe(`${domain}/projects`);
     });
 });

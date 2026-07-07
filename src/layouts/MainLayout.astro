@@ -6,13 +6,15 @@ import Footer from "@components/Footer.astro";
 interface Props {
     title: string;
     description?: string;
+    image?: string; // social-share image (defaults to the site logo)
+    noindex?: boolean; // keep the page out of search engines
     footerCta?: boolean; // hide the "get in touch" button (404 page)
 }
 
-const { title, description, footerCta = true } = Astro.props;
+const { title, description, image, noindex, footerCta = true } = Astro.props;
 ---
 
-<PageLayout {title} {description}>
+<PageLayout {title} {description} {image} {noindex}>
     <!-- Full-height column so the footer reaches the bottom on short pages (404). -->
     <div class="min-h-dvh flex flex-col">
         <Header />

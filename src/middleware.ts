@@ -16,6 +16,9 @@ function isNavigablePage(context: APIContext): boolean {
     const path = context.url.pathname;
     if (path === "/admin" || path.startsWith("/admin/")) return false;
     if (path.startsWith("/_")) return false;
+    // File-like routes (sitemap.xml, robots.txt, …) have no locale variant, so
+    // redirecting them to a `/en/*` prefix would only 404.
+    if (/\.[a-z0-9]+$/i.test(path)) return false;
     return (context.request.headers.get("accept") ?? "").includes("text/html");
 }
 

@@ -23,8 +23,11 @@ export function localeOfPath(pathname: string): Locale {
 }
 
 // The same page in another locale: "/en/projects" + "fr" -> "/projects".
+// The trailing slash is dropped (except at the root) so the canonical URLs,
+// the hreflang alternates and the sitemap all agree on a single URL form.
 export function pathInLocale(locale: Locale, pathname: string): string {
-    return getRelativeLocaleUrl(locale, stripLocale(pathname));
+    const url = getRelativeLocaleUrl(locale, stripLocale(pathname));
+    return url === "/" ? "/" : url.replace(/\/+$/, "");
 }
 
 // The hreflang alternate links of a page, plus x-default pointing to the default locale.
