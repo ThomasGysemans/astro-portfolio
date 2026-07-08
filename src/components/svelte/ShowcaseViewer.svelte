@@ -152,13 +152,13 @@
     <!-- info card -->
     {#key index}
         <div class="absolute z-20 bottom-5 left-4 right-4 sm:left-auto sm:right-8 sm:bottom-8 sm:w-90 bg-[rgba(3,17,26,.78)] border border-[rgba(154,209,212,.28)] rounded-[15px] p-4 backdrop-blur-xl showcase-fade-card">
-            <img src={current.thumb} alt={current.name} loading="lazy" decoding="async" class="w-full aspect-video object-cover rounded-[10px] mb-3.25 max-sm:hidden" />
+            <img src={current.thumb} alt={current.name} loading="lazy" decoding="async" class="w-full aspect-video object-cover rounded-[10px] mb-3.25" />
             <div class="flex justify-between items-baseline mb-1.75">
                 <span class="text-base font-bold">{current.name}</span>
                 <span class="text-[10.5px] text-[#9ad1d4] font-bold">{counter}</span>
             </div>
             <p class="text-[11.5px] leading-[1.65] text-[#b8d6da] mb-3">{current.desc}</p>
-            <div class="flex gap-1.5 mb-3.5 flex-wrap">
+            <div class="flex gap-1.5 mb-3.5 flex-wrap max-sm:hidden">
                 {#each current.techs as tech (tech)}
                     <span class="text-[10px] font-semibold text-[#c4dfe2] border border-white/20 rounded-full py-1 px-2.75">{tech}</span>
                 {/each}
