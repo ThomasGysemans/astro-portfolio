@@ -34,6 +34,11 @@ const aiPoints = [
     { emoji: "👁", label: trans.freelance.ai3a[lang], result: trans.freelance.ai3b[lang] },
     { emoji: "💶", label: trans.freelance.ai4a[lang], result: trans.freelance.ai4b[lang] },
 ];
+
+const carePoints = [
+    { emoji: "♿", label: trans.freelance.care1a[lang], result: trans.freelance.care1b[lang] },
+    { emoji: "🔒", label: trans.freelance.care2a[lang], result: trans.freelance.care2b[lang] },
+];
 ---
 
 <MainLayout title={trans.freelance.title[lang]} description={trans.freelance.description[lang]}>
@@ -97,6 +102,18 @@ const aiPoints = [
                     <h2 class="text-base font-bold mb-4 text-heading">{trans.freelance.aititle[lang]}</h2>
                     <ul class="flex flex-col gap-3 text-[13px] font-semibold text-body">
                         {aiPoints.map(point => (
+                            <li class="flex items-center gap-2.5 flex-wrap">
+                                <span aria-hidden="true">{point.emoji}</span>
+                                <span class="text-heading">{point.label}</span>
+                                <span class="text-accent">{point.result}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div class="surface-card py-7 px-8.5">
+                    <h2 class="text-base font-bold mb-4 text-heading">{trans.freelance.carestitle[lang]}</h2>
+                    <ul class="flex flex-col gap-3 text-[13px] font-semibold text-body">
+                        {carePoints.map(point => (
                             <li class="flex items-center gap-2.5 flex-wrap">
                                 <span aria-hidden="true">{point.emoji}</span>
                                 <span class="text-heading">{point.label}</span>
