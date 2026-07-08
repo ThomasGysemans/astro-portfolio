@@ -22,8 +22,12 @@ function isActive(route: string): boolean {
 }
 
 // The same page in every locale, for the language switch pill.
+// Autonyms (a language named in its own language) give the "FR"/"EN"
+// abbreviations a full, correctly-pronounced accessible name.
+const LOCALE_NAMES: Record<App.LangCode, string> = { fr: "Français", en: "English" };
 const localeLinks = LOCALES.map(locale => ({
     locale,
+    name: LOCALE_NAMES[locale],
     href: pathInLocale(locale, Astro.url.pathname),
 }));
 const contactHref = getRelativeLocaleUrl(lang, "/freelance");
@@ -58,7 +62,7 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
         >{themeIcon}</button>
         <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
             {localeLinks.map(link => (
-                <a href={link.href} data-set-lang={link.locale} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
+                <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
             ))}
         </div>
         <a href={contactHref} class="btn-primary text-[12.5px] px-5 py-2.5">{trans.common.contactme[lang]}</a>
@@ -75,7 +79,7 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
 </header>
 
 <div data-drawer hidden>
-    <button type="button" data-drawer-close aria-label={trans.common.closemenu[lang]} class="drawer-backdrop fixed inset-0 z-40 bg-[rgba(2,8,18,.6)] backdrop-blur-[3px]"></button>
+    <button type="button" data-drawer-close tabindex="-1" aria-hidden="true" class="drawer-backdrop fixed inset-0 z-40 bg-[rgba(2,8,18,.6)] backdrop-blur-[3px]"></button>
     <nav aria-label={trans.nav.mobilenav[lang]} class="drawer-panel fixed top-0 right-0 bottom-0 z-50 w-[min(300px,84vw)] bg-card-solid border-l border-edge py-6 px-6 flex flex-col gap-1.5 shadow-[-20px_0_60px_rgba(2,8,18,.45)]">
         <div class="flex justify-between items-center mb-3.5">
             <span class="font-bold text-heading text-sm">{trans.common.menu[lang]}</span>
@@ -99,7 +103,7 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
             >{themeIcon}</button>
             <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
                 {localeLinks.map(link => (
-                    <a href={link.href} data-set-lang={link.locale} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
+                    <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
                 ))}
             </div>
         </div>
@@ -173,12 +177,106 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
             });
         });
 
-        document.querySelectorAll("[data-drawer-open]").forEach(btn => {
-            btn.addEventListener("click", () => drawer?.removeAttribute("hidden"));
+        // Remember who opened the drawer so focus can be restored on close.
+        let opener: HTMLElement | null = null;
+
+        // Lock the page scroll behind the open drawer. The scrollbar width is
+        // compensated with padding so removing it doesn't shift the layout
+        // (only matters on desktop widths ≤900px; mobile scrollbars overlay).
+        function lockScroll() {
+            const root = document.documentElement;
+            const scrollbar = window.innerWidth - root.clientWidth;
+            root.style.overflow = "hidden";
+            if (scrollbar > 0) root.style.paddingRight = `${scrollbar}px`;
+        }
+
+        function unlockScroll() {
+            const root = document.documentElement;
+            root.style.overflow = "";
+            root.style.paddingRight = "";
+        }
+
+        function openDrawer(trigger: HTMLElement) {
+            opener = trigger;
+            drawer?.removeAttribute("hidden");
+            lockScroll();
+            // Move focus onto the panel's close button so keyboard users land
+            // inside it (not the invisible backdrop, which comes first in DOM).
+            drawer?.querySelector<HTMLElement>(".drawer-panel [data-drawer-close]")?.focus();
+        }
+
+        function closeDrawer() {
+            if (drawer?.hasAttribute("hidden")) return;
+            drawer?.setAttribute("hidden", "");
+            unlockScroll();
+            opener?.focus();
+        }
+
+        document.querySelectorAll<HTMLElement>("[data-drawer-open]").forEach(btn => {
+            btn.addEventListener("click", () => openDrawer(btn));
         });
 
         document.querySelectorAll("[data-drawer-close]").forEach(btn => {
-            btn.addEventListener("click", () => drawer?.setAttribute("hidden", ""));
+            btn.addEventListener("click", closeDrawer);
+        });
+
+        // A scroll gesture outside the panel closes the drawer. The background
+        // itself can't scroll (locked above), so this reacts to the intent —
+        // scrolling within the panel is left alone so its own content still moves.
+        function closeOnScroll(event: Event) {
+            if (drawer?.hasAttribute("hidden") !== false) return;
+            const panel = drawer.querySelector(".drawer-panel");
+            if (panel && event.target instanceof Node && panel.contains(event.target)) return;
+            closeDrawer();
+        }
+
+        document.addEventListener("wheel", closeOnScroll, { passive: true });
+        document.addEventListener("touchmove", closeOnScroll, { passive: true });
+
+        // The visible, focusable controls of the drawer panel, in DOM order.
+        // Queried on demand so the list always reflects the current state.
+        function panelFocusables(): HTMLElement[] {
+            const panel = drawer?.querySelector<HTMLElement>(".drawer-panel");
+            if (!panel) return [];
+            const selector = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            return Array.from(panel.querySelectorAll<HTMLElement>(selector))
+                .filter(el => el.offsetParent !== null);
+        }
+
+        // While the drawer is open: Escape closes it, and Tab/Shift+Tab are
+        // confined to the panel (focus trap) so it never escapes behind the
+        // backdrop into the inert page underneath.
+        document.addEventListener("keydown", event => {
+            if (drawer?.hasAttribute("hidden") !== false) return;
+
+            if (event.key === "Escape") {
+                closeDrawer();
+                return;
+            }
+
+            if (event.key !== "Tab") return;
+
+            const items = panelFocusables();
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            const active = document.activeElement as HTMLElement | null;
+
+            if (event.shiftKey) {
+                if (active === first || !drawer.contains(active)) {
+                    event.preventDefault();
+                    last.focus();
+                }
+            } else if (active === last || !drawer.contains(active)) {
+                event.preventDefault();
+                first.focus();
+            }
+        });
+
+        // Clicking a link inside the panel navigates, so the drawer should not
+        // stay open behind the new page state.
+        drawer?.querySelectorAll<HTMLAnchorElement>(".drawer-panel a[href]").forEach(link => {
+            link.addEventListener("click", () => drawer?.setAttribute("hidden", ""));
         });
     }
 

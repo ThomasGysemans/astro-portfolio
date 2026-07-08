@@ -20,4 +20,5 @@ export const common = {
     "closemenu": text("Fermer le menu", "Close menu"),
     "menu": text("Menu"),
     "newwindow": text("nouvelle fenêtre", "new window"),
+    "skiptocontent": text("Aller au contenu principal", "Skip to main content"),
 } satisfies Record<string, Localized>;

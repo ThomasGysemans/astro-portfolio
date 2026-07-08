@@ -2,6 +2,7 @@
 import PageLayout from "./PageLayout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
+import trans from "@i18n";
 
 interface Props {
     title: string;
@@ -12,11 +13,13 @@ interface Props {
 }
 
 const { title, description, image, noindex, footerCta = true } = Astro.props;
+const lang = Astro.locals.lang;
 ---
 
 <PageLayout {title} {description} {image} {noindex}>
     <!-- Full-height column so the footer reaches the bottom on short pages (404). -->
     <div class="min-h-dvh flex flex-col">
+        <a href="#main-content" class="skip-link">{trans.common.skiptocontent[lang]}</a>
         <Header />
         <div class="flex-1 flex flex-col">
             <slot />

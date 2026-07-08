@@ -34,7 +34,7 @@ const detailRows = [
 ---
 
 <MainLayout title={`${trans.common.title[lang]} - ${name}`} description={project.description[lang]} image={project.thumbLarge}>
-    <main class="pt-6.5 px-page pb-11 max-w-415 mx-auto">
+    <main id="main-content" class="pt-6.5 px-page pb-11 max-w-415 mx-auto">
         <nav class="text-[11.5px] text-muted mb-4" aria-label={trans.detail.allprojects[lang]}>
             <a href={projectsUrl} class="text-accent font-bold">‹ {trans.detail.allprojects[lang]}</a>
             <span class="mx-2">/</span>
@@ -52,10 +52,10 @@ const detailRows = [
             </div>
             <div class="flex gap-2.5 flex-wrap">
                 {project.link && (
-                    <a href={project.link} target="_blank" rel="noopener" class="btn-primary text-[12.5px] py-3 px-5.5 shadow-btn-glow">{trans.detail.visit[lang]}</a>
+                    <a href={project.link} target="_blank" rel="noopener" aria-label={`${trans.detail.visit[lang]} (${trans.common.newwindow[lang]})`} class="btn-primary text-[12.5px] py-3 px-5.5 shadow-btn-glow">{trans.detail.visit[lang]}</a>
                 )}
                 {project.github && (
-                    <a href={project.github} target="_blank" rel="noopener" class="btn-outline text-[12.5px] py-2.75 px-5">{trans.detail.githubrepo[lang]}</a>
+                    <a href={project.github} target="_blank" rel="noopener" aria-label={`${trans.detail.githubrepo[lang]} (${trans.common.newwindow[lang]})`} class="btn-outline text-[12.5px] py-2.75 px-5">{trans.detail.githubrepo[lang]}</a>
                 )}
             </div>
         </div>

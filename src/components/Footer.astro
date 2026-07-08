@@ -12,9 +12,9 @@ const lang = Astro.locals.lang;
 
 <footer class="bg-page py-6 px-page flex justify-between items-center gap-4 flex-wrap border-t border-edge">
     <div class="flex gap-6 text-[12.5px] font-semibold">
-        <a href="https://malt.fr/profile/thomasgysemans" target="_blank" rel="noopener" class="text-muted hover:text-heading transition-colors">Malt</a>
-        <a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" rel="noopener" class="text-muted hover:text-heading transition-colors">LinkedIn</a>
-        <a href="https://github.com/ThomasGysemans" target="_blank" rel="noopener" class="text-muted hover:text-heading transition-colors">GitHub</a>
+        <a href="https://malt.fr/profile/thomasgysemans" target="_blank" rel="noopener" aria-label={`Malt (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">Malt</a>
+        <a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" rel="noopener" aria-label={`LinkedIn (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">LinkedIn</a>
+        <a href="https://github.com/ThomasGysemans" target="_blank" rel="noopener" aria-label={`GitHub (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">GitHub</a>
     </div>
     <p class="text-[11.5px] text-faint">{trans.footer.status[lang]}</p>
     {cta && (

@@ -130,8 +130,9 @@
     <input
         type="search"
         bind:value={query}
+        aria-label={labels.searchPlaceholder}
         placeholder={labels.searchPlaceholder}
-        class="flex-1 min-w-0 bg-transparent border-none outline-hidden text-text text-[12.5px] font-sans placeholder:text-muted"
+        class="flex-1 min-w-0 bg-transparent border-none text-text text-[12.5px] font-sans placeholder:text-muted"
     />
     <button
         type="button"

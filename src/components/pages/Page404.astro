@@ -7,7 +7,7 @@ const lang = Astro.locals.lang;
 ---
 
 <MainLayout title={trans.common.title[lang]} footerCta={false} noindex>
-    <main class="flex-1 flex flex-col gap-6 justify-center items-center py-16 px-page">
+    <main id="main-content" class="flex-1 flex flex-col gap-6 justify-center items-center py-16 px-page">
         <img src="/logos/black-hole.svg" alt={trans.common.blackhole[lang]} class="w-60" />
         <h1 class="text-center text-xl text-heading font-bold glow">{trans.error.notfound[lang]} (404)</h1>
         <a href={getRelativeLocaleUrl(lang, "/")} class="btn-outline text-[13px] py-3 px-6.5">{trans.error.backhome[lang]}</a>
