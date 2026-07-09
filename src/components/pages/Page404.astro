@@ -4,6 +4,11 @@ import MainLayout from "@layouts/MainLayout.astro";
 import trans from "@i18n";
 
 const lang = Astro.locals.lang;
+
+// Rendered both by the router (unmatched routes) and by explicit
+// `Astro.rewrite("/404")` calls, which don't set the status on their own.
+// Forcing 404 here avoids a soft 404 (a 200 response for a missing page).
+Astro.response.status = 404;
 ---
 
 <MainLayout title={trans.common.title[lang]} footerCta={false} noindex>
