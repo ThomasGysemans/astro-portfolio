@@ -78,6 +78,7 @@ export type Project = {
     tagline: Localized, // uppercase hook shown in the carousel and the showcase
     caption: Localized, // caption of the presentation picture
     techs: ProjectTech[],
+    updated: string, // record's last-modified timestamp (ISO), used for the sitemap's <lastmod>
 };
 
 export type Review = {

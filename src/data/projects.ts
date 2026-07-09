@@ -48,6 +48,7 @@ function mapProject(record: RecordModel): Project {
         tagline: text("tagline"),
         caption: text("caption"),
         techs,
+        updated: record.updated,
     };
 }
 
