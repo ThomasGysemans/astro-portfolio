@@ -11,6 +11,10 @@ interface Props {
 
 const DOMAIN = "https://thomasgysemans.dev";
 const DEFAULT_IMAGE = `${DOMAIN}/logo.png`;
+// Social-share card used when a page passes no `image` of its own. Its intrinsic
+// size is advertised so scrapers can lay the card out before fetching the file.
+const DEFAULT_SOCIAL_IMAGE = `${DOMAIN}/og-default.png`;
+const DEFAULT_SOCIAL_IMAGE_SIZE = { width: 4096, height: 2304 };
 
 const { title, description, image, noindex = false } = Astro.props;
 const lang = Astro.locals.lang;
@@ -43,9 +47,12 @@ const metaDescription = description ?? og.description[lang];
 const canonical = `${DOMAIN}${pathInLocale(lang, Astro.url.pathname)}`;
 
 // Social-share image: absolute URLs (e.g. PocketBase thumbnails) are used as-is,
-// root-relative ones are resolved against the domain.
-const rawImage = image ?? DEFAULT_IMAGE;
+// root-relative ones are resolved against the domain. Only the default card has
+// known dimensions — a custom `image` (a project thumbnail cropped to 1200px
+// wide) has a height we can't assert here, so its size meta is omitted.
+const rawImage = image ?? DEFAULT_SOCIAL_IMAGE;
 const socialImage = /^https?:\/\//.test(rawImage) ? rawImage : `${DOMAIN}${rawImage}`;
+const usingDefaultImage = image === undefined;
 
 const alternates = alternateLinks(Astro.url.pathname, DOMAIN);
 
@@ -86,6 +93,13 @@ const structuredData = {
         <meta property="og:site_name" content={og.site_name[lang]}>
         <meta property="og:description" content={metaDescription}>
         <meta property="og:image" content={socialImage}>
+        {usingDefaultImage && (
+            <>
+                <meta property="og:image:width" content={String(DEFAULT_SOCIAL_IMAGE_SIZE.width)}>
+                <meta property="og:image:height" content={String(DEFAULT_SOCIAL_IMAGE_SIZE.height)}>
+                <meta property="og:image:type" content="image/png">
+            </>
+        )}
         <meta name="description" content={metaDescription}>
         <meta name="keywords" content="portfolio, Thomas Gysemans, développeur, développeur web, développeur d'applications, freelance, web developer, mobile developer, developer, webmaster, back-end, backend, frontend, front-end, designer">
 
