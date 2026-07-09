@@ -122,30 +122,30 @@
     >{labels.exit}</a>
 
     <!-- left rail -->
-    <nav class="absolute left-8 top-7 bottom-7 w-62.5 z-20 max-lg:hidden flex flex-col" aria-label={labels.title}>
-        <div class="text-[10.5px] font-bold tracking-[.22em] text-[#9ad1d4] mb-1.5">{labels.label}</div>
-        <div class="text-[19px] font-bold leading-[1.35] mb-4.5">{labels.title}</div>
+    <nav class="absolute left-8 top-7 bottom-7 w-70 xl:w-80 2xl:w-96 z-20 max-lg:hidden flex flex-col" aria-label={labels.title}>
+        <div class="text-[12px] xl:text-[13px] 2xl:text-[14px] font-bold tracking-[.22em] text-[#9ad1d4] mb-2">{labels.label}</div>
+        <div class="text-[23px] xl:text-[27px] 2xl:text-[31px] font-bold leading-[1.3] mb-5">{labels.title}</div>
         <div class="flex flex-col gap-1">
             {#each items as item, i (item.href)}
                 <button
                     type="button"
                     aria-current={i === index ? "true" : undefined}
                     onclick={() => select(i)}
-                    class="flex items-center gap-2.5 text-[12.5px] py-2.25 px-3 rounded-[9px] border text-left transition-colors {i === index ? 'text-white font-bold bg-[rgba(154,209,212,.12)] border-[rgba(154,209,212,.35)]' : 'text-[#8fb4ba] border-transparent hover:text-white'}"
+                    class="flex items-center gap-2.5 text-[15px] xl:text-[17px] 2xl:text-[19px] py-2.5 xl:py-3 px-3 rounded-[9px] border text-left transition-colors {i === index ? 'text-white font-bold bg-[rgba(154,209,212,.12)] border-[rgba(154,209,212,.35)]' : 'text-[#8fb4ba] border-transparent hover:text-white'}"
                 >
-                    <span class="text-[9.5px] font-bold {i === index ? 'text-[#9ad1d4]' : 'text-[rgba(143,180,186,.6)]'}">{pad(i + 1)}</span>
+                    <span class="text-[11.5px] xl:text-[13px] 2xl:text-[14.5px] font-bold {i === index ? 'text-[#9ad1d4]' : 'text-[rgba(143,180,186,.6)]'}">{pad(i + 1)}</span>
                     {item.name}
                 </button>
             {/each}
         </div>
-        <div class="mt-auto text-[10.5px] text-[#7da3ab] leading-[1.7]">{labels.travelTip}</div>
+        <div class="mt-auto text-[12.5px] xl:text-[14px] 2xl:text-[15.5px] text-[#7da3ab] leading-[1.7]">{labels.travelTip}</div>
     </nav>
 
     <!-- center title -->
     {#key index}
         <div class="absolute z-10 text-center left-1/2 top-[16%] w-full px-5 lg:w-auto lg:px-0 lg:left-[56%] lg:top-[34%] -translate-x-1/2 lg:-translate-y-1/2 showcase-fade-title">
-            <h1 class="text-[clamp(26px,4vw,36px)] font-bold m-0 [text-shadow:0_0_44px_rgba(154,209,212,.55)]">{current.name}</h1>
-            <div class="text-xs text-[#9fc3c9] mt-2 tracking-[.08em] [text-shadow:0_1px_14px_rgba(2,10,16,.9)]">{current.tagline}</div>
+            <h1 class="text-[clamp(32px,4.8vw,46px)] font-bold m-0 [text-shadow:0_0_44px_rgba(154,209,212,.55)]">{current.name}</h1>
+            <div class="text-sm md:text-[15px] text-[#9fc3c9] mt-2.5 tracking-[.08em] [text-shadow:0_1px_14px_rgba(2,10,16,.9)]">{current.tagline}</div>
         </div>
     {/key}
 
