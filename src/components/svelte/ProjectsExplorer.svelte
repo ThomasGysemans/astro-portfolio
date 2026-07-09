@@ -96,7 +96,10 @@
         // "featured" is the default state: keep it out of the URL.
         if (filter !== "featured") params.set("filter", filter);
         if (tech) params.set("tech", tech);
-        if (q) params.set("q", q);
+        // Share the query as typed (case preserved); `q` is only lowercased
+        // for matching, not for the URL.
+        const typedQuery = query.trim();
+        if (typedQuery) params.set("q", typedQuery);
         const search = params.toString();
         history.replaceState(null, "", `${location.pathname}${search ? `?${search}` : ""}`);
     });
