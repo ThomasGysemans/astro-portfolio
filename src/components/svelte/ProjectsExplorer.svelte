@@ -225,12 +225,12 @@
             <span class="inline-flex items-center gap-2 text-xs font-semibold leading-normal text-heading bg-card border border-edge-strong rounded-full py-2.5 px-4.5">🏅 {highlight}</span>
         {/each}
     </div>
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-4 mt-6.5">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 mt-6.5">
         {#each skillGroups as group (group.title)}
             <div class="surface-card py-5 px-5.5">
                 <div class="flex justify-between items-baseline mb-3.5">
                     <span class="text-[13px] font-bold text-accent-heading">{group.title}</span>
-                    <span class="text-[10.5px] text-muted">{group.countLabel}</span>
+                    <span class="text-[10.5px] text-muted whitespace-nowrap">{group.countLabel}</span>
                 </div>
                 <div class="flex flex-col gap-2.75">
                     {#each group.items as item (item.n)}
