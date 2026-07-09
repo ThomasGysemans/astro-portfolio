@@ -55,21 +55,29 @@
         startTimer();
     }
 
-    // Only the visible video plays; the hidden ones are rewound.
+    // The visible video plays only while the carousel is running; pausing the
+    // slideshow (manually or via reduced-motion) freezes it in place, and the
+    // hidden ones are rewound.
     $effect(() => {
         for (let i = 0; i < videos.length; i++) {
             const video = videos[i];
             if (!video) continue;
-            if (i === index) {
+            if (i === index && !paused) {
                 video.play().catch(() => {});
             } else {
                 video.pause();
-                video.currentTime = 0;
+                if (i !== index) video.currentTime = 0;
             }
         }
     });
 
-    onMount(startTimer);
+    onMount(() => {
+        // Respect a reduced-motion preference: start paused so nothing moves on
+        // its own; the visitor can still press play. `matchMedia` is browser-only,
+        // hence resolved here rather than in the initial (SSR) state.
+        paused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        startTimer();
+    });
     onDestroy(() => clearInterval(timer));
 </script>
 
