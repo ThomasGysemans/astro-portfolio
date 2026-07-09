@@ -6,6 +6,7 @@ export type ReviewFormValues = {
     role: string,
     company: string,
     year: string,
+    rating: string,
     quoteEn: string,
     roleEn: string,
     companyEn: string,
@@ -50,6 +51,14 @@ const title = isNew ? "Nouvel avis" : `Avis : ${values.company}`;
                 <div class="adm-field">
                     <label for="year" class="adm-label">Année</label>
                     <input id="year" name="year" type="number" class="adm-input" value={values.year} required>
+                </div>
+                <div class="adm-field">
+                    <label for="rating" class="adm-label">Note (étoiles)</label>
+                    <select id="rating" name="rating" class="adm-input" required>
+                        {[5, 4, 3, 2, 1].map(n => (
+                            <option value={String(n)} selected={values.rating === String(n)}>{"★".repeat(n)}{"☆".repeat(5 - n)} ({n}/5)</option>
+                        ))}
+                    </select>
                 </div>
             </div>
         </section>

@@ -86,4 +86,5 @@ export type Review = {
     role: Localized, // role of the reviewer ("Owner", "Founder", ...)
     company: Localized, // company name and short activity
     year: number,
+    rating: number, // star rating, 1 to 5
 };

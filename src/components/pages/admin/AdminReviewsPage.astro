@@ -7,6 +7,7 @@ export type AdminReviewRow = {
     role: string,
     company: string,
     year: number,
+    rating: number,
 };
 
 interface Props {
@@ -32,7 +33,10 @@ const excerpt = (quote: string) => quote.length > 120 ? quote.slice(0, 120) + "�
         {reviews.map(review => (
             <div class="adm-row">
                 <div class="flex-1 min-w-60">
-                    <div class="text-[14px] font-bold text-heading">{review.company} <span class="text-muted font-normal">· {review.role} · {review.year}</span></div>
+                    <div class="text-[14px] font-bold text-heading">
+                        {review.company} <span class="text-muted font-normal">· {review.role} · {review.year}</span>
+                        <span class="text-accent ml-1 tracking-[1px]" title={`${review.rating}/5`} aria-label={`Note : ${review.rating} sur 5`}>{"★".repeat(review.rating)}<span class="text-muted">{"☆".repeat(5 - review.rating)}</span></span>
+                    </div>
                     <p class="text-[13px] text-body mt-1 italic">« {excerpt(review.quote)} »</p>
                 </div>
                 <a href={`/admin/reviews/${review.id}`} class="adm-btn-outline">Modifier</a>

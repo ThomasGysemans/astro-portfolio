@@ -631,7 +631,8 @@ var REVIEWS = [
     },
     role: { fr: "G\xE9rant", en: "Owner" },
     company: { fr: "YSA \u2014 toiture & r\xE9novation", en: "YSA \u2014 roofing & renovation" },
-    year: 2023
+    year: 2023,
+    rating: 5
   },
   {
     quote: {
@@ -640,7 +641,8 @@ var REVIEWS = [
     },
     role: { fr: "Fondateur", en: "Founder" },
     company: { fr: "Food'Halluin \u2014 plateforme de restaurants", en: "Food'Halluin \u2014 restaurants platform" },
-    year: 2022
+    year: 2022,
+    rating: 5
   },
   {
     quote: {
@@ -649,7 +651,8 @@ var REVIEWS = [
     },
     role: { fr: "Associ\xE9", en: "Partner" },
     company: { fr: "MyStage \u2014 app de suivi de stage", en: "MyStage \u2014 internship tracking app" },
-    year: 2025
+    year: 2025,
+    rating: 5
   }
 ];
 

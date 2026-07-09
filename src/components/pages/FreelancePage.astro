@@ -143,7 +143,10 @@ const carePoints = [
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
                     {reviews.map(review => (
                         <figure class="surface-card py-7 px-7 flex flex-col gap-3.5">
-                            <div class="text-accent text-[13px] tracking-[2px]" aria-hidden="true">★★★★★</div>
+                            <div class="text-[13px] tracking-[2px]">
+                                <span class="text-accent" aria-hidden="true">{"★".repeat(review.rating)}<span class="text-muted">{"☆".repeat(5 - review.rating)}</span></span>
+                                <span class="sr-only">{lang === "fr" ? `Note : ${review.rating} sur 5` : `Rating: ${review.rating} out of 5`}</span>
+                            </div>
                             <!-- The quotation marks come from the page, not the data (localized style). -->
                             <blockquote class="text-[13.5px] leading-[1.7] text-body">{lang === "fr" ? `« ${review.quote[lang]} »` : `“${review.quote[lang]}”`}</blockquote>
                             <figcaption class="mt-auto border-t border-edge pt-3 flex justify-between items-center gap-2.5">

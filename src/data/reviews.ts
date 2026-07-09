@@ -13,6 +13,8 @@ export async function getReviews(): Promise<Review[]> {
             role: { fr: r.role_fr, en: r.role_en || r.role_fr },
             company: { fr: r.company_fr, en: r.company_en || r.company_fr },
             year: r.year,
+            // Clamp to 1–5; legacy rows predating the field (0/undefined) show 5.
+            rating: Math.min(5, Math.max(1, r.rating || 5)),
         }));
     });
 }

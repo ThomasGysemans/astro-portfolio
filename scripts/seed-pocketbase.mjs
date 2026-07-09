@@ -109,6 +109,7 @@ for (const review of REVIEWS) {
         company_fr: review.company.fr,
         company_en: review.company.en,
         year: review.year,
+        rating: review.rating,
     });
 }
 console.log(`created ${REVIEWS.length} reviews`);
