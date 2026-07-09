@@ -26,15 +26,28 @@ export async function adminLogin(email: string, password: string): Promise<strin
 }
 
 // An authenticated client built from the cookie, or null when the visitor
-// is not (or no longer) a logged-in superuser.
-export function adminFromCookies(cookies: AstroCookies): PocketBase | null {
+// is not (or no longer) a logged-in superuser. The token is confirmed with
+// PocketBase, not just decoded: `authStore.isValid` only reads the payload and
+// checks expiry — it never verifies the signature — so a forged token would
+// otherwise pass. `authRefresh` proves the signature server-side.
+export async function adminFromCookies(cookies: AstroCookies): Promise<PocketBase | null> {
     const token = cookies.get(ADMIN_COOKIE)?.value;
     if (!token) return null;
 
     const client = newClient();
     client.authStore.save(token, null);
+    // Reject empty/expired/non-superuser tokens locally first, before spending
+    // a network round-trip on them.
     if (!client.authStore.isValid || !client.authStore.isSuperuser) return null;
-    return client;
+
+    try {
+        // Verifies the token's signature and that the superuser still exists;
+        // throws on a forged or revoked token, and refreshes the auth store.
+        await client.collection("_superusers").authRefresh();
+    } catch {
+        return null;
+    }
+    return client.authStore.isValid && client.authStore.isSuperuser ? client : null;
 }
 
 export function setAdminCookie(cookies: AstroCookies, token: string): void {

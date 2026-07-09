@@ -60,13 +60,13 @@ export const userMiddleware = defineMiddleware((context, next) => {
 // The back-office is only reachable by logged-in PocketBase superusers.
 // It runs after userMiddleware, so a locale-prefixed URL has already been
 // rewritten to its locale-less form when this executes.
-export const adminMiddleware = defineMiddleware((context, next) => {
+export const adminMiddleware = defineMiddleware(async (context, next) => {
     const path = context.url.pathname;
     if (path !== "/admin" && !path.startsWith("/admin/")) {
         return next();
     }
 
-    context.locals.admin = adminFromCookies(context.cookies);
+    context.locals.admin = await adminFromCookies(context.cookies);
 
     const onLoginPage = path === "/admin/login" || path === "/admin/login/";
     if (!context.locals.admin && !onLoginPage) {
