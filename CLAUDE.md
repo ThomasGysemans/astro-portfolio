@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` — runs `astro check` (type-checking, must stay at 0 errors) then builds for the Vercel serverless adapter
 - `npx astro check` — type-check only
 - `docker compose up -d` — local PocketBase at http://127.0.0.1:8090 (dashboard at `/_/`, superuser `thomas@gysemans.dev` / `thomasgysemans`). Schema migrations are versioned in `db/pb_migrations/` (excluded from tsconfig).
-- `node scripts/seed-pocketbase.mjs` — wipes and re-seeds the content collections (target/credentials via `POCKETBASE_URL`, `PB_SUPERUSER_EMAIL`, `PB_SUPERUSER_PASSWORD`).
+- `node scripts/seed-pocketbase.mjs` — wipes and re-seeds the content collections (target/credentials via `POCKETBASE_URL`, `PB_SUPERUSER_EMAIL`, `PB_SUPERUSER_PASSWORD`). The seed content itself lives in `scripts/seed-data.mjs`.
 - `npm run test` / `npm run test:unit` — Vitest unit tests (`tests/unit/`), configured via `getViteConfig` in `vitest.config.ts` so the `@i18n`/`@data` aliases and the `astro:i18n` virtual module resolve. Pure logic only (no DB).
 - `npm run test:e2e` — Playwright e2e tests (`tests/e2e/`). **Requires the local PocketBase running with seeded content.** Playwright's `webServer` starts the dev server via `dev:e2e` (`astro dev` daemonises when stdout is not a TTY, so it starts the daemon then tails its logs to stay foreground).
 
@@ -38,7 +38,7 @@ Astro 7 in SSR mode (`output: "server"`, Vercel serverless adapter imported from
 
 ### Theming
 
-Dark by default, light via a `theme` cookie read by the middleware and rendered as `data-theme` on `<html>` (no FOUC — no client-side detection). All colors are CSS variables declared in `src/styles/tailwind.scss` and mapped to Tailwind tokens in `tailwind.config.mjs`: always style with token classes (`text-heading`, `bg-card`, `border-edge`, `text-accent`…), never hardcode theme colors. Fixed-color surfaces (showcase, over-image UI) intentionally use `night`/`accent-strong`/literal values.
+Dark by default, light via a `theme` cookie read by the middleware and rendered as `data-theme` on `<html>` (no FOUC — no client-side detection). All colors are CSS variables declared in `src/styles/tailwind.css` (Tailwind 4 loads the v3-style `tailwind.config.mjs` via `@config` — that file stays the source of truth for the token mapping): always style with token classes (`text-heading`, `bg-card`, `border-edge`, `text-accent`…), never hardcode theme colors. Fixed-color surfaces (showcase, over-image UI) intentionally use `night`/`accent-strong`/literal values. A few components still use `lang="scss"` in their `<style>` blocks; the back-office has its own plain stylesheet (`src/styles/admin.css`).
 
 ### Data
 
