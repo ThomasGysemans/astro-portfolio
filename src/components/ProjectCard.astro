@@ -14,9 +14,6 @@ interface Props {
 const { project, variant = "compact" } = Astro.props;
 const lang = Astro.locals.lang;
 const href = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
-const meta = project.context === "professional"
-    ? CONTEXTS.professional[lang]
-    : CATEGORIES[project.categories[0]].single[lang];
 ---
 
 {variant === "compact" ? (
@@ -30,7 +27,7 @@ const meta = project.context === "professional"
                 <div class="text-[15px] font-bold text-heading truncate">{project.name[lang]}</div>
                 <div class="text-[11.5px] text-muted mt-0.5 truncate">{project.sub[lang]}</div>
             </div>
-            <span class="text-[11px] text-accent font-bold whitespace-nowrap">{meta} · {project.year}</span>
+            <span class="text-[11px] text-accent font-bold whitespace-nowrap">{CONTEXTS[project.context][lang]} · {project.year}</span>
         </div>
     </a>
 ) : (

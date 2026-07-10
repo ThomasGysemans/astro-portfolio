@@ -20,13 +20,13 @@ const explorerProjects = projects.map(p => ({
     date: p.date,
     desc: p.description[lang],
     thumb: p.thumb,
-    badge: CATEGORIES[p.categories[0]].single[lang],
     categories: p.categories,
     featured: p.featured,
     teamIcon: p.teamSize === 1 ? "👤" : "👥",
     teamLabel: p.teamSize === 1 ? trans.common.solo[lang] : `${trans.common.teamof[lang]} ${p.teamSize}`,
     contextLabel: CONTEXTS[p.context][lang],
-    techs: p.techs.map(t => ({ n: t.name, c: t.color })),
+    techs: p.techs.map(t => t.name),
+    cats: p.categories.map(c => ({ key: c, label: CATEGORIES[c].single[lang], dot: CATEGORIES[c].dot })),
 }));
 
 const pills = [

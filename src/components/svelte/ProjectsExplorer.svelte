@@ -11,13 +11,13 @@
         date: string,
         desc: string,
         thumb: string,
-        badge: string, // localized main-category label shown on the thumbnail
         categories: string[],
         featured: boolean,
         teamIcon: string,
         teamLabel: string,
         contextLabel: string,
-        techs: { n: string, c: string }[],
+        techs: string[], // technology names, only used by the tech filter
+        cats: { key: string, label: string, dot: string }[], // singular category labels shown as pills on the card
     };
 
     type Pill = {
@@ -89,7 +89,7 @@
         projects
             .filter(p =>
                 (filter === "all" || (filter === "featured" ? p.featured : p.categories.includes(filter))) &&
-                (!tech || p.techs.some(t => t.n === tech)) &&
+                (!tech || p.techs.includes(tech)) &&
                 (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)))
             .sort((a, b) => sort === "oldest" ? a.year - b.year : b.year - a.year)
     );
@@ -113,6 +113,11 @@
     function pickTech(name: string) {
         tech = name;
         filter = "all";
+        document.getElementById("projects-toolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function pickCategory(key: string) {
+        filter = key;
         document.getElementById("projects-toolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 </script>
@@ -185,7 +190,6 @@
             <div class="relative aspect-video overflow-hidden">
                 <img src={p.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
                 <img src={p.thumb} alt={p.name} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
-                <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1.25 px-2.5 rounded-md uppercase">{p.badge}</span>
             </div>
             <div class="bg-card-solid pt-3.75 px-4.25 pb-3.25 flex flex-col gap-2.25 flex-1">
                 <div class="flex justify-between items-baseline gap-2">
@@ -194,14 +198,14 @@
                 </div>
                 <p class="text-[11.5px] leading-[1.6] text-body m-0">{p.desc}</p>
                 <div class="relative z-10 flex gap-1.5 flex-wrap mt-auto">
-                    {#each p.techs as t (t.n)}
+                    {#each p.cats as c (c.key)}
                         <button
                             type="button"
-                            onclick={() => pickTech(t.n)}
+                            onclick={() => pickCategory(c.key)}
                             class="inline-flex items-center gap-1.25 text-[10.5px] font-semibold text-chip-text border border-edge-strong rounded-full py-1 px-2.5 hover:border-accent hover:text-heading transition-colors"
                         >
-                            <span class="w-1.5 h-1.5 rounded-full" style="background:{t.c}" />
-                            {t.n}
+                            <span class="w-1.5 h-1.5 rounded-full" style="background:{c.dot}" />
+                            {c.label}
                         </button>
                     {/each}
                 </div>
