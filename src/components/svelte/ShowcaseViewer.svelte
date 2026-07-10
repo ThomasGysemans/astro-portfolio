@@ -145,7 +145,7 @@
     {#key index}
         <div class="absolute z-10 text-center left-1/2 top-[16%] w-full px-5 lg:w-auto lg:px-0 lg:left-[56%] lg:top-[34%] -translate-x-1/2 lg:-translate-y-1/2 showcase-fade-title">
             <h1 class="text-[clamp(32px,4.8vw,46px)] font-bold m-0 [text-shadow:0_0_44px_rgba(154,209,212,.55)]">{current.name}</h1>
-            <div class="text-sm md:text-[15px] text-[#9fc3c9] mt-2.5 tracking-[.08em] [text-shadow:0_1px_14px_rgba(2,10,16,.9)]">{current.tagline}</div>
+            <div class="text-sm md:text-[15px] text-[#9fc3c9] mt-2.5 tracking-[.08em] [text-shadow:0_1px_14px_rgba(2,10,16,.9)] uppercase">{current.tagline}</div>
         </div>
     {/key}
 

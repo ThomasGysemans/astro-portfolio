@@ -37,6 +37,25 @@
     let paused = $state(false);
     let timer: ReturnType<typeof setInterval> | undefined;
     let videos = $state<(HTMLVideoElement | undefined)[]>([]);
+    let portrait = $state<boolean[]>([]);
+
+    // A portrait media (e.g. a mobile screenshot) cannot fill the wide frame
+    // without being cropped beyond recognition, so it is displayed whole
+    // (object-contain) instead. Its orientation is only known from the
+    // intrinsic size, measured once the browser has it — immediately when the
+    // element was already loaded before hydration.
+    function detectOrientation(node: HTMLImageElement | HTMLVideoElement, i: number) {
+        const measure = () => {
+            const isVideo = node instanceof HTMLVideoElement;
+            const width = isVideo ? node.videoWidth : node.naturalWidth;
+            const height = isVideo ? node.videoHeight : node.naturalHeight;
+            if (width && height) portrait[i] = height > width;
+        };
+        measure();
+        const event = node instanceof HTMLVideoElement ? "loadedmetadata" : "load";
+        node.addEventListener(event, measure);
+        return { destroy: () => node.removeEventListener(event, measure) };
+    }
 
     function startTimer() {
         clearInterval(timer);
@@ -82,38 +101,54 @@
 </script>
 
 <div class="relative rounded-2xl overflow-hidden border border-edge shadow-[0_24px_70px_rgba(2,8,18,.35)]" role="region" aria-roledescription="carousel" aria-label={project.name}>
-    <div class="relative aspect-video sm:aspect-21/9 bg-[#04101f]">
+    <div class="relative aspect-4/3 md:aspect-video lg:aspect-2/1 bg-[#04101f]">
         {#each media as item, i (item.src)}
-            {#if item.video}
-                <video
-                    bind:this={videos[i]}
-                    src={item.src}
-                    muted
-                    loop
-                    playsinline
-                    preload={i === 0 ? "auto" : "metadata"}
-                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-450 {i === index ? 'opacity-100' : 'opacity-0'}"
-                    aria-hidden={i === index ? "false" : "true"}
-                />
-            {:else}
-                <img
-                    src={item.src}
-                    alt={i === index ? project.caption : ""}
-                    loading={i === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-450 {i === index ? 'opacity-100' : 'opacity-0'}"
-                    aria-hidden={i === index ? "false" : "true"}
-                />
-            {/if}
+            <div
+                class="absolute inset-0 transition-opacity duration-450 {i === index ? 'opacity-100' : 'opacity-0'}"
+                aria-hidden={i === index ? "false" : "true"}
+            >
+                {#if portrait[i] && !item.video}
+                    <!-- Blurred copy filling the sides left empty by a portrait picture. -->
+                    <img
+                        src={item.src}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        aria-hidden="true"
+                        class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-60"
+                    />
+                {/if}
+                {#if item.video}
+                    <video
+                        bind:this={videos[i]}
+                        use:detectOrientation={i}
+                        src={item.src}
+                        muted
+                        loop
+                        playsinline
+                        preload={i === 0 ? "auto" : "metadata"}
+                        class="absolute inset-0 w-full h-full {portrait[i] ? 'object-contain' : 'object-cover'}"
+                    />
+                {:else}
+                    <img
+                        use:detectOrientation={i}
+                        src={item.src}
+                        alt={i === index ? project.caption : ""}
+                        loading={i === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                        class="absolute inset-0 w-full h-full {portrait[i] ? 'object-contain' : 'object-cover'}"
+                    />
+                {/if}
+            </div>
         {/each}
         <div class="absolute inset-0 bg-linear-to-b from-[rgba(3,15,32,.25)] via-transparent to-[rgba(3,15,32,.92)] pointer-events-none" />
     </div>
 
     <div class="absolute left-[clamp(14px,2vw,28px)] right-[clamp(14px,2vw,28px)] bottom-[clamp(12px,1.6vw,22px)] flex items-end gap-5 flex-wrap">
         <div class="flex-1 min-w-0">
-            <div class="text-[10.5px] font-bold tracking-[.14em] text-[#9fc1f7] [text-shadow:0_1px_8px_rgba(0,0,0,.6)]">{project.tagline}</div>
+            <div class="text-[10.5px] font-bold tracking-[.14em] text-[#9fc1f7] [text-shadow:0_1px_8px_rgba(0,0,0,.6)] max-sm:hidden">{project.tagline}</div>
             <h3 class="text-[clamp(18px,2vw,26px)] font-bold mt-1.5 mb-0 text-white [text-shadow:0_2px_12px_rgba(0,0,0,.5)]">{project.name}</h3>
-            <div class="text-[12.5px] text-[#c9d6ef] mt-1 [text-shadow:0_1px_8px_rgba(0,0,0,.6)]">{project.caption}</div>
+            <div class="text-[12.5px] text-[#c9d6ef] mt-1 [text-shadow:0_1px_8px_rgba(0,0,0,.6)] max-sm:hidden">{project.caption}</div>
         </div>
         <a
             href={project.href}
