@@ -4,7 +4,7 @@ import AdminLayout from "@layouts/AdminLayout.astro";
 import MediaUploader from "@components/svelte/admin/MediaUploader.svelte";
 import TechsEditor from "@components/svelte/admin/TechsEditor.svelte";
 import type { ProjectFormState } from "@data/admin/projects";
-import { CATEGORIES, CONTEXTS, PROJECT_TYPES, TECH_ROLES } from "@data/categories";
+import { CATEGORIES, CONTEXTS, TECH_ROLES } from "@data/categories";
 import { LOCALES } from "@i18n/config";
 
 interface Props {
@@ -62,21 +62,16 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
         <section class="adm-card">
             <h2 class="text-[16px] font-bold text-heading mb-4">Classement</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-                <div class="adm-field">
-                    <label for="category" class="adm-label">Catégorie</label>
-                    <select id="category" name="category" class="adm-input" required>
+                <div class="adm-field col-span-full">
+                    <span class="adm-label adm-label-req">Catégories (la première cochée donne le badge des cartes)</span>
+                    <div class="flex gap-4 items-center min-h-9.5 flex-wrap">
                         {Object.entries(CATEGORIES).map(([catId, meta]) => (
-                            <option value={catId} selected={values.category === catId}>{meta.label.fr}</option>
+                            <label class="adm-check">
+                                <input type="checkbox" name="categories" value={catId} checked={values.categories.includes(catId)}>
+                                {meta.label.fr}
+                            </label>
                         ))}
-                    </select>
-                </div>
-                <div class="adm-field">
-                    <label for="type" class="adm-label">Type</label>
-                    <select id="type" name="type" class="adm-input" required>
-                        {Object.entries(PROJECT_TYPES).map(([typeId, label]) => (
-                            <option value={typeId} selected={values.type === typeId}>{label.fr}</option>
-                        ))}
-                    </select>
+                    </div>
                 </div>
                 <div class="adm-field">
                     <label for="context" class="adm-label">Contexte</label>
@@ -99,7 +94,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
                     <input id="teamSize" name="teamSize" type="number" min="1" class="adm-input" value={values.teamSize} required>
                 </div>
                 <div class="adm-field">
-                    <span class="adm-label">Langues du projet</span>
+                    <span class="adm-label adm-label-req">Langues du projet</span>
                     <div class="flex gap-4 items-center min-h-9.5">
                         {LOCALES.map(locale => (
                             <label class="adm-check">

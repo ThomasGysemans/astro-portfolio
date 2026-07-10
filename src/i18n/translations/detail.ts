@@ -7,7 +7,7 @@ export const detail = {
     "aboutproject": text("À propos de ce projet", "About this project"),
     "techstack": text("Stack technique", "Tech stack"),
     "year": text("Année", "Year"),
-    "type": text("Type"),
+    "categories": text("Catégories", "Categories"),
     "team": text("Équipe", "Team"),
     "context": text("Contexte", "Context"),
     "languages": text("Langues", "Languages"),

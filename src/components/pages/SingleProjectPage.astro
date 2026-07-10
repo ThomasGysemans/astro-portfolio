@@ -2,7 +2,7 @@
 import type { Project } from "@data/models";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAdjacentProjects } from "@data/projects";
-import { CATEGORIES, CONTEXTS, PROJECT_TYPES, TECH_ROLES } from "@data/categories";
+import { CATEGORIES, CONTEXTS, TECH_ROLES } from "@data/categories";
 import MainLayout from "@layouts/MainLayout.astro";
 import trans from "@i18n";
 
@@ -17,8 +17,9 @@ const { prev, next } = await getAdjacentProjects(project.slug);
 const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
 const teamLabel = project.teamSize === 1 ? trans.common.solo[lang] : `${trans.common.teamof[lang]} ${project.teamSize}`;
 const languagesLabel = project.languages.map(l => l.toUpperCase()).join(" · ");
+const categoriesLabel = project.categories.map(c => CATEGORIES[c].single[lang]).join(" · ");
 const chips = [
-    CATEGORIES[project.category].single[lang],
+    ...project.categories.map(c => CATEGORIES[c].single[lang]),
     CONTEXTS[project.context][lang],
     project.date,
     teamLabel,
@@ -35,7 +36,7 @@ const gallery = project.pictures.map(picture => ({
 }));
 const detailRows = [
     { label: trans.detail.year[lang], value: project.date },
-    { label: trans.detail.type[lang], value: PROJECT_TYPES[project.type][lang] },
+    { label: trans.detail.categories[lang], value: categoriesLabel },
     { label: trans.detail.team[lang], value: teamLabel },
     { label: trans.detail.context[lang], value: CONTEXTS[project.context][lang] },
     { label: trans.detail.languages[lang], value: languagesLabel },

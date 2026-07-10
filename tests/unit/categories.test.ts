@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CATEGORIES, CONTEXTS, PROJECT_TYPES, TECH_ROLES } from "@data/categories";
+import { CATEGORIES, CONTEXTS, TECH_ROLES } from "@data/categories";
 import { GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
 import type { Localized } from "@data/models";
 
@@ -28,10 +28,6 @@ describe("CATEGORIES", () => {
 describe("select label maps", () => {
     it("localises every context", () => {
         for (const value of Object.values(CONTEXTS)) expectLocalized(value);
-    });
-
-    it("localises every project type", () => {
-        for (const value of Object.values(PROJECT_TYPES)) expectLocalized(value);
     });
 
     it("localises every tech role", () => {

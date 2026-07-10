@@ -11,8 +11,7 @@ export type ProjectFormValues = {
     slug: string,
     featured: boolean,
     carousel: boolean,
-    category: string,
-    type: string,
+    categories: string[],
     context: string,
     year: string,
     date: string,
@@ -63,7 +62,7 @@ export type AdminProjectRow = {
     slug: string,
     name: string,
     year: number,
-    category: string,
+    categories: string[],
     context: string,
     featured: boolean,
     carousel: boolean,
@@ -77,8 +76,7 @@ function emptyValues(): ProjectFormValues {
         slug: "",
         featured: false,
         carousel: false,
-        category: "web",
-        type: "website",
+        categories: [],
         context: "personal",
         year: String(new Date().getFullYear()),
         date: String(new Date().getFullYear()),
@@ -106,8 +104,7 @@ function parseForm(data: FormData): ProjectFormValues {
         slug: text(data, "slug"),
         featured: data.has("featured"),
         carousel: data.has("carousel"),
-        category: text(data, "category"),
-        type: text(data, "type"),
+        categories: data.getAll("categories").map(String),
         context: text(data, "context"),
         year: text(data, "year"),
         date: text(data, "date"),
@@ -136,8 +133,7 @@ function projectPayload(v: ProjectFormValues): Record<string, unknown> {
         slug: v.slug,
         featured: v.featured,
         carousel: v.carousel,
-        category: v.category,
-        type: v.type,
+        categories: v.categories,
         context: v.context,
         year: Number(v.year),
         date: v.date,
@@ -281,8 +277,7 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
             slug: record.slug,
             featured: !!record.featured,
             carousel: !!record.carousel,
-            category: record.category,
-            type: record.type,
+            categories: record.categories ?? [],
             context: record.context,
             year: String(record.year ?? ""),
             date: record.date ?? "",
@@ -321,6 +316,9 @@ export async function handleProjectPost(pb: PocketBase, data: FormData, id?: str
 
     try {
         if (action === "save") {
+            if (values.categories.length === 0) {
+                return { error: "Sélectionne au moins une catégorie.", values };
+            }
             if (values.languages.length === 0) {
                 return { error: "Sélectionne au moins une langue du projet.", values };
             }
@@ -410,7 +408,7 @@ export async function listAdminProjects(pb: PocketBase): Promise<AdminProjectRow
         name: (record.expand?.project_translations_via_project as RecordModel[] | undefined)
             ?.find(r => r.locale === "fr")?.name ?? record.slug,
         year: record.year,
-        category: record.category,
+        categories: record.categories ?? [],
         context: record.context,
         featured: !!record.featured,
         carousel: !!record.carousel,

@@ -16,7 +16,7 @@ const lang = Astro.locals.lang;
 const href = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
 const meta = project.context === "professional"
     ? CONTEXTS.professional[lang]
-    : CATEGORIES[project.category].single[lang];
+    : CATEGORIES[project.categories[0]].single[lang];
 ---
 
 {variant === "compact" ? (

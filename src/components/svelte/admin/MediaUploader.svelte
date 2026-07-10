@@ -180,7 +180,7 @@
 
 <div class="flex flex-col gap-6">
     <div>
-        <span class="adm-label">Vignette {isNew ? "(requise)" : "(remplacée seulement si un fichier est choisi)"}</span>
+        <span class="adm-label" class:adm-label-req={isNew}>Vignette{isNew ? "" : " (remplacée seulement si un fichier est choisi)"}</span>
         <div class={["flex items-start gap-3 flex-wrap mb-3", { hidden: !thumbUrl && !thumbPreview }]}>
             {#if thumbUrl}
                 <figure class="adm-media-card w-50" class:adm-media-removed={thumbPreview}>

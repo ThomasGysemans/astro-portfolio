@@ -11,8 +11,8 @@
         date: string,
         desc: string,
         thumb: string,
-        badge: string, // localized category label shown on the thumbnail
-        category: string,
+        badge: string, // localized main-category label shown on the thumbnail
+        categories: string[],
         featured: boolean,
         teamIcon: string,
         teamLabel: string,
@@ -88,7 +88,7 @@
     let filtered = $derived(
         projects
             .filter(p =>
-                (filter === "all" || (filter === "featured" ? p.featured : p.category === filter)) &&
+                (filter === "all" || (filter === "featured" ? p.featured : p.categories.includes(filter))) &&
                 (!tech || p.techs.some(t => t.n === tech)) &&
                 (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)))
             .sort((a, b) => sort === "oldest" ? a.year - b.year : b.year - a.year)

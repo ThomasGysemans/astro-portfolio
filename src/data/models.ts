@@ -6,18 +6,7 @@ export type { Localized };
 
 export type ProjectContext = "personal" | "school" | "professional";
 
-export type ProjectCategory = "web" | "games" | "apps" | "languages" | "challenges" | "other";
-
-// Values of the `type` select of the `projects` collection.
-export type ProjectTypeId =
-    | "website"
-    | "app-and-website"
-    | "video-game"
-    | "mobile-app"
-    | "programming-language"
-    | "coding-challenge"
-    | "database-project"
-    | "open-source-project";
+export type ProjectCategory = "web" | "games" | "apps" | "software" | "languages" | "challenges" | "other";
 
 // Values of the `role` select of the `project_techs` collection.
 export type TechRoleId =
@@ -64,8 +53,7 @@ export type Project = {
     name: Localized,
     featured: boolean, // featured projects appear on the homepage and in the showcase
     carousel: boolean, // the (single) project whose pictures fill the homepage carousel
-    category: ProjectCategory,
-    type: ProjectTypeId,
+    categories: ProjectCategory[], // a project may belong to several categories (first one = main)
     year: number, // used for sorting
     date: string, // displayed date, e.g. "2023" or "2018 → 2025"
     teamSize: number, // 1 = solo

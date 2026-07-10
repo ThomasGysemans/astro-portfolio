@@ -9,6 +9,16 @@
     @apply block text-[12px] font-bold text-muted uppercase tracking-wider mb-1.5;
 }
 
+/* Required fields: the label carries a trailing asterisk. Automatic when the
+   label directly precedes a `required` control; `.adm-label-req` marks the
+   labels whose rule is enforced elsewhere (server-side "at least one" checks,
+   controls not adjacent to their label). */
+.adm-label:has(+ :required)::after,
+.adm-label-req::after {
+    content: " *";
+    @apply text-accent;
+}
+
 .adm-input {
     @apply block w-full bg-card border border-edge rounded-lg px-3 py-2 text-[14px] text-text;
     transition: border-color .2s;
