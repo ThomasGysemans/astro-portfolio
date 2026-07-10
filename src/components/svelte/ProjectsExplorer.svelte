@@ -11,7 +11,7 @@
         date: string,
         desc: string,
         thumb: string,
-        badge: string,
+        badge: string, // localized category label shown on the thumbnail
         category: string,
         featured: boolean,
         teamIcon: string,
@@ -52,6 +52,9 @@
     interface Props {
         projects: ExplorerProject[];
         pills: Pill[];
+        // Page heading per filter pill key; falls back to the "all" title.
+        titles: Record<string, string>;
+        subtitle: string;
         techColors: Record<string, string>;
         skillHighlights: string[];
         skillGroups: SkillGroup[];
@@ -64,6 +67,8 @@
     let {
         projects,
         pills,
+        titles,
+        subtitle,
         techColors,
         skillHighlights,
         skillGroups,
@@ -74,6 +79,7 @@
     }: Props = $props();
 
     let filter = $state(initialFilter);
+    let title = $derived(titles[filter] ?? titles.all);
     let tech = $state<string | null>(initialTech);
     let query = $state(initialQuery);
     let sort = $state<"recent" | "oldest">("recent");
@@ -110,6 +116,12 @@
         document.getElementById("projects-toolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 </script>
+
+<!-- heading following the active filter -->
+<div class="px-page pt-11">
+    <h1 class="text-3xl font-bold m-0 text-heading glow">{title}</h1>
+    <p class="text-[13px] text-body mt-1.5">{subtitle}</p>
+</div>
 
 <!-- filter pills -->
 <div class="flex gap-2 flex-wrap px-page mt-4.5">
@@ -170,9 +182,10 @@
 <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5 px-page mt-6 pb-6">
     {#each filtered as p (p.slug)}
         <article class="explorer-card relative rounded-[13px] overflow-hidden border border-edge flex flex-col">
-            <div class="relative">
-                <img src={p.thumb} alt={p.name} loading="lazy" decoding="async" class="w-full aspect-video object-cover" />
-                <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1.25 px-2.5 rounded-md">{p.badge}</span>
+            <div class="relative aspect-video overflow-hidden">
+                <img src={p.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+                <img src={p.thumb} alt={p.name} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+                <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1.25 px-2.5 rounded-md uppercase">{p.badge}</span>
             </div>
             <div class="bg-card-solid pt-3.75 px-4.25 pb-3.25 flex flex-col gap-2.25 flex-1">
                 <div class="flex justify-between items-baseline gap-2">

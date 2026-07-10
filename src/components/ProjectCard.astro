@@ -21,7 +21,10 @@ const meta = project.context === "professional"
 
 {variant === "compact" ? (
     <a {href} class="project-card block rounded-[13px] overflow-hidden border border-edge">
-        <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="w-full aspect-video object-cover" />
+        <div class="relative aspect-video overflow-hidden">
+            <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+            <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+        </div>
         <div class="flex justify-between items-center gap-2.5 bg-card-solid py-3.5 px-4.5">
             <div class="min-w-0">
                 <div class="text-[15px] font-bold text-heading truncate">{project.name[lang]}</div>
@@ -32,8 +35,9 @@ const meta = project.context === "professional"
     </a>
 ) : (
     <a {href} class="project-card flex flex-col rounded-[13px] overflow-hidden border border-edge">
-        <div class="relative">
-            <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="w-full aspect-video object-cover" />
+        <div class="relative aspect-video overflow-hidden">
+            <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+            <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
             <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1 px-2.5 rounded-md uppercase">
                 {CONTEXTS[project.context][lang]} · {project.year}
             </span>

@@ -1,4 +1,5 @@
 ---
+import "flag-icons/css/flag-icons.min.css";
 import AdminLayout from "@layouts/AdminLayout.astro";
 import MediaUploader from "@components/svelte/admin/MediaUploader.svelte";
 import TechsEditor from "@components/svelte/admin/TechsEditor.svelte";
@@ -25,13 +26,16 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
 
 <AdminLayout {title} {notice}>
     <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
-        <h1 class="text-[24px] font-bold text-heading glow">{isNew ? "Nouveau projet" : values.name || values.slug}</h1>
+        <div class="flex items-center gap-4">
+            <h1 class="text-[24px] font-bold text-heading glow">{isNew ? "Nouveau projet" : values.name || values.slug}</h1>
+            {!isNew && <a href={`/projects/${values.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>}
+        </div>
         <a href="/admin/projects" class="text-[13px] text-muted hover:text-accent transition-colors">← Retour à la liste</a>
     </div>
 
     {error && <p class="adm-banner adm-banner-error">{error}</p>}
 
-    <form method="POST" enctype="multipart/form-data" class="flex flex-col gap-6">
+    <form method="POST" enctype="multipart/form-data" autocomplete="off" class="flex flex-col gap-6">
         <input type="hidden" name="action" value="save">
 
         <section class="adm-card">
@@ -40,10 +44,6 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
                 <div class="adm-field">
                     <label for="slug" class="adm-label">Slug</label>
                     <input id="slug" name="slug" class="adm-input" value={values.slug} required minlength="2" maxlength="100">
-                </div>
-                <div class="adm-field">
-                    <label for="badge" class="adm-label">Badge (optionnel)</label>
-                    <input id="badge" name="badge" class="adm-input" value={values.badge} maxlength="50" placeholder="Déduit de la catégorie si vide">
                 </div>
                 <div class="adm-field">
                     <label class="adm-check pb-2.5">
@@ -56,7 +56,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
                     </label>
                 </div>
             </div>
-            {!isNew && <p class="text-[12px] text-muted mt-3">⚠ Le slug est l'URL publique du projet (SEO) : ne le changez pas après publication.</p>}
+            {!isNew && <p class="text-[12px] text-muted mt-3">⚠ Le slug est l'URL publique du projet (SEO) : ne le change pas après publication.</p>}
         </section>
 
         <section class="adm-card">
@@ -132,7 +132,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
         </section>
 
         <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-4">Textes (français)</h2>
+            <h2 class="text-[16px] font-bold text-heading mb-4 flex items-center gap-2"><span class="fi fi-fr rounded-[3px]" aria-hidden="true"></span>Textes (français)</h2>
             <div class="flex flex-col gap-4">
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
                     <div class="adm-field">
@@ -164,7 +164,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
         </section>
 
         <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-1">Textes (anglais)</h2>
+            <h2 class="text-[16px] font-bold text-heading mb-1 flex items-center gap-2"><span class="fi fi-gb rounded-[3px]" aria-hidden="true"></span>Textes (anglais)</h2>
             <p class="text-[12.5px] text-muted mb-4">Facultatif : tant qu'un champ est vide, le site anglais retombe sur le texte français correspondant.</p>
             <div class="flex flex-col gap-4">
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
@@ -204,7 +204,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
     {!isNew && (
         <section class="mt-10">
             <h2 class="text-[18px] font-bold text-heading mb-1">Technologies</h2>
-            <p class="text-[12.5px] text-muted mb-4">L'ordre de la liste définit l'ordre d'affichage sur la page du projet : glissez-déposez les lignes pour les réordonner, puis enregistrez.</p>
+            <p class="text-[12.5px] text-muted mb-4">L'ordre de la liste définit l'ordre d'affichage sur la page du projet : glisse-dépose les lignes pour les réordonner, puis enregistre.</p>
             <TechsEditor {techs} {availableTechs} roles={techRoles} client:load />
         </section>
     )}

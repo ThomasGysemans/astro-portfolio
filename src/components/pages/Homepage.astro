@@ -20,7 +20,7 @@ const freelanceUrl = getRelativeLocaleUrl(lang, "/freelance");
 
 // The carousel explores the pictures of a single project (picked in the back-office).
 const isVideo = (url: string) => /\.(mp4|mov|qt|webm)(\?|$)/i.test(url);
-const carouselMedia = (carouselProject?.pictures ?? []).map(src => ({ src, video: isVideo(src) }));
+const carouselMedia = (carouselProject?.pictures ?? []).map(({ url }) => ({ src: url, video: isVideo(url) }));
 const carouselInfo = carouselProject && {
     name: carouselProject.name[lang],
     tagline: carouselProject.tagline[lang],

@@ -25,18 +25,21 @@ async function gotoHydratedProjects(page: Page) {
 test.describe("projects explorer", () => {
     test("lists project cards", async ({ page }) => {
         await page.goto("/projects");
-        await expect(content(page).getByRole("heading", { name: "Tous mes projets" })).toBeVisible();
+        // The heading follows the active filter; the default is "featured".
+        await expect(content(page).getByRole("heading", { name: "Mes projets à la une" })).toBeVisible();
         await expect(page.locator("article.explorer-card").first()).toBeVisible();
     });
 
-    test("category pills toggle their pressed state", async ({ page }) => {
+    test("category pills toggle their pressed state and the heading", async ({ page }) => {
         const allPill = await gotoHydratedProjects(page);
         await expect(allPill).toHaveAttribute("aria-pressed", "true");
+        await expect(content(page).getByRole("heading", { name: "Tous mes projets" })).toBeVisible();
 
         const featuredPill = content(page).getByRole("button", { name: /^À la une/ });
         await featuredPill.click();
         await expect(featuredPill).toHaveAttribute("aria-pressed", "true");
         await expect(allPill).toHaveAttribute("aria-pressed", "false");
+        await expect(content(page).getByRole("heading", { name: "Mes projets à la une" })).toBeVisible();
     });
 
     test("search narrows the results and clears back", async ({ page }) => {

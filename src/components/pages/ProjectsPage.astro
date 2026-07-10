@@ -1,6 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getAllProjects, getProjectBadge, countProjectsUsing } from "@data/projects";
+import { getAllProjects, countProjectsUsing } from "@data/projects";
 import { getTechnologies, GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
 import { CATEGORIES, CONTEXTS } from "@data/categories";
 import ProjectsExplorer from "@components/svelte/ProjectsExplorer.svelte";
@@ -20,7 +20,7 @@ const explorerProjects = projects.map(p => ({
     date: p.date,
     desc: p.description[lang],
     thumb: p.thumb,
-    badge: getProjectBadge(p),
+    badge: CATEGORIES[p.category].single[lang],
     category: p.category,
     featured: p.featured,
     teamIcon: p.teamSize === 1 ? "👤" : "👥",
@@ -98,18 +98,23 @@ const initialTech = technologies.some(t => t.name === techParam) ? techParam : n
 const initialQuery = searchParams.get("q") ?? "";
 
 const subtitle = trans.projects.subtitle[lang].replace("{count}", `${projects.length}`);
+
+// The heading follows the active filter pill (rendered inside the island so
+// it updates live; the SSR output already matches the ?filter= of the URL).
+const titles: Record<string, string> = {
+    featured: trans.projects.featuredtitle[lang],
+    all: trans.projects.allmyprojects[lang],
+    ...Object.fromEntries(Object.entries(CATEGORIES).map(([key, meta]) => [key, meta.title[lang]])),
+};
 ---
 
 <MainLayout title={trans.projects.title[lang]} description={trans.projects.description[lang]}>
     <main id="main-content" class="w-full max-w-415 mx-auto">
-        <div class="px-page pt-11">
-            <h1 class="text-3xl font-bold m-0 text-heading glow">{trans.projects.allmyprojects[lang]}</h1>
-            <p class="text-[13px] text-body mt-1.5">{subtitle}</p>
-        </div>
-
         <ProjectsExplorer
             projects={explorerProjects}
             {pills}
+            {titles}
+            {subtitle}
             {techColors}
             skillHighlights={techSkills.map(s => s[lang])}
             {skillGroups}

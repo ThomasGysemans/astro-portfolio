@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { countProjectsUsing, getProjectBadge } from "@data/projects";
-import { CATEGORIES } from "@data/categories";
-import type { Project, ProjectCategory, ProjectTech } from "@data/models";
+import { countProjectsUsing } from "@data/projects";
+import type { Project, ProjectTech } from "@data/models";
 
 // Minimal Project builder — only the fields the functions under test read.
 function makeProject(overrides: Partial<Project> = {}): Project {
@@ -35,22 +34,6 @@ function makeProject(overrides: Partial<Project> = {}): Project {
 function tech(name: string): ProjectTech {
     return { name, color: "#000000", role: "language" };
 }
-
-describe("getProjectBadge", () => {
-    it("uses the project's explicit badge when set", () => {
-        expect(getProjectBadge(makeProject({ badge: "CUSTOM" }))).toBe("CUSTOM");
-    });
-
-    it("falls back to the category's default badge", () => {
-        expect(getProjectBadge(makeProject({ category: "games" }))).toBe(CATEGORIES.games.badge);
-    });
-
-    it("derives the right default badge for every category", () => {
-        for (const category of Object.keys(CATEGORIES) as ProjectCategory[]) {
-            expect(getProjectBadge(makeProject({ category }))).toBe(CATEGORIES[category].badge);
-        }
-    });
-});
 
 describe("countProjectsUsing", () => {
     const projects = [

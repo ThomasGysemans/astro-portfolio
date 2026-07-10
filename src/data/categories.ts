@@ -3,17 +3,17 @@ import type { Localized, ProjectCategory, ProjectContext, ProjectTypeId, TechRol
 export type CategoryMeta = {
     label: Localized, // plural label used on the filter pills
     single: Localized, // singular label used on the compact cards ("Game · 2024")
+    title: Localized, // heading of the /projects page when the category filter is active
     dot: string, // color of the dot shown on filter pills
-    badge: string, // default thumbnail badge of the category
 };
 
 export const CATEGORIES: Record<ProjectCategory, CategoryMeta> = {
-    web: { label: { fr: "Web", en: "Web" }, single: { fr: "Web", en: "Web" }, dot: "#566CF5", badge: "WEB" },
-    games: { label: { fr: "Jeux", en: "Games" }, single: { fr: "Jeu", en: "Game" }, dot: "#EC323B", badge: "GAME" },
-    apps: { label: { fr: "Apps", en: "Apps" }, single: { fr: "App", en: "App" }, dot: "#F09953", badge: "APP" },
-    languages: { label: { fr: "Langages", en: "Languages" }, single: { fr: "Langage", en: "Language" }, dot: "#24D5FB", badge: "LANG" },
-    challenges: { label: { fr: "Challenges", en: "Challenges" }, single: { fr: "Challenge", en: "Challenge" }, dot: "#F9DA08", badge: "CHALLENGE" },
-    other: { label: { fr: "Autre", en: "Other" }, single: { fr: "Autre", en: "Other" }, dot: "#F983E7", badge: "OTHER" },
+    web: { label: { fr: "Web", en: "Web" }, single: { fr: "Web", en: "Web" }, title: { fr: "Mes projets web", en: "My web projects" }, dot: "#566CF5" },
+    games: { label: { fr: "Jeux", en: "Games" }, single: { fr: "Jeu", en: "Game" }, title: { fr: "Mes jeux", en: "My games" }, dot: "#EC323B" },
+    apps: { label: { fr: "Apps", en: "Apps" }, single: { fr: "App", en: "App" }, title: { fr: "Mes apps", en: "My apps" }, dot: "#F09953" },
+    languages: { label: { fr: "Langages", en: "Languages" }, single: { fr: "Langage", en: "Language" }, title: { fr: "Mes langages de programmation", en: "My programming languages" }, dot: "#24D5FB" },
+    challenges: { label: { fr: "Challenges", en: "Challenges" }, single: { fr: "Challenge", en: "Challenge" }, title: { fr: "Mes challenges de code", en: "My coding challenges" }, dot: "#F9DA08" },
+    other: { label: { fr: "Autre", en: "Other" }, single: { fr: "Autre", en: "Other" }, title: { fr: "Mes autres projets", en: "My other projects" }, dot: "#F983E7" },
 };
 
 export const CONTEXTS: Record<ProjectContext, Localized> = {

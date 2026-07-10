@@ -11,7 +11,6 @@ export type ProjectFormValues = {
     slug: string,
     featured: boolean,
     carousel: boolean,
-    badge: string,
     category: string,
     type: string,
     context: string,
@@ -44,10 +43,17 @@ export type AdminTechRow = {
     role: string,
 };
 
+export type AdminPicture = {
+    name: string,
+    url: string,
+    captionFr: string,
+    captionEn: string,
+};
+
 export type ProjectFormState = {
     values: ProjectFormValues,
     thumbUrl?: string,
-    pictures: { name: string, url: string }[],
+    pictures: AdminPicture[],
     techs: AdminTechRow[],
     availableTechs: { id: string, name: string }[],
 };
@@ -71,7 +77,6 @@ function emptyValues(): ProjectFormValues {
         slug: "",
         featured: false,
         carousel: false,
-        badge: "",
         category: "web",
         type: "website",
         context: "personal",
@@ -101,7 +106,6 @@ function parseForm(data: FormData): ProjectFormValues {
         slug: text(data, "slug"),
         featured: data.has("featured"),
         carousel: data.has("carousel"),
-        badge: text(data, "badge"),
         category: text(data, "category"),
         type: text(data, "type"),
         context: text(data, "context"),
@@ -132,7 +136,6 @@ function projectPayload(v: ProjectFormValues): Record<string, unknown> {
         slug: v.slug,
         featured: v.featured,
         carousel: v.carousel,
-        badge: v.badge,
         category: v.category,
         type: v.type,
         context: v.context,
@@ -143,6 +146,57 @@ function projectPayload(v: ProjectFormValues): Record<string, unknown> {
         github: v.github,
         link: v.link,
     };
+}
+
+type PictureCaptions = Record<string, { fr?: string, en?: string }>;
+
+function pictureCaptions(record: RecordModel): PictureCaptions {
+    return (record.picture_captions ?? {}) as PictureCaptions;
+}
+
+// The media list of the form submits one `picture_order` token per kept
+// media (`existing:<filename>` or `new:<index into the uploaded files>`),
+// aligned with the `picture_alt_fr`/`picture_alt_en` caption inputs.
+type PictureOrder = {
+    tokens: string[],
+    captionsFr: string[],
+    captionsEn: string[],
+};
+
+function parsePictureOrder(data: FormData): PictureOrder | undefined {
+    // Absent marker = the media editor did not run (no JS): leave the
+    // pictures untouched instead of wiping them.
+    if (!data.has("picture_order_present")) return undefined;
+    return {
+        tokens: data.getAll("picture_order").map(String),
+        captionsFr: data.getAll("picture_alt_fr").map(String),
+        captionsEn: data.getAll("picture_alt_en").map(String),
+    };
+}
+
+// Applies the submitted order and captions to the record's pictures.
+// The files uploaded in this save were appended at the end of the field,
+// in submission order: resolve the `new:<i>` tokens against that tail,
+// then rewrite the full filename list (PocketBase reorders the kept files
+// and deletes the omitted ones) along with the captions map.
+async function applyPictureOrder(pb: PocketBase, recordId: string, stored: string[], uploadedCount: number, order: PictureOrder): Promise<void> {
+    const appended = uploadedCount > 0 ? stored.slice(stored.length - uploadedCount) : [];
+    const desired: string[] = [];
+    const captions: PictureCaptions = {};
+    order.tokens.forEach((token, i) => {
+        const name = token.startsWith("new:")
+            ? appended[Number(token.slice("new:".length))]
+            : token.slice("existing:".length);
+        if (!name || !stored.includes(name) || desired.includes(name)) return;
+        desired.push(name);
+        const fr = order.captionsFr[i]?.trim() ?? "";
+        const en = order.captionsEn[i]?.trim() ?? "";
+        if (fr || en) captions[name] = { fr, en };
+    });
+    // `pictures` is required: never wipe it entirely from here (the POST
+    // handler rejects a fully emptied list before writing anything).
+    if (desired.length === 0) desired.push(...stored);
+    await pb.collection("projects").update(recordId, { pictures: desired, picture_captions: captions });
 }
 
 // Only one project may fill the homepage carousel: flagging one unflags the others.
@@ -227,7 +281,6 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
             slug: record.slug,
             featured: !!record.featured,
             carousel: !!record.carousel,
-            badge: record.badge ?? "",
             category: record.category,
             type: record.type,
             context: record.context,
@@ -254,6 +307,8 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
         pictures: ((record.pictures as string[] | undefined) ?? []).map(name => ({
             name,
             url: pb.files.getURL(record, name),
+            captionFr: pictureCaptions(record)[name]?.fr ?? "",
+            captionEn: pictureCaptions(record)[name]?.en ?? "",
         })),
         techs,
         availableTechs: allTechs.filter(t => !usedTechIds.has(t.id)),
@@ -267,12 +322,13 @@ export async function handleProjectPost(pb: PocketBase, data: FormData, id?: str
     try {
         if (action === "save") {
             if (values.languages.length === 0) {
-                return { error: "Sélectionnez au moins une langue du projet.", values };
+                return { error: "Sélectionne au moins une langue du projet.", values };
             }
 
             const payload = projectPayload(values);
             const thumb = file(data, "thumb");
             const newPictures = files(data, "pictures");
+            const order = parsePictureOrder(data);
 
             if (!id) {
                 if (!thumb) {
@@ -282,18 +338,28 @@ export async function handleProjectPost(pb: PocketBase, data: FormData, id?: str
                 // `pictures` is required by the collection: default to the thumb.
                 payload.pictures = newPictures.length > 0 ? newPictures : [thumb];
                 const record = await pb.collection("projects").create(payload);
+                if (order && order.tokens.length > 0) {
+                    await applyPictureOrder(pb, record.id, record.pictures as string[], newPictures.length, order);
+                }
                 await upsertTranslations(pb, record.id, values);
                 if (values.carousel) await claimCarousel(pb, record.id);
                 invalidateCache();
                 return { redirect: `/admin/projects/${record.id}?created=1` };
             }
 
+            // An emptied media list would leave the project without any
+            // picture, which the collection forbids: reject before writing.
+            if (order && order.tokens.length === 0 && newPictures.length === 0) {
+                return { error: "Le projet doit garder au moins une image ou vidéo.", values };
+            }
+
             if (thumb) payload.thumb = thumb;
             if (newPictures.length > 0) payload["pictures+"] = newPictures;
-            const removedPictures = data.getAll("remove_pictures").map(String);
-            if (removedPictures.length > 0) payload["pictures-"] = removedPictures;
 
-            await pb.collection("projects").update(id, payload);
+            const record = await pb.collection("projects").update(id, payload);
+            if (order) {
+                await applyPictureOrder(pb, id, record.pictures as string[], newPictures.length, order);
+            }
             await upsertTranslations(pb, id, values);
             if (values.carousel) await claimCarousel(pb, id);
             invalidateCache();

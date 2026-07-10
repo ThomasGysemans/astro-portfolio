@@ -363,7 +363,6 @@ var PROJECTS = [
     name: text("BDD des JO", "Olympic Games database"),
     featured: false,
     category: "other",
-    badge: "SQL",
     type: "database-project",
     year: 2023,
     date: "2023",

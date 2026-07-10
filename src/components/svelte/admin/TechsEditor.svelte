@@ -108,7 +108,7 @@
     }
 </script>
 
-<form method="POST" class="flex flex-col gap-4">
+<form method="POST" autocomplete="off" class="flex flex-col gap-4">
     <input type="hidden" name="action" value="save-techs" />
     {#each removed as ref (ref)}
         <input type="hidden" name="tech_removed" value={ref} />

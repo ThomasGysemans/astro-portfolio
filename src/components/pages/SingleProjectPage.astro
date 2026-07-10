@@ -1,8 +1,8 @@
 ---
 import type { Project } from "@data/models";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getAdjacentProjects, getProjectBadge } from "@data/projects";
-import { CONTEXTS, PROJECT_TYPES, TECH_ROLES } from "@data/categories";
+import { getAdjacentProjects } from "@data/projects";
+import { CATEGORIES, CONTEXTS, PROJECT_TYPES, TECH_ROLES } from "@data/categories";
 import MainLayout from "@layouts/MainLayout.astro";
 import trans from "@i18n";
 
@@ -18,12 +18,21 @@ const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
 const teamLabel = project.teamSize === 1 ? trans.common.solo[lang] : `${trans.common.teamof[lang]} ${project.teamSize}`;
 const languagesLabel = project.languages.map(l => l.toUpperCase()).join(" · ");
 const chips = [
-    getProjectBadge(project),
+    CATEGORIES[project.category].single[lang],
     CONTEXTS[project.context][lang],
     project.date,
     teamLabel,
     languagesLabel,
 ];
+// The gallery shows every picture of the project, each with its own
+// caption (also used as the alt text); pictures without one fall back
+// to the project's legacy thumbnail caption.
+const isVideo = (url: string) => /\.(mp4|mov|qt|webm)(\?|$)/i.test(url);
+const gallery = project.pictures.map(picture => ({
+    url: picture.url,
+    video: isVideo(picture.url),
+    caption: picture.caption[lang] || project.caption[lang],
+}));
 const detailRows = [
     { label: trans.detail.year[lang], value: project.date },
     { label: trans.detail.type[lang], value: PROJECT_TYPES[project.type][lang] },
@@ -66,10 +75,19 @@ const detailRows = [
                     <h2 class="text-[13px] font-bold text-accent-heading mb-2.5">{trans.detail.aboutproject[lang]}</h2>
                     <p class="text-[13px] leading-[1.8] text-body">{project.about[lang]}</p>
                 </section>
-                <figure class="surface-card overflow-hidden">
-                    <img src={project.thumbLarge} alt={project.caption[lang]} loading="lazy" decoding="async" class="w-full aspect-video object-cover" />
-                    <figcaption class="py-2.75 px-4 text-[11px] text-muted border-t border-edge">📷 {project.caption[lang]}</figcaption>
-                </figure>
+                {gallery.map(media => (
+                    <figure class="surface-card overflow-hidden">
+                        {media.video ? (
+                            <video src={media.url} controls muted playsinline preload="metadata" aria-label={media.caption} class="w-full aspect-video object-contain bg-[#04101f]" />
+                        ) : (
+                            <div class="relative aspect-video overflow-hidden">
+                                <img src={media.url} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+                                <img src={media.url} alt={media.caption} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+                            </div>
+                        )}
+                        <figcaption class="py-2.75 px-4 text-[11px] text-muted border-t border-edge">{media.video ? "🎬" : "📷"} {media.caption}</figcaption>
+                    </figure>
+                ))}
             </div>
 
             <div class="flex flex-col gap-3.5">

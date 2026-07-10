@@ -58,7 +58,6 @@ for (const project of PROJECTS) {
         // The homepage carousel shows the pictures of a single project;
         // default to the first featured one (re-pickable in the back-office).
         carousel: project.slug === PROJECTS.find(p => p.featured)?.slug,
-        badge: project.badge ?? "",
         category: project.category,
         type: project.type,
         context: project.context,

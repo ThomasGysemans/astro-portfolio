@@ -8,7 +8,8 @@ test.describe("navigation", () => {
         const nav = page.getByRole("navigation", { name: "Navigation principale" });
         await nav.getByRole("link", { name: "Projets" }).click();
         await expect(page).toHaveURL(/\/projects\/?$/);
-        await expect(page.getByRole("heading", { name: "Tous mes projets" })).toBeVisible();
+        // The heading follows the active filter; the default is "featured".
+        await expect(page.getByRole("heading", { name: "Mes projets à la une" })).toBeVisible();
     });
 
     test("the language switch moves to the English URL and serves English", async ({ page, context }) => {

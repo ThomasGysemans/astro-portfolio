@@ -11,11 +11,10 @@ function expectLocalized(value: Localized) {
 }
 
 describe("CATEGORIES", () => {
-    it("gives every category a complete label, singular and badge", () => {
+    it("gives every category a complete label and singular", () => {
         for (const meta of Object.values(CATEGORIES)) {
             expectLocalized(meta.label);
             expectLocalized(meta.single);
-            expect(meta.badge.length).toBeGreaterThan(0);
         }
     });
 

@@ -1,6 +1,5 @@
 import type { RecordModel } from "pocketbase";
-import type { Localized, Project, ProjectTech } from "./models";
-import { CATEGORIES } from "./categories";
+import type { Localized, Project, ProjectPicture, ProjectTech } from "./models";
 import { cached, pb } from "./pb";
 
 const EXPAND = "project_translations_via_project,project_techs_via_project.technology";
@@ -23,13 +22,23 @@ function mapProject(record: RecordModel): Project {
     }));
     const text = (key: string) => localize(translations, key);
 
+    // Per-picture captions written by the back-office, keyed by filename.
+    const captions = (record.picture_captions ?? {}) as Record<string, { fr?: string, en?: string }>;
+    const pictures: ProjectPicture[] = ((record.pictures as string[] | undefined) ?? []).map(name => {
+        const fr = captions[name]?.fr ?? "";
+        return {
+            // No thumb sizes are declared on `pictures` (it also holds videos): full-size URLs.
+            url: pb.files.getURL(record, name),
+            caption: { fr, en: captions[name]?.en || fr },
+        };
+    });
+
     return {
         slug: record.slug,
         name: text("name"),
         featured: !!record.featured,
         carousel: !!record.carousel,
         category: record.category,
-        badge: record.badge || undefined,
         type: record.type,
         year: record.year,
         date: record.date,
@@ -38,8 +47,7 @@ function mapProject(record: RecordModel): Project {
         languages: record.languages,
         thumb: pb.files.getURL(record, record.thumb, { thumb: "800x0" }),
         thumbLarge: pb.files.getURL(record, record.thumb, { thumb: "1200x0" }),
-        // No thumb sizes are declared on `pictures` (it also holds videos): full-size URLs.
-        pictures: ((record.pictures as string[] | undefined) ?? []).map(name => pb.files.getURL(record, name)),
+        pictures,
         github: record.github || undefined,
         link: record.link || undefined,
         sub: text("sub"),
@@ -92,10 +100,6 @@ export async function getAdjacentProjects(slug: string): Promise<{ prev: Project
         prev: all[(i - 1 + all.length) % all.length],
         next: all[(i + 1) % all.length],
     };
-}
-
-export function getProjectBadge(project: Project): string {
-    return project.badge ?? CATEGORIES[project.category].badge;
 }
 
 export function countProjectsUsing(projects: Project[], tech: string): number {

@@ -7,6 +7,7 @@ export const projects = {
         "All my projects (school, personal and freelance work) along with my tech skills.",
     ),
     "allmyprojects": text("Tous mes projets", "All my projects"),
+    "featuredtitle": text("Mes projets à la une", "My featured projects"),
     "subtitle": text(
         "{count} projets · 2018 → 2025 · scolaire, personnel & freelance",
         "{count} projects · 2018 → 2025 · school, personal & freelance work",

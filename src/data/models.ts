@@ -54,13 +54,17 @@ export type ProjectTech = {
     role: TechRoleId,
 };
 
+export type ProjectPicture = {
+    url: string, // full-size URL of the file (image or video)
+    caption: Localized, // per-picture caption/alt text; may be empty (pages fall back to the project caption)
+};
+
 export type Project = {
     slug: string,
     name: Localized,
     featured: boolean, // featured projects appear on the homepage and in the showcase
     carousel: boolean, // the (single) project whose pictures fill the homepage carousel
     category: ProjectCategory,
-    badge?: string, // small uppercase badge on the thumbnail; derived from the category when omitted
     type: ProjectTypeId,
     year: number, // used for sorting
     date: string, // displayed date, e.g. "2023" or "2018 → 2025"
@@ -69,7 +73,7 @@ export type Project = {
     languages: App.LangCode[], // languages supported by the project itself
     thumb: string, // presentation picture URL, ~800px wide (cards)
     thumbLarge: string, // presentation picture URL, ~1200px wide (detail page)
-    pictures: string[], // full-size URLs of the `pictures` files (images and videos)
+    pictures: ProjectPicture[], // the `pictures` files (images and videos), in display order, with their captions
     github?: string,
     link?: string,
     sub: Localized, // one-line subtitle shown on compact cards

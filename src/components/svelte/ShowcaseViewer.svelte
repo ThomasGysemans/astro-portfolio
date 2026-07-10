@@ -152,7 +152,10 @@
     <!-- info card -->
     {#key index}
         <div class="absolute z-20 bottom-5 left-4 right-4 sm:left-auto sm:right-8 sm:bottom-8 sm:w-90 bg-[rgba(3,17,26,.78)] border border-[rgba(154,209,212,.28)] rounded-[15px] p-4 backdrop-blur-xl showcase-fade-card">
-            <img src={current.thumb} alt={current.name} loading="lazy" decoding="async" class="w-full aspect-video object-cover rounded-[10px] mb-3.25" />
+            <div class="relative aspect-video overflow-hidden rounded-[10px] mb-3.25">
+                <img src={current.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+                <img src={current.thumb} alt={current.name} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+            </div>
             <div class="flex justify-between items-baseline mb-1.75">
                 <span class="text-base font-bold">{current.name}</span>
                 <span class="text-[10.5px] text-[#9ad1d4] font-bold">{counter}</span>

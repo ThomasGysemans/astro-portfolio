@@ -20,7 +20,7 @@ if (!state) return Astro.redirect("/admin/projects");
 if (submitted) state.values = submitted;
 
 const notice = Astro.url.searchParams.has("created")
-    ? "Projet créé : ajoutez maintenant ses technologies ci-dessous."
+    ? "Projet créé : ajoute maintenant ses technologies ci-dessous."
     : Astro.url.searchParams.has("saved") ? "Modifications enregistrées." : undefined;
 ---
 
