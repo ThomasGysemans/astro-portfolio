@@ -1,8 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getAllProjects, getCarouselProject, getFeaturedProjects } from "@data/projects";
-import { getTechnologies } from "@data/technologies";
+import { getAllProjects } from "@data/projects";
+import { countTechnologies } from "@data/technologies";
 import FeaturedCarousel from "@components/svelte/FeaturedCarousel.svelte";
 import AvailabilityBadge from "@components/AvailabilityBadge.astro";
 import ProjectCard from "@components/ProjectCard.astro";
@@ -13,10 +13,15 @@ import { isVideo } from "@data/media";
 import trans from "@i18n";
 
 const lang = Astro.locals.lang;
-// The technologies come from the same 60s cache as /projects; the stat
-// numbers are computed from data already needed by the page, so keeping
-// them in sync with the database costs no extra latency.
-const [featured, allProjects, carouselProject, technologies] = await Promise.all([getFeaturedProjects(), getAllProjects(), getCarouselProject(), getTechnologies()]);
+// One cached PocketBase query feeds everything project-related: the featured
+// cards, the carousel project and the total count are all derived from the
+// same list. The technologies stat goes through a count-only query (a number,
+// not the collection); both requests run in parallel and hit the 60s cache.
+const [allProjects, technologiesCount] = await Promise.all([getAllProjects(), countTechnologies()]);
+const featured = allProjects.filter(p => p.featured);
+// The carousel explores the single project flagged in the back-office,
+// falling back to the first featured one.
+const carouselProject = allProjects.find(p => p.carousel) ?? featured[0];
 const totalProjects = allProjects.length;
 const allProjectsLabel = trans.home.allprojectscount[lang].replace("{count}", `${totalProjects}`);
 const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
@@ -99,7 +104,7 @@ const aboutCards = [
             <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 px-page pt-2.5 pb-8.5">
                 <StatCard value={trans.home.stat1num[lang]}>{trans.home.stat1[lang]}</StatCard>
                 <StatCard value={`${totalProjects}`}>{trans.home.stat2[lang]}</StatCard>
-                <StatCard value={`${technologies.length}`}>{trans.home.stat3[lang]}</StatCard>
+                <StatCard value={`${technologiesCount}`}>{trans.home.stat3[lang]}</StatCard>
                 <StatCard value={trans.home.stat4num[lang]}>{trans.home.stat4[lang]}</StatCard>
             </section>
 

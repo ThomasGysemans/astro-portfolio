@@ -75,13 +75,6 @@ export async function getFeaturedProjects(): Promise<Project[]> {
     return (await getAllProjects()).filter(p => p.featured);
 }
 
-// The single project whose pictures fill the homepage carousel, chosen
-// in the back-office. Falls back to the first featured project.
-export async function getCarouselProject(): Promise<Project | undefined> {
-    const all = await getAllProjects();
-    return all.find(p => p.carousel) ?? all.find(p => p.featured);
-}
-
 // The client work shown on the freelance page.
 export async function getProfessionalProjects(): Promise<Project[]> {
     return (await getAllProjects()).filter(p => p.context === "professional");

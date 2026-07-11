@@ -29,3 +29,12 @@ export async function getTechnologies(): Promise<Technology[]> {
         }));
     });
 }
+
+// Number of technologies, for the homepage stat: only `totalItems` of a
+// one-row page is transferred, instead of downloading the whole collection.
+export async function countTechnologies(): Promise<number> {
+    return cached("technologies-count", async () => {
+        const page = await pb.collection("technologies").getList(1, 1, { fields: "id" });
+        return page.totalItems;
+    });
+}
