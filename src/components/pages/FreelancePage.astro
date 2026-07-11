@@ -21,6 +21,8 @@ const [freelanceProjects, allProjects, reviews] = await Promise.all([
 const totalProjects = allProjects.length;
 const allProjectsLabel = trans.home.allprojectscount[lang].replace("{count}", `${totalProjects}`);
 const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
+// Year of the oldest project, for the "shipped since {year}" stat.
+const firstYear = allProjects.length > 0 ? Math.min(...allProjects.map(p => p.year)) : new Date().getFullYear();
 
 const steps = [
     { emoji: "🎨", border: "#619cf3", title: trans.freelance.step1title[lang], text: trans.freelance.step1[lang], fade: ".2s", pulse: ".4s" },
@@ -86,7 +88,7 @@ const carePoints = [
                 <StatCard value={trans.freelance.stat1num[lang]}>{trans.freelance.stat1[lang]}</StatCard>
                 <StatCard value={trans.freelance.stat2num[lang]}>{trans.freelance.stat2[lang]}</StatCard>
                 <StatCard value={trans.freelance.stat3num[lang]}>{trans.freelance.stat3[lang]}</StatCard>
-                <StatCard value={trans.freelance.stat4num[lang]}>{trans.freelance.stat4[lang]}</StatCard>
+                <StatCard value={`${totalProjects}`}>{trans.freelance.stat4[lang].replace("{year}", `${firstYear}`)}</StatCard>
             </section>
 
             <!-- guarantee + AI -->

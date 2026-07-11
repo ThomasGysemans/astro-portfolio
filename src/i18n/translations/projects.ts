@@ -9,8 +9,8 @@ export const projects = {
     "allmyprojects": text("Tous mes projets", "All my projects"),
     "featuredtitle": text("Mes projets à la une", "My featured projects"),
     "subtitle": text(
-        "{count} projets · 2018 → 2025 · scolaire, personnel & freelance",
-        "{count} projects · 2018 → 2025 · school, personal & freelance work",
+        "{count} projets · {from} → {to} · scolaire, personnel & freelance",
+        "{count} projects · {from} → {to} · school, personal & freelance work",
     ),
     "featuredpill": text("À la une", "Featured"),
     "allpill": text("Tous", "All"),

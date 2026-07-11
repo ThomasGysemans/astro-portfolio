@@ -97,7 +97,14 @@ const initialFilter = validFilters.includes(filterParam) ? filterParam : "featur
 const initialTech = technologies.some(t => t.name === techParam) ? techParam : null;
 const initialQuery = searchParams.get("q") ?? "";
 
-const subtitle = trans.projects.subtitle[lang].replace("{count}", `${projects.length}`);
+// The year range follows the actual projects instead of a hardcoded copy
+// (computed from the already-loaded list, so it never goes stale).
+const years = projects.map(p => p.year);
+const currentYear = new Date().getFullYear();
+const subtitle = trans.projects.subtitle[lang]
+    .replace("{count}", `${projects.length}`)
+    .replace("{from}", `${years.length > 0 ? Math.min(...years) : currentYear}`)
+    .replace("{to}", `${years.length > 0 ? Math.max(...years) : currentYear}`);
 
 // The heading follows the active filter pill (rendered inside the island so
 // it updates live; the SSR output already matches the ?filter= of the URL).

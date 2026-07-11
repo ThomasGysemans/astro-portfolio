@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAllProjects, getCarouselProject, getFeaturedProjects } from "@data/projects";
+import { getTechnologies } from "@data/technologies";
 import FeaturedCarousel from "@components/svelte/FeaturedCarousel.svelte";
 import AvailabilityBadge from "@components/AvailabilityBadge.astro";
 import ProjectCard from "@components/ProjectCard.astro";
@@ -12,7 +13,10 @@ import { isVideo } from "@data/media";
 import trans from "@i18n";
 
 const lang = Astro.locals.lang;
-const [featured, allProjects, carouselProject] = await Promise.all([getFeaturedProjects(), getAllProjects(), getCarouselProject()]);
+// The technologies come from the same 60s cache as /projects; the stat
+// numbers are computed from data already needed by the page, so keeping
+// them in sync with the database costs no extra latency.
+const [featured, allProjects, carouselProject, technologies] = await Promise.all([getFeaturedProjects(), getAllProjects(), getCarouselProject(), getTechnologies()]);
 const totalProjects = allProjects.length;
 const allProjectsLabel = trans.home.allprojectscount[lang].replace("{count}", `${totalProjects}`);
 const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
@@ -94,8 +98,8 @@ const aboutCards = [
             <!-- stats -->
             <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 px-page pt-2.5 pb-8.5">
                 <StatCard value={trans.home.stat1num[lang]}>{trans.home.stat1[lang]}</StatCard>
-                <StatCard value={trans.home.stat2num[lang]}>{trans.home.stat2[lang]}</StatCard>
-                <StatCard value={trans.home.stat3num[lang]}>{trans.home.stat3[lang]}</StatCard>
+                <StatCard value={`${totalProjects}`}>{trans.home.stat2[lang]}</StatCard>
+                <StatCard value={`${technologies.length}`}>{trans.home.stat3[lang]}</StatCard>
                 <StatCard value={trans.home.stat4num[lang]}>{trans.home.stat4[lang]}</StatCard>
             </section>
 

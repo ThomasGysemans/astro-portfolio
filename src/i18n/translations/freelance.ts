@@ -29,8 +29,7 @@ export const freelance = {
     "stat2": text("de satisfaction pour tous les clients avec qui j'ai travaillé", "satisfaction for all clients I have worked with"),
     "stat3num": text("48h"),
     "stat3": text("pour une première réponse et un devis gratuit", "to get a first reply and a free quote"),
-    "stat4num": text("20"),
-    "stat4": text("projets livrés depuis 2018", "projects shipped since 2018"),
+    "stat4": text("projets livrés depuis {year}", "projects shipped since {year}"),
     "guaranteetitle": text("Garantie un an", "One-year guarantee"),
     "guarantee": text(
         "Un bug dans l'année suivant la livraison ? Corrigé gratuitement, sans discussion.",
