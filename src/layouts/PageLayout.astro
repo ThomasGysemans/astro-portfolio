@@ -13,8 +13,11 @@ const DOMAIN = "https://thomasgysemans.dev";
 const DEFAULT_IMAGE = `${DOMAIN}/logo.png`;
 // Social-share card used when a page passes no `image` of its own. Its intrinsic
 // size is advertised so scrapers can lay the card out before fetching the file.
+// 1200x630 is the recommended Open Graph size (scrapers download it on every
+// share); PNG on purpose, the text stays crisper than JPEG. Generated from
+// public/header.png, the untouched original (kept in the repo like cv.pdf).
 const DEFAULT_SOCIAL_IMAGE = `${DOMAIN}/og-default.png`;
-const DEFAULT_SOCIAL_IMAGE_SIZE = { width: 4096, height: 2304 };
+const DEFAULT_SOCIAL_IMAGE_SIZE = { width: 1200, height: 630 };
 
 const { title, description, image, noindex = false } = Astro.props;
 const lang = Astro.locals.lang;

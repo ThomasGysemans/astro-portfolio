@@ -53,7 +53,7 @@ export type Project = {
     name: Localized,
     featured: boolean, // featured projects appear on the homepage and in the showcase
     carousel: boolean, // the (single) project whose pictures fill the homepage carousel
-    categories: ProjectCategory[], // a project may belong to several categories (first one = main)
+    categories: ProjectCategory[], // a project may belong to several categories
     year: number, // used for sorting
     date: string, // displayed date, e.g. "2023" or "2018 → 2025"
     teamSize: number, // 1 = solo

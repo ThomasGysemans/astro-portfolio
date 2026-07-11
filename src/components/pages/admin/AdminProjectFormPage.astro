@@ -63,7 +63,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
             <h2 class="text-[16px] font-bold text-heading mb-4">Classement</h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
                 <div class="adm-field col-span-full">
-                    <span class="adm-label adm-label-req">Catégories (la première cochée donne le badge des cartes)</span>
+                    <span class="adm-label adm-label-req">Catégories</span>
                     <div class="flex gap-4 items-center min-h-9.5 flex-wrap">
                         {Object.entries(CATEGORIES).map(([catId, meta]) => (
                             <label class="adm-check">
