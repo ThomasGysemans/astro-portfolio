@@ -15,7 +15,6 @@ export const home = {
     "appdev": text("Développeur d'applications", "App developer"),
     "designer": text("UI/UX designer"),
     "dragtoorbit": text("Glissez pour orbiter", "Drag to orbit"),
-    "earthalt": text("Terre 3D interactive", "Interactive 3D Earth"),
     "stat1num": text("10+"),
     "stat1": text("années de code en autodidacte, depuis mes 13 ans", "years of self-taught code, since age 13"),
     "stat2num": text("20"),

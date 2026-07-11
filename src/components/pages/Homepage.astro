@@ -8,6 +8,7 @@ import ProjectCard from "@components/ProjectCard.astro";
 import StatCard from "@components/StatCard.astro";
 import MainLayout from "@layouts/MainLayout.astro";
 import Earth from "@components/svelte/Earth.svelte";
+import { isVideo } from "@data/media";
 import trans from "@i18n";
 
 const lang = Astro.locals.lang;
@@ -19,7 +20,6 @@ const showcaseUrl = getRelativeLocaleUrl(lang, "/showcase");
 const freelanceUrl = getRelativeLocaleUrl(lang, "/freelance");
 
 // The carousel explores the pictures of a single project (picked in the back-office).
-const isVideo = (url: string) => /\.(mp4|mov|qt|webm)(\?|$)/i.test(url);
 const carouselMedia = (carouselProject?.pictures ?? []).map(({ url }) => ({ src: url, video: isVideo(url) }));
 const carouselInfo = carouselProject && {
     name: carouselProject.name[lang],

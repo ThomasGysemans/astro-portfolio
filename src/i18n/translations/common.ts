@@ -2,7 +2,6 @@ import { text, type Localized } from "../text";
 
 export const common = {
     "title": text("Portfolio de Thomas Gysemans", "Portfolio of Thomas Gysemans"),
-    "contact": text("Contact"),
     "contactme": text("Me contacter", "Contact me"),
     "details": text("Détails", "Details"),
     "seemore": text("Voir plus", "See more"),

@@ -12,6 +12,7 @@
     // one before saving.
     import { flip } from "svelte/animate";
     import { tick } from "svelte";
+    import { isVideo } from "@data/media";
 
     type Picture = { name: string; url: string; captionFr: string; captionEn: string };
 
@@ -35,8 +36,6 @@
     }
 
     const { thumbUrl, pictures, isNew }: Props = $props();
-
-    const isVideo = (name: string) => /\.(mp4|mov|qt|webm)$/i.test(name);
 
     let thumbPreview = $state<string | null>(null);
     let items = $state<Item[]>(pictures.map(p => ({

@@ -145,19 +145,21 @@
 </div>
 
 <!-- search + sort toolbar -->
-<div id="projects-toolbar" class="mx-page-margin bg-card border border-edge rounded-[11px] py-3 px-4 flex gap-2.5 items-center scroll-mt-6">
+<!-- `flex-wrap` keeps the sort button reachable on small screens: it drops
+     to a second row instead of being hidden or crushing the search input. -->
+<div id="projects-toolbar" class="mx-page-margin bg-card border border-edge rounded-[11px] py-3 px-4 flex gap-2.5 items-center flex-wrap scroll-mt-6">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" class="stroke-muted shrink-0" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
     <input
         type="search"
         bind:value={query}
         aria-label={labels.searchPlaceholder}
         placeholder={labels.searchPlaceholder}
-        class="flex-1 min-w-0 bg-transparent border-none text-text text-[12.5px] font-sans placeholder:text-muted"
+        class="flex-1 min-w-32 bg-transparent border-none text-text text-[12.5px] font-sans placeholder:text-muted"
     />
     <button
         type="button"
         onclick={() => sort = sort === "oldest" ? "recent" : "oldest"}
-        class="text-[11.5px] font-semibold text-chip-text border border-edge-strong rounded-lg py-1.75 px-3 inline-flex items-center gap-1.5 whitespace-nowrap hover:border-accent transition-colors max-sm:hidden"
+        class="text-[11.5px] font-semibold text-chip-text border border-edge-strong rounded-lg py-1.75 px-3 inline-flex items-center gap-1.5 whitespace-nowrap hover:border-accent transition-colors"
     >
         {sort === "oldest" ? labels.sortOldest : labels.sortNewest}
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M8 7l4-4 4 4M8 17l4 4 4-4" /></svg>

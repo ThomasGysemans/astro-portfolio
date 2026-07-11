@@ -92,9 +92,12 @@ export async function findProject(slug: string): Promise<Project | undefined> {
 }
 
 // Previous/next projects in the "newest first" order, cycling at both ends.
-export async function getAdjacentProjects(slug: string): Promise<{ prev: Project, next: Project }> {
+// Empty when the slug is unknown or the project is alone: a project must
+// never be its own neighbour (the page then hides the prev/next links).
+export async function getAdjacentProjects(slug: string): Promise<{ prev?: Project, next?: Project }> {
     const all = await getAllProjects();
-    const i = Math.max(0, all.findIndex(p => p.slug === slug));
+    const i = all.findIndex(p => p.slug === slug);
+    if (i === -1 || all.length < 2) return {};
     return {
         prev: all[(i - 1 + all.length) % all.length],
         next: all[(i + 1) % all.length],

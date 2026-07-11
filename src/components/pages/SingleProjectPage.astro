@@ -4,6 +4,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAdjacentProjects } from "@data/projects";
 import { CATEGORIES, CONTEXTS, TECH_ROLES } from "@data/categories";
 import MainLayout from "@layouts/MainLayout.astro";
+import { isVideo } from "@data/media";
 import trans from "@i18n";
 
 interface Props {
@@ -28,7 +29,6 @@ const chips = [
 // The gallery shows every picture of the project, each with its own
 // caption (also used as the alt text); pictures without one fall back
 // to the project's legacy thumbnail caption.
-const isVideo = (url: string) => /\.(mp4|mov|qt|webm)(\?|$)/i.test(url);
 const gallery = project.pictures.map(picture => ({
     url: picture.url,
     video: isVideo(picture.url),
@@ -117,13 +117,15 @@ const detailRows = [
                     </dl>
                 </section>
 
-                <nav class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-[13px] py-4.5 px-5" aria-label={trans.detail.moreprojects[lang]}>
-                    <h2 class="text-xs font-bold mb-2.5 text-heading">{trans.detail.moreprojects[lang]}</h2>
-                    <div class="flex justify-between gap-4 text-xs font-bold">
-                        <a href={getRelativeLocaleUrl(lang, `/projects/${prev.slug}`)} class="text-accent hover:underline">‹ {prev.name[lang]}</a>
-                        <a href={getRelativeLocaleUrl(lang, `/projects/${next.slug}`)} class="text-accent hover:underline text-right">{next.name[lang]} ›</a>
-                    </div>
-                </nav>
+                {prev && next && (
+                    <nav class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-[13px] py-4.5 px-5" aria-label={trans.detail.moreprojects[lang]}>
+                        <h2 class="text-xs font-bold mb-2.5 text-heading">{trans.detail.moreprojects[lang]}</h2>
+                        <div class="flex justify-between gap-4 text-xs font-bold">
+                            <a href={getRelativeLocaleUrl(lang, `/projects/${prev.slug}`)} class="text-accent hover:underline">‹ {prev.name[lang]}</a>
+                            <a href={getRelativeLocaleUrl(lang, `/projects/${next.slug}`)} class="text-accent hover:underline text-right">{next.name[lang]} ›</a>
+                        </div>
+                    </nav>
+                )}
             </div>
         </div>
     </main>
