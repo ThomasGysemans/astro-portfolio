@@ -1,0 +1,23 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import trans from "@i18n";
+
+interface Props {
+    cta?: boolean; // the "get in touch" button is hidden on the 404 page
+}
+
+const { cta = true } = Astro.props;
+const lang = Astro.locals.lang;
+---
+
+<footer class="bg-page py-6 px-page flex justify-between items-center gap-4 flex-wrap border-t border-edge">
+    <div class="flex gap-6 text-[12.5px] font-semibold">
+        <a href="https://malt.fr/profile/thomasgysemans" target="_blank" rel="noopener" aria-label={`Malt (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">Malt</a>
+        <a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" rel="noopener" aria-label={`LinkedIn (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">LinkedIn</a>
+        <a href="https://github.com/ThomasGysemans" target="_blank" rel="noopener" aria-label={`GitHub (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">GitHub</a>
+    </div>
+    <p class="text-[11.5px] text-faint">{trans.footer.status[lang]}</p>
+    {cta && (
+        <a href={getRelativeLocaleUrl(lang, "/freelance")} class="bg-btn text-btn-text text-[12.5px] font-bold py-2.5 px-5 rounded-lg hover:brightness-110 transition-[filter]">{trans.footer.getintouch[lang]}</a>
+    )}
+</footer>

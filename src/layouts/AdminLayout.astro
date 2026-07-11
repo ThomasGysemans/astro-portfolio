@@ -1,0 +1,143 @@
+---
+// Layout of the back-office. Deliberately minimal: no SEO tags (the pages
+// are private and noindex), French only, same design tokens as the site.
+import "@styles/tailwind.css";
+import "@styles/admin.css";
+
+interface Props {
+    title: string;
+    // The login page hides the navigation; its tab title also stays
+    // neutral (no "Admin" suffix revealing what the page is).
+    nav?: boolean;
+    // Success message rendered as an auto-dismissed toast.
+    notice?: string;
+}
+
+const { title, nav = true, notice } = Astro.props;
+const theme = Astro.locals.theme;
+const path = Astro.url.pathname;
+
+const links = [
+    { href: "/admin/projects", label: "Projets" },
+    { href: "/admin/technologies", label: "Technologies" },
+    { href: "/admin/reviews", label: "Avis" },
+];
+
+const isCurrent = (href: string) => path === href || path.startsWith(href + "/");
+---
+
+<!DOCTYPE html>
+<html lang="fr" data-theme={theme}>
+    <head>
+        <meta charset="utf-8">
+        <link rel="icon" type="image/png" href="/logo.png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="preload" href="/fonts/comfortaa-vf.woff2" as="font" type="font/woff2" crossorigin>
+        <title>{nav ? `${title} - Admin` : title}</title>
+    </head>
+    <body class="min-h-screen">
+        {notice && <div class="adm-toast" role="status">{notice}</div>}
+        {nav && (
+            <header class="border-b border-edge bg-card">
+                <nav class="max-w-275 mx-auto px-page py-3.5 flex items-center gap-5 flex-wrap">
+                    <a href="/admin/projects" class="text-[15px] font-bold text-heading">Admin</a>
+                    {links.map(link => (
+                        <a
+                            href={link.href}
+                            class:list={[
+                                "text-[13.5px] font-bold transition-colors",
+                                isCurrent(link.href) ? "text-accent" : "text-muted hover:text-accent",
+                            ]}
+                            aria-current={isCurrent(link.href) ? "page" : undefined}
+                        >{link.label}</a>
+                    ))}
+                    <span class="flex-1" />
+                    <a href="/" class="text-[13px] text-muted hover:text-accent transition-colors">Voir le site ↗</a>
+                    <form method="POST" action="/admin/logout">
+                        <button type="submit" class="text-[13px] text-muted hover:text-accent transition-colors cursor-pointer">Déconnexion</button>
+                    </form>
+                </nav>
+            </header>
+        )}
+        <main class="max-w-275 mx-auto px-page py-9">
+            <slot />
+        </main>
+
+        <dialog id="adm-confirm" class="adm-modal">
+            <p id="adm-confirm-message" class="text-[14.5px] leading-relaxed text-body m-0"></p>
+            <div class="flex justify-end gap-3 mt-5">
+                <button type="button" id="adm-confirm-cancel" class="adm-btn-outline">Annuler</button>
+                <button type="button" id="adm-confirm-ok" class="adm-btn-danger">Confirmer</button>
+            </div>
+        </dialog>
+
+        <script>
+            // --- Confirmation modal replacing the native confirm() dialogs.
+            const dialog = document.getElementById("adm-confirm") as HTMLDialogElement | null;
+            const messageEl = document.getElementById("adm-confirm-message");
+            let onConfirm: (() => void) | null = null;
+
+            function askConfirmation(text: string, action: () => void): void {
+                if (!dialog || !messageEl) {
+                    action();
+                    return;
+                }
+                messageEl.textContent = text;
+                onConfirm = action;
+                dialog.showModal();
+            }
+
+            document.getElementById("adm-confirm-ok")?.addEventListener("click", () => {
+                const action = onConfirm;
+                onConfirm = null;
+                dialog?.close();
+                action?.();
+            });
+            document.getElementById("adm-confirm-cancel")?.addEventListener("click", () => {
+                onConfirm = null;
+                dialog?.close();
+            });
+
+            // Forms whose action is fully described by hidden inputs.
+            for (const form of document.querySelectorAll<HTMLFormElement>("form[data-confirm]")) {
+                form.addEventListener("submit", event => {
+                    event.preventDefault();
+                    // form.submit() skips this listener, so no loop.
+                    askConfirmation(form.dataset.confirm ?? "", () => form.submit());
+                });
+            }
+
+            // Submit buttons that carry their own action (e.g. the delete
+            // button living inside an update form).
+            for (const button of document.querySelectorAll<HTMLButtonElement>("button[data-confirm]")) {
+                button.addEventListener("click", event => {
+                    event.preventDefault();
+                    askConfirmation(button.dataset.confirm ?? "", () => button.form?.requestSubmit(button));
+                });
+            }
+
+            // --- Success toast: auto-dismiss, and strip the status params
+            // from the URL so a refresh doesn't replay it.
+            const toast = document.querySelector(".adm-toast");
+            if (toast) {
+                setTimeout(() => {
+                    toast.classList.add("adm-toast-hide");
+                    setTimeout(() => toast.remove(), 350);
+                }, 4000);
+            }
+
+            const url = new URL(window.location.href);
+            let hadStatusParam = false;
+            for (const param of ["saved", "created", "deleted"]) {
+                if (url.searchParams.has(param)) {
+                    url.searchParams.delete(param);
+                    hadStatusParam = true;
+                }
+            }
+            if (hadStatusParam) {
+                history.replaceState(null, "", url);
+            }
+        </script>
+    </body>
+</html>

@@ -1,21 +1,28 @@
 ---
-import "@styles/tailwind.scss";
+import "@styles/tailwind.css";
+import { alternateLinks, pathInLocale } from "@i18n";
 
 interface Props {
     title: string;
+    description?: string;
+    image?: string; // absolute or root-relative URL of the social-share image
+    noindex?: boolean; // keep the page out of search engines (404, etc.)
 }
 
-const ALL_LANGUAGES = ["fr", "en"];
 const DOMAIN = "https://thomasgysemans.dev";
+const DEFAULT_IMAGE = `${DOMAIN}/logo.png`;
+// Social-share card used when a page passes no `image` of its own. Its intrinsic
+// size is advertised so scrapers can lay the card out before fetching the file.
+// 1200x630 is the recommended Open Graph size (scrapers download it on every
+// share); PNG on purpose, the text stays crisper than JPEG. Generated from
+// public/header.png, the untouched original (kept in the repo like cv.pdf).
+const DEFAULT_SOCIAL_IMAGE = `${DOMAIN}/og-default.png`;
+const DEFAULT_SOCIAL_IMAGE_SIZE = { width: 1200, height: 630 };
 
-const { title } = Astro.props;
+const { title, description, image, noindex = false } = Astro.props;
 const lang = Astro.locals.lang;
-const otherLangs = ALL_LANGUAGES.filter(l => l !== lang);
+const theme = Astro.locals.theme;
 const og = {
-    title: {
-        "fr": "Portfolio de Thomas Gysemans - webmaster et développeur d'applications",
-        "en": "Portfolio of Thomas Gysemans - webmaster and app developer",
-    },
     locale: {
         "fr": "fr_FR",
         "en": "en_US",
@@ -25,51 +32,86 @@ const og = {
         "en": "Portfolio of Thomas Gysemans",
     },
     description: {
-        "fr": "Je suis développeur d'applications et de sites internet et je présente ici mes compétences et mes anciens projets.",
-        "en": "I am an application and website developer and I present here my skills and my past projects.",
+        "fr": "Je suis développeur d'applications et de sites internet, disponible en freelance, et je présente ici mes compétences et mes anciens projets.",
+        "en": "I am an application and website developer, available for freelance work, and I present here my skills and my past projects.",
     },
 } satisfies Record<string, Record<App.LangCode, string>>;
 
-const fullPathname = Astro.url.pathname.replace(/\/{2,}/g, "/");
-const langIncludedInPathname = ALL_LANGUAGES.map(l => `/${l}`).some(l => fullPathname.startsWith(l));
-const fullPathnameWithoutLeadingSlash = fullPathname.substring(1);
-const langlessPathname = langIncludedInPathname
-    ? (fullPathnameWithoutLeadingSlash.indexOf('/') === -1 ? "" : fullPathnameWithoutLeadingSlash.substring(fullPathnameWithoutLeadingSlash.indexOf('/') + 1))
-    : fullPathnameWithoutLeadingSlash;
+const metaDescription = description ?? og.description[lang];
+
+// Each language version is self-canonical so both stay indexable. Under the
+// i18n fallback `rewrite`, `Astro.url.pathname` has already lost the `/en`
+// prefix, so the canonical URL is rebuilt from the served locale. `pathInLocale`
+// also drops the trailing slash, giving one canonical form per page.
+const canonical = `${DOMAIN}${pathInLocale(lang, Astro.url.pathname)}`;
+
+// Social-share image: absolute URLs (e.g. PocketBase thumbnails) are used as-is,
+// root-relative ones are resolved against the domain. Only the default card has
+// known dimensions — a custom `image` (a project thumbnail cropped to 1200px
+// wide) has a height we can't assert here, so its size meta is omitted.
+const rawImage = image ?? DEFAULT_SOCIAL_IMAGE;
+const socialImage = /^https?:\/\//.test(rawImage) ? rawImage : `${DOMAIN}${rawImage}`;
+const usingDefaultImage = image === undefined;
+
+const alternates = alternateLinks(Astro.url.pathname, DOMAIN);
+
+// Structured data helps search engines identify the person behind the site.
+const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Thomas Gysemans",
+    url: DOMAIN,
+    image: DEFAULT_IMAGE,
+    jobTitle: lang === "fr" ? "Développeur d'applications et de sites internet" : "Application and website developer",
+    description: og.description[lang],
+    sameAs: [
+        "https://github.com/ThomasGysemans",
+    ],
+};
 ---
 
 <!DOCTYPE html>
-<html {lang}>
+<html {lang} data-theme={theme}>
     <head>
         <meta charset="utf-8">
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="icon" type="image/png" href="/logo.png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="generator" content={Astro.generator}>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap">
+        <link rel="preload" href="/fonts/comfortaa-vf.woff2" as="font" type="font/woff2" crossorigin>
         <title>{title}</title>
 
-        <meta property="og:title" content={og.title[lang]}>
+        <link rel="canonical" href={canonical}>
+        {noindex && <meta name="robots" content="noindex, nofollow">}
+
+        <meta property="og:title" content={title}>
         <meta property="og:type" content="website">
-        <meta property="og:url" content={DOMAIN}>
-        <!-- <meta property="og:image" content="https://thomasgysemans.dev/og_image.png">
-        <meta property="og:image:type" content="image/png">
-        <meta property="og:image:alt" content="Portfolio">
-        <meta property="og:image:width" content="958">
-        <meta property="og:image:height" content="992"> -->
+        <meta property="og:url" content={canonical}>
         <meta property="og:locale" content={og.locale[lang]}>
         <meta property="og:site_name" content={og.site_name[lang]}>
-        <meta property="og:description" content={og.description[lang]}>
-        <meta name="description" content={og.description[lang]}>
-        <meta name="keywords" content="portfolio, Thomas Gysemans, développeur, développeur web, développeur d'applications, web developer, mobile developer, developer, webmaster, back-end, backend, frontend, front-end, designer">
+        <meta property="og:description" content={metaDescription}>
+        <meta property="og:image" content={socialImage}>
+        {usingDefaultImage && (
+            <>
+                <meta property="og:image:width" content={String(DEFAULT_SOCIAL_IMAGE_SIZE.width)}>
+                <meta property="og:image:height" content={String(DEFAULT_SOCIAL_IMAGE_SIZE.height)}>
+                <meta property="og:image:type" content="image/png">
+            </>
+        )}
+        <meta name="description" content={metaDescription}>
+        <meta name="keywords" content="portfolio, Thomas Gysemans, développeur, développeur web, développeur d'applications, freelance, web developer, mobile developer, developer, webmaster, back-end, backend, frontend, front-end, designer">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content={title}>
+        <meta name="twitter:description" content={metaDescription}>
+        <meta name="twitter:image" content={socialImage}>
 
         <meta http-equiv="content-language" content={lang} />
 
-        {otherLangs.map(l => {
-            const href = l === "fr" ? `${DOMAIN}/${langlessPathname}` : `${DOMAIN}/${l}/${langlessPathname}`;
-            return <link rel="alternate" hreflang={l} {href} />
-        })}
+        {alternates.map(alt => (
+            <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+        ))}
+
+        <script type="application/ld+json" set:html={JSON.stringify(structuredData)} is:inline />
     </head>
     <body class="overflow-x-hidden">
         <slot />

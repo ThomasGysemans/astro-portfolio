@@ -1,0 +1,54 @@
+---
+import AdminLayout from "@layouts/AdminLayout.astro";
+import type { AdminProjectRow } from "@data/admin/projects";
+import { CATEGORIES, CONTEXTS } from "@data/categories";
+import type { ProjectCategory, ProjectContext } from "@data/models";
+
+interface Props {
+    projects: AdminProjectRow[];
+    notice?: string;
+    error?: string;
+}
+
+const { projects, notice, error } = Astro.props;
+
+const categoriesLabel = (ids: string[]) => ids.map(id => CATEGORIES[id as ProjectCategory]?.label.fr ?? id).join(", ");
+const contextLabel = (id: string) => CONTEXTS[id as ProjectContext]?.fr ?? id;
+---
+
+<AdminLayout title="Projets" {notice}>
+    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
+        <h1 class="text-[24px] font-bold text-heading glow">Projets <span class="text-muted text-[15px] font-normal">({projects.length})</span></h1>
+        <a href="/admin/projects/new" class="adm-btn">+ Nouveau projet</a>
+    </div>
+
+    {error && <p class="adm-banner adm-banner-error">{error}</p>}
+
+    <div class="flex flex-col gap-2.5">
+        {projects.map(project => (
+            <div class="adm-row">
+                <img src={project.thumbUrl} alt="" class="w-16 h-16 rounded-sm object-cover flex-none" loading="lazy">
+                <div class="flex-1 min-w-55">
+                    <div class="text-[15px] font-bold text-heading">
+                        {project.name}
+                        {project.featured && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-accent border border-accent rounded-sm px-1.5 py-0.5 align-middle">vitrine</span>}
+                        {project.carousel && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-heading border border-edge rounded-sm px-1.5 py-0.5 align-middle">carousel</span>}
+                    </div>
+                    <div class="text-[12.5px] text-muted mt-0.5">
+                        /{project.slug} · {project.year} · {categoriesLabel(project.categories)} · {contextLabel(project.context)}
+                    </div>
+                </div>
+                <a href={`/projects/${project.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>
+                <a href={`/admin/projects/${project.id}`} class="adm-btn-outline">Modifier</a>
+                <form method="POST" data-confirm={`Supprimer le projet « ${project.name} » ? Ses traductions et technologies seront supprimées avec lui.`}>
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value={project.id}>
+                    <button type="submit" class="adm-btn-danger">Supprimer</button>
+                </form>
+            </div>
+        ))}
+        {projects.length === 0 && (
+            <p class="text-[14px] text-body">Aucun projet pour le moment.</p>
+        )}
+    </div>
+</AdminLayout>

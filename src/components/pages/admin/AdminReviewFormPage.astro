@@ -1,0 +1,91 @@
+---
+import AdminLayout from "@layouts/AdminLayout.astro";
+
+export type ReviewFormValues = {
+    quote: string,
+    role: string,
+    company: string,
+    year: string,
+    rating: string,
+    quoteEn: string,
+    roleEn: string,
+    companyEn: string,
+};
+
+interface Props {
+    id?: string;
+    values: ReviewFormValues;
+    error?: string;
+}
+
+const { id, values, error } = Astro.props;
+const isNew = !id;
+const title = isNew ? "Nouvel avis" : `Avis : ${values.company}`;
+---
+
+<AdminLayout {title}>
+    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
+        <h1 class="text-[24px] font-bold text-heading glow">{isNew ? "Nouvel avis" : `Avis : ${values.company}`}</h1>
+        <a href="/admin/reviews" class="text-[13px] text-muted hover:text-accent transition-colors">← Retour à la liste</a>
+    </div>
+
+    {error && <p class="adm-banner adm-banner-error">{error}</p>}
+
+    <form method="POST" autocomplete="off" class="flex flex-col gap-6 max-w-160">
+        <section class="adm-card flex flex-col gap-4">
+            <h2 class="text-[16px] font-bold text-heading">Avis (français)</h2>
+            <div>
+                <label for="quote" class="adm-label">Citation</label>
+                <textarea id="quote" name="quote" class="adm-input" required>{values.quote}</textarea>
+                <p class="text-[12px] text-muted mt-1.5">Sans guillemets : ils sont ajoutés automatiquement à l'affichage.</p>
+            </div>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+                <div class="adm-field">
+                    <label for="role" class="adm-label">Rôle (Gérant, Fondateur…)</label>
+                    <input id="role" name="role" class="adm-input" value={values.role}>
+                </div>
+                <div class="adm-field">
+                    <label for="company" class="adm-label">Entreprise</label>
+                    <input id="company" name="company" class="adm-input" value={values.company} required>
+                </div>
+                <div class="adm-field">
+                    <label for="year" class="adm-label">Année</label>
+                    <input id="year" name="year" type="number" class="adm-input" value={values.year} required>
+                </div>
+                <div class="adm-field">
+                    <label for="rating" class="adm-label">Note (étoiles)</label>
+                    <select id="rating" name="rating" class="adm-input" required>
+                        {[5, 4, 3, 2, 1].map(n => (
+                            <option value={String(n)} selected={values.rating === String(n)}>{"★".repeat(n)}{"☆".repeat(5 - n)} ({n}/5)</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="adm-card flex flex-col gap-4">
+            <div>
+                <h2 class="text-[16px] font-bold text-heading">Avis (anglais)</h2>
+                <p class="text-[12.5px] text-muted mt-1">Facultatif : tant qu'un champ est vide, le site anglais retombe sur le texte français correspondant.</p>
+            </div>
+            <div>
+                <label for="quote_en" class="adm-label">Citation</label>
+                <textarea id="quote_en" name="quote_en" class="adm-input">{values.quoteEn}</textarea>
+            </div>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+                <div class="adm-field">
+                    <label for="role_en" class="adm-label">Rôle</label>
+                    <input id="role_en" name="role_en" class="adm-input" value={values.roleEn}>
+                </div>
+                <div class="adm-field">
+                    <label for="company_en" class="adm-label">Entreprise</label>
+                    <input id="company_en" name="company_en" class="adm-input" value={values.companyEn}>
+                </div>
+            </div>
+        </section>
+
+        <div>
+            <button type="submit" class="adm-btn">{isNew ? "Créer l'avis" : "Enregistrer"}</button>
+        </div>
+    </form>
+</AdminLayout>

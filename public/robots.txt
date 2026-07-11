@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /en/admin
+
+Sitemap: https://thomasgysemans.dev/sitemap.xml

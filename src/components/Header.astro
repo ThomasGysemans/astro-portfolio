@@ -1,0 +1,284 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import trans, { LOCALES, stripLocale, pathInLocale } from "@i18n";
+import Logo from "@components/Logo.astro";
+
+const lang = Astro.locals.lang;
+const theme = Astro.locals.theme;
+const langlessPathname = stripLocale(Astro.url.pathname);
+
+const links = [
+    { href: getRelativeLocaleUrl(lang, "/"), label: trans.nav.home[lang], route: "/" },
+    { href: getRelativeLocaleUrl(lang, "/projects"), label: trans.nav.projects[lang], route: "/projects" },
+    { href: getRelativeLocaleUrl(lang, "/freelance"), label: trans.nav.freelance[lang], route: "/freelance" },
+    { href: getRelativeLocaleUrl(lang, "/showcase"), label: trans.nav.showcase[lang], route: "/showcase" },
+];
+
+function isActive(route: string): boolean {
+    if (route === "/") {
+        return langlessPathname === "/";
+    }
+    return langlessPathname.startsWith(route);
+}
+
+// The same page in every locale, for the language switch pill.
+// Autonyms (a language named in its own language) give the "FR"/"EN"
+// abbreviations a full, correctly-pronounced accessible name.
+const LOCALE_NAMES: Record<App.LangCode, string> = { fr: "Français", en: "English" };
+const localeLinks = LOCALES.map(locale => ({
+    locale,
+    name: LOCALE_NAMES[locale],
+    href: pathInLocale(locale, Astro.url.pathname),
+}));
+const contactHref = getRelativeLocaleUrl(lang, "/freelance");
+const themeIcon = theme === "dark" ? "☀️" : "🌙";
+---
+
+<header class="relative z-30 flex items-center justify-between gap-4 flex-wrap py-4 px-page border-b border-edge bg-(--header-bg) transition-colors">
+    <a href={getRelativeLocaleUrl(lang, "/")} class="flex items-center gap-3">
+        <Logo />
+        <span class="font-bold text-heading text-sm leading-tight">Thomas<br />Gysemans</span>
+    </a>
+
+    <nav aria-label={trans.nav.mainnav[lang]} class="hdr-nav flex gap-[clamp(14px,2.5vw,30px)] flex-wrap text-[13px] font-semibold">
+        {links.map(link => (
+            <a
+                href={link.href}
+                aria-current={isActive(link.route) ? "page" : undefined}
+                class={`whitespace-nowrap pb-1 border-b-2 transition-colors hover:text-heading ${isActive(link.route) ? "text-heading border-accent-strong" : "text-muted border-transparent"}`}
+            >
+                {link.label}
+            </a>
+        ))}
+    </nav>
+
+    <div class="hdr-actions flex items-center gap-3.5">
+        <button
+            type="button"
+            data-theme-toggle
+            title={trans.common.switchtheme[lang]}
+            aria-label={trans.common.switchtheme[lang]}
+            class="w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] hover:border-accent transition-colors"
+        >{themeIcon}</button>
+        <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
+            {localeLinks.map(link => (
+                <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
+            ))}
+        </div>
+        <a href={contactHref} class="btn-primary text-[12.5px] px-5 py-2.5">{trans.common.contactme[lang]}</a>
+    </div>
+
+    <button
+        type="button"
+        data-drawer-open
+        aria-label={trans.common.openmenu[lang]}
+        class="hdr-burger w-10.5 h-10.5 rounded-[10px] border border-edge-strong bg-chip items-center justify-center"
+    >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="stroke-heading" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+    </button>
+</header>
+
+<div data-drawer hidden>
+    <button type="button" data-drawer-close tabindex="-1" aria-hidden="true" class="drawer-backdrop fixed inset-0 z-40 bg-[rgba(2,8,18,.6)] backdrop-blur-[3px]"></button>
+    <nav aria-label={trans.nav.mobilenav[lang]} class="drawer-panel fixed top-0 right-0 bottom-0 z-50 w-[min(300px,84vw)] bg-card-solid border-l border-edge py-6 px-6 flex flex-col gap-1.5 shadow-[-20px_0_60px_rgba(2,8,18,.45)]">
+        <div class="flex justify-between items-center mb-3.5">
+            <span class="font-bold text-heading text-sm">{trans.common.menu[lang]}</span>
+            <button type="button" data-drawer-close aria-label={trans.common.closemenu[lang]} class="w-9 h-9 rounded-full border border-edge-strong inline-flex items-center justify-center text-heading text-sm">✕</button>
+        </div>
+        {links.map(link => (
+            <a
+                href={link.href}
+                aria-current={isActive(link.route) ? "page" : undefined}
+                class={`text-sm font-bold py-3 px-3 rounded-lg hover:bg-chip hover:text-heading ${isActive(link.route) ? "text-heading" : "text-muted"}`}
+            >
+                {link.label}
+            </a>
+        ))}
+        <div class="border-t border-edge mt-3 pt-4 flex items-center gap-3">
+            <button
+                type="button"
+                data-theme-toggle
+                aria-label={trans.common.switchtheme[lang]}
+                class="w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px]"
+            >{themeIcon}</button>
+            <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
+                {localeLinks.map(link => (
+                    <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
+                ))}
+            </div>
+        </div>
+        <a href={contactHref} class="btn-primary text-[13px] py-3 px-5 mt-2">{trans.common.contactme[lang]}</a>
+    </nav>
+</div>
+
+<style lang="scss">
+    // Collapse the nav and the actions into the drawer on small screens.
+    .hdr-burger {
+        display: none;
+    }
+
+    @media (max-width: 900px) {
+        .hdr-nav,
+        .hdr-actions {
+            display: none;
+        }
+
+        .hdr-burger {
+            display: inline-flex;
+        }
+    }
+
+    @keyframes drawer-in {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+
+    @keyframes drawer-fade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    [data-drawer]:not([hidden]) {
+        .drawer-backdrop {
+            animation: drawer-fade .25s ease both;
+        }
+
+        .drawer-panel {
+            animation: drawer-in .3s cubic-bezier(.25, .8, .35, 1) both;
+        }
+    }
+</style>
+
+<script>
+    // Theme switching: flip the attribute on <html> and persist the choice
+    // in a cookie so that SSR renders the right theme on the next request.
+    function setupHeader() {
+        const drawer = document.querySelector<HTMLElement>("[data-drawer]");
+
+        document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const html = document.documentElement;
+                const theme = html.dataset.theme === "dark" ? "light" : "dark";
+                html.dataset.theme = theme;
+                document.cookie = `theme=${theme};path=/;max-age=31536000;samesite=lax`;
+                document.querySelectorAll("[data-theme-toggle]").forEach(b => {
+                    b.textContent = theme === "dark" ? "☀️" : "🌙";
+                });
+            });
+        });
+
+        // Record an explicit language choice before navigating: the cookie
+        // becomes authoritative, so the middleware never auto-redirects the
+        // visitor away from the language they just picked.
+        document.querySelectorAll<HTMLAnchorElement>("[data-set-lang]").forEach(link => {
+            link.addEventListener("click", () => {
+                const locale = link.dataset.setLang;
+                document.cookie = `lang=${locale};path=/;max-age=31536000;samesite=lax`;
+            });
+        });
+
+        // Remember who opened the drawer so focus can be restored on close.
+        let opener: HTMLElement | null = null;
+
+        // Lock the page scroll behind the open drawer. The scrollbar width is
+        // compensated with padding so removing it doesn't shift the layout
+        // (only matters on desktop widths ≤900px; mobile scrollbars overlay).
+        function lockScroll() {
+            const root = document.documentElement;
+            const scrollbar = window.innerWidth - root.clientWidth;
+            root.style.overflow = "hidden";
+            if (scrollbar > 0) root.style.paddingRight = `${scrollbar}px`;
+        }
+
+        function unlockScroll() {
+            const root = document.documentElement;
+            root.style.overflow = "";
+            root.style.paddingRight = "";
+        }
+
+        function openDrawer(trigger: HTMLElement) {
+            opener = trigger;
+            drawer?.removeAttribute("hidden");
+            lockScroll();
+            // Move focus onto the panel's close button so keyboard users land
+            // inside it (not the invisible backdrop, which comes first in DOM).
+            drawer?.querySelector<HTMLElement>(".drawer-panel [data-drawer-close]")?.focus();
+        }
+
+        function closeDrawer() {
+            if (drawer?.hasAttribute("hidden")) return;
+            drawer?.setAttribute("hidden", "");
+            unlockScroll();
+            opener?.focus();
+        }
+
+        document.querySelectorAll<HTMLElement>("[data-drawer-open]").forEach(btn => {
+            btn.addEventListener("click", () => openDrawer(btn));
+        });
+
+        document.querySelectorAll("[data-drawer-close]").forEach(btn => {
+            btn.addEventListener("click", closeDrawer);
+        });
+
+        // A scroll gesture outside the panel closes the drawer. The background
+        // itself can't scroll (locked above), so this reacts to the intent —
+        // scrolling within the panel is left alone so its own content still moves.
+        function closeOnScroll(event: Event) {
+            if (drawer?.hasAttribute("hidden") !== false) return;
+            const panel = drawer.querySelector(".drawer-panel");
+            if (panel && event.target instanceof Node && panel.contains(event.target)) return;
+            closeDrawer();
+        }
+
+        document.addEventListener("wheel", closeOnScroll, { passive: true });
+        document.addEventListener("touchmove", closeOnScroll, { passive: true });
+
+        // The visible, focusable controls of the drawer panel, in DOM order.
+        // Queried on demand so the list always reflects the current state.
+        function panelFocusables(): HTMLElement[] {
+            const panel = drawer?.querySelector<HTMLElement>(".drawer-panel");
+            if (!panel) return [];
+            const selector = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            return Array.from(panel.querySelectorAll<HTMLElement>(selector))
+                .filter(el => el.offsetParent !== null);
+        }
+
+        // While the drawer is open: Escape closes it, and Tab/Shift+Tab are
+        // confined to the panel (focus trap) so it never escapes behind the
+        // backdrop into the inert page underneath.
+        document.addEventListener("keydown", event => {
+            if (drawer?.hasAttribute("hidden") !== false) return;
+
+            if (event.key === "Escape") {
+                closeDrawer();
+                return;
+            }
+
+            if (event.key !== "Tab") return;
+
+            const items = panelFocusables();
+            if (items.length === 0) return;
+            const first = items[0];
+            const last = items[items.length - 1];
+            const active = document.activeElement as HTMLElement | null;
+
+            if (event.shiftKey) {
+                if (active === first || !drawer.contains(active)) {
+                    event.preventDefault();
+                    last.focus();
+                }
+            } else if (active === last || !drawer.contains(active)) {
+                event.preventDefault();
+                first.focus();
+            }
+        });
+
+        // Clicking a link inside the panel navigates, so the drawer should not
+        // stay open behind the new page state.
+        drawer?.querySelectorAll<HTMLAnchorElement>(".drawer-panel a[href]").forEach(link => {
+            link.addEventListener("click", () => drawer?.setAttribute("hidden", ""));
+        });
+    }
+
+    setupHeader();
+</script>

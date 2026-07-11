@@ -14,7 +14,13 @@ interface ImportEnv {
 declare namespace App {
     interface Locals {
         lang: App.LangCode,
+        theme: App.Theme,
+        // Authenticated PocketBase superuser client; set by the middleware
+        // on /admin routes only (null when the visitor is not logged in).
+        admin?: import("pocketbase").default | null,
     }
-    
-    type LangCode = "fr" | "en";
+
+    // Derived from the single source of truth in src/i18n/config.ts.
+    type LangCode = import("./i18n/config").Locale;
+    type Theme = "dark" | "light";
 }

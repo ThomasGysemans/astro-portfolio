@@ -1,0 +1,17 @@
+services:
+  pocketbase:
+    build: ./docker/pocketbase
+    container_name: portfolio-pocketbase
+    ports:
+      - "8090:8090"
+    volumes:
+      # Database files live in a named volume, outside of the repo.
+      - pb_data:/pb_data
+      # Schema migrations are versioned with the repo: PocketBase writes one
+      # file here for every collection change made through the admin UI,
+      # and replays them automatically on a fresh volume.
+      - ./db/pb_migrations:/pb_migrations
+    restart: unless-stopped
+
+volumes:
+  pb_data:

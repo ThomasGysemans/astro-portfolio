@@ -1,0 +1,25 @@
+---
+import AdminLoginPage from "@components/pages/admin/AdminLoginPage.astro";
+import { adminLogin, setAdminCookie } from "@data/admin/client";
+
+// The middleware already redirects logged-in superusers to /admin/projects.
+let error: string | undefined;
+let email: string | undefined;
+
+if (Astro.request.method === "POST") {
+    const data = await Astro.request.formData();
+    email = String(data.get("email") ?? "");
+    const password = String(data.get("password") ?? "");
+
+    try {
+        const token = await adminLogin(email, password);
+        setAdminCookie(Astro.cookies, token);
+        return Astro.redirect("/admin/projects");
+    } catch {
+        // Same message whatever the failure: no hint about which field is wrong.
+        error = "Identifiants invalides.";
+    }
+}
+---
+
+<AdminLoginPage {error} {email} />

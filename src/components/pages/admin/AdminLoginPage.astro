@@ -1,0 +1,31 @@
+---
+// Deliberately anonymous: nothing on this page says what it protects.
+import AdminLayout from "@layouts/AdminLayout.astro";
+
+interface Props {
+    error?: string;
+    email?: string;
+}
+
+const { error, email } = Astro.props;
+---
+
+<AdminLayout title="Connexion" nav={false}>
+    <div class="max-w-100 mx-auto mt-[12vh]">
+        <h1 class="text-[22px] font-bold text-heading glow mb-7 text-center">Connexion</h1>
+
+        {error && <p class="adm-banner adm-banner-error">{error}</p>}
+
+        <form method="POST" class="adm-card flex flex-col gap-4">
+            <div>
+                <label for="email" class="adm-label">Email</label>
+                <input id="email" name="email" type="email" class="adm-input" value={email ?? ""} required autofocus autocomplete="username">
+            </div>
+            <div>
+                <label for="password" class="adm-label">Mot de passe</label>
+                <input id="password" name="password" type="password" class="adm-input" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="adm-btn mt-1">Se connecter</button>
+        </form>
+    </div>
+</AdminLayout>

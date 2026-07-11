@@ -1,0 +1,21 @@
+---
+import AdminProjectFormPage from "@components/pages/admin/AdminProjectFormPage.astro";
+import { handleProjectPost, projectFormState } from "@data/admin/projects";
+
+const pb = Astro.locals.admin!;
+let error: string | undefined;
+let submitted;
+
+if (Astro.request.method === "POST") {
+    const result = await handleProjectPost(pb, await Astro.request.formData());
+    if ("redirect" in result) return Astro.redirect(result.redirect);
+    error = result.error;
+    submitted = result.values;
+}
+
+const state = (await projectFormState(pb))!;
+// On error, re-render the form with what was submitted instead of the defaults.
+if (submitted) state.values = submitted;
+---
+
+<AdminProjectFormPage {state} {error} />

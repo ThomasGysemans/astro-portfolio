@@ -1,0 +1,59 @@
+---
+import type { Project } from "@data/models";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { CONTEXTS } from "@data/categories";
+import trans from "@i18n";
+
+interface Props {
+    project: Project;
+    // "compact": thumbnail + name/sub bar (homepage).
+    // "freelance": thumbnail + badge + name + description (freelance page).
+    variant?: "compact" | "freelance";
+}
+
+const { project, variant = "compact" } = Astro.props;
+const lang = Astro.locals.lang;
+const href = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
+---
+
+{variant === "compact" ? (
+    <a {href} class="project-card block rounded-[13px] overflow-hidden border border-edge">
+        <div class="relative aspect-video overflow-hidden">
+            <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+            <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+        </div>
+        <div class="flex justify-between items-center gap-2.5 bg-card-solid py-3.5 px-4.5">
+            <div class="min-w-0">
+                <div class="text-[15px] font-bold text-heading truncate">{project.name[lang]}</div>
+                <div class="text-[11.5px] text-muted mt-0.5 truncate">{project.sub[lang]}</div>
+            </div>
+            <span class="text-[11px] text-accent font-bold whitespace-nowrap">{CONTEXTS[project.context][lang]} · {project.year}</span>
+        </div>
+    </a>
+) : (
+    <a {href} class="project-card flex flex-col rounded-[13px] overflow-hidden border border-edge">
+        <div class="relative aspect-video overflow-hidden">
+            <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+            <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+            <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1 px-2.5 rounded-md uppercase">
+                {CONTEXTS[project.context][lang]} · {project.year}
+            </span>
+        </div>
+        <div class="bg-card-solid py-5 px-5 flex flex-col gap-2.5 flex-1">
+            <h3 class="text-base font-bold m-0 text-heading">{project.name[lang]}</h3>
+            <p class="text-[12.5px] leading-relaxed text-body">{project.description[lang]}</p>
+            <span class="mt-auto pt-1.5 text-xs font-bold text-accent">{trans.common.details[lang]} →</span>
+        </div>
+    </a>
+)}
+
+<style>
+    .project-card {
+        transition: box-shadow .25s, transform .25s;
+    }
+
+    .project-card:hover {
+        box-shadow: 0 0 0 1px rgba(97, 156, 243, .7), 0 14px 40px rgba(97, 156, 243, .2);
+        transform: translateY(-3px);
+    }
+</style>
