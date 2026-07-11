@@ -32,26 +32,31 @@ export const userMiddleware = defineMiddleware((context, next) => {
     const urlLocale = localeOfPath(context.url.pathname);
     context.locals.lang = urlLocale;
 
-    const chosen = context.cookies.get(LANG_COOKIE)?.value;
-    const preference = chosen !== undefined && isLocale(chosen) ? chosen : undefined;
+    // Only top-level HTML navigations count as language signals: assets, form
+    // POSTs, file-like routes (sitemap.xml…) and the French-only back-office
+    // must neither be redirected nor overwrite the visitor's `lang` cookie.
+    if (isNavigablePage(context)) {
+        const chosen = context.cookies.get(LANG_COOKIE)?.value;
+        const preference = chosen !== undefined && isLocale(chosen) ? chosen : undefined;
 
-    // Only the prefix-less URLs are ambiguous entry points we may redirect: a
-    // `/en/*` URL is an explicit request for English and is always honoured
-    // (crawlers included, so both language versions stay indexable). On the
-    // default URLs, send the visitor to their preferred language — their past
-    // choice (the `lang` cookie, set by the switch) first, otherwise their
-    // browser's `Accept-Language`.
-    if (urlLocale === DEFAULT_LOCALE && isNavigablePage(context)) {
-        const target = preference ?? preferredLocale(context.request.headers.get("accept-language"));
-        if (target !== DEFAULT_LOCALE) {
-            context.cookies.set(LANG_COOKIE, target, LANG_COOKIE_OPTS);
-            return context.redirect(pathInLocale(target, context.url.pathname) + context.url.search);
+        // Only the prefix-less URLs are ambiguous entry points we may redirect: a
+        // `/en/*` URL is an explicit request for English and is always honoured
+        // (crawlers included, so both language versions stay indexable). On the
+        // default URLs, send the visitor to their preferred language — their past
+        // choice (the `lang` cookie, set by the switch) first, otherwise their
+        // browser's `Accept-Language`.
+        if (urlLocale === DEFAULT_LOCALE) {
+            const target = preference ?? preferredLocale(context.request.headers.get("accept-language"));
+            if (target !== DEFAULT_LOCALE) {
+                context.cookies.set(LANG_COOKIE, target, LANG_COOKIE_OPTS);
+                return context.redirect(pathInLocale(target, context.url.pathname) + context.url.search);
+            }
         }
-    }
 
-    // Remember the language actually being served for next time.
-    if (chosen !== urlLocale) {
-        context.cookies.set(LANG_COOKIE, urlLocale, LANG_COOKIE_OPTS);
+        // Remember the language actually being served for next time.
+        if (chosen !== urlLocale) {
+            context.cookies.set(LANG_COOKIE, urlLocale, LANG_COOKIE_OPTS);
+        }
     }
 
     return next();

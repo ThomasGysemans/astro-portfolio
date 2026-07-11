@@ -57,13 +57,37 @@ test.describe("projects explorer", () => {
         await expect(cards.first()).toBeVisible();
     });
 
-    test("clicking a technology chip filters by that technology", async ({ page }) => {
-        await gotoHydratedProjects(page);
-        const firstChip = page.locator("article.explorer-card button", { hasText: /\S/ }).first();
-        const tech = (await firstChip.innerText()).trim();
+    test("clicking a category chip on a card activates that category filter", async ({ page }) => {
+        const allPill = await gotoHydratedProjects(page);
+        const cards = page.locator("article.explorer-card");
+        const firstChip = cards.first().locator("button", { hasText: /\S/ }).first();
+        const category = (await firstChip.innerText()).trim();
         await firstChip.click();
-        // The active-filter banner names the chosen technology.
+
+        // The clicked category replaces "all" as the active filter...
+        await expect(allPill).toHaveAttribute("aria-pressed", "false");
+        // ...and every remaining card belongs to it (they all carry its chip).
+        const count = await cards.count();
+        expect(count).toBeGreaterThan(0);
+        await expect(cards.filter({ has: page.locator("button", { hasText: category }) })).toHaveCount(count);
+    });
+
+    test("clicking a technology in the skills section filters by that technology", async ({ page }) => {
+        await gotoHydratedProjects(page);
+        // Technologies used by at least one project are rendered as buttons
+        // in the "tech skills" groups (the unused ones are plain divs).
+        const skills = content(page).locator("section", {
+            has: page.getByRole("heading", { name: "Mes compétences techniques" }),
+        });
+        await skills.getByRole("button").first().click();
+
+        // The active-filter banner appears, with its clear button.
         await expect(content(page).getByText("Projets réalisés avec", { exact: false })).toBeVisible();
-        await expect(content(page).getByRole("button", { name: new RegExp(`Retirer le filtre ${tech}`) })).toBeVisible();
+        const clearButton = content(page).getByRole("button", { name: /^Retirer le filtre/ });
+        await expect(clearButton).toBeVisible();
+
+        // Clearing the technology filter removes the banner.
+        await clearButton.click();
+        await expect(content(page).getByText("Projets réalisés avec", { exact: false })).toBeHidden();
     });
 });

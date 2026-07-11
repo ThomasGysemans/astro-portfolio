@@ -79,4 +79,5 @@ export type Review = {
     company: Localized, // company name and short activity
     year: number,
     rating: number, // star rating, 1 to 5
+    translated: boolean, // the English quote is a real translation (false = fallback to the French text)
 };

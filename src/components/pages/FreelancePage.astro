@@ -153,7 +153,7 @@ const carePoints = [
                                 <div class="text-[11px] text-muted leading-normal">
                                     {review.role[lang]}<br />
                                     <span class="font-bold text-heading text-xs">{review.company[lang]}</span>
-                                    {lang === "en" && (
+                                    {lang === "en" && review.translated && (
                                         <span class="block text-[10px] italic text-muted">Translated from French</span>
                                     )}
                                 </div>
