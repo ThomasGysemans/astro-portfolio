@@ -1,4 +1,5 @@
 import PocketBase from "pocketbase";
+import { forwardClientIP } from "./client-ip";
 
 if (!import.meta.env.POCKETBASE_URL) {
     throw new Error("Missing environment variable 'POCKETBASE_URL'");
@@ -8,6 +9,9 @@ export const pb = new PocketBase(import.meta.env.POCKETBASE_URL);
 
 // Concurrent SSR requests would cancel each other's identical queries otherwise.
 pb.autoCancellation(false);
+
+// PocketBase rate-limits per IP: forward the visitor's, not the server's.
+forwardClientIP(pb);
 
 // The content changes rarely: a short in-memory cache (per serverless instance)
 // spares PocketBase a round-trip on every page render.

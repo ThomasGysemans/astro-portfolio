@@ -4,6 +4,7 @@
 // never carries credentials.
 import PocketBase from "pocketbase";
 import type { AstroCookies } from "astro";
+import { forwardClientIP } from "@data/client-ip";
 
 export const ADMIN_COOKIE = "admin_token";
 
@@ -15,6 +16,9 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 function newClient(): PocketBase {
     const client = new PocketBase(import.meta.env.POCKETBASE_URL);
     client.autoCancellation(false);
+    // Auth endpoints have the strictest per-IP rate limits: make sure a
+    // login/refresh counts against the visitor's IP, not the server's.
+    forwardClientIP(client);
     return client;
 }
 

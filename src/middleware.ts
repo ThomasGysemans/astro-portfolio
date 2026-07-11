@@ -3,6 +3,20 @@ import { defineMiddleware, sequence } from "astro:middleware";
 import { DEFAULT_LOCALE, isLocale, preferredLocale } from "@i18n/config";
 import { localeOfPath, pathInLocale } from "@i18n/paths";
 import { adminFromCookies } from "@data/admin/client";
+import { withClientIP } from "@data/client-ip";
+
+// Runs first so every PocketBase call made while this request renders (data
+// functions, admin auth) can forward the visitor's real IP — otherwise
+// PocketBase's per-IP rate limiting sees every visitor as the server's IP.
+export const clientIPMiddleware = defineMiddleware((context, next) => {
+    let ip: string | undefined;
+    try {
+        ip = context.clientAddress;
+    } catch {
+        // Not every context provides it (prerendering, unsupported adapter).
+    }
+    return withClientIP(ip, next);
+});
 
 const LANG_COOKIE = "lang";
 // Persist the language choice for a year so a returning visitor is never
@@ -85,4 +99,4 @@ export const adminMiddleware = defineMiddleware(async (context, next) => {
 
 // Astro's i18n middleware runs automatically now that `routing` is no longer
 // "manual", so it no longer needs to be added to the sequence by hand.
-export const onRequest = sequence(userMiddleware, adminMiddleware);
+export const onRequest = sequence(clientIPMiddleware, userMiddleware, adminMiddleware);
