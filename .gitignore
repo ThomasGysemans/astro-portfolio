@@ -27,6 +27,9 @@ pnpm-debug.log*
 
 public/thumbs/
 
+# raw font sources: only the converted public/fonts/*.woff2 is served
+public/fonts/Comfortaa/
+
 # playwright
 test-results/
 playwright-report/

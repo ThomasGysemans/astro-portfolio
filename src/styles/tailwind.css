@@ -4,6 +4,19 @@
    hocus variant) as the single source of truth for the theme. */
 @config "../../tailwind.config.mjs";
 
+/* Self-hosted Comfortaa (variable, wght 300-700): no request to Google Fonts,
+   so no visitor IP leaves the site just to render text (GDPR). The single
+   WOFF2 covers every weight used; heavier ones (e.g. font-extrabold) are
+   synthesized from 700, exactly as with the former hosted CSS. License in
+   /fonts/OFL.txt; sources in public/fonts/Comfortaa/ (gitignored). */
+@font-face {
+    font-family: "Comfortaa";
+    src: url("/fonts/comfortaa-vf.woff2") format("woff2-variations");
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 @layer base {
     /* Tailwind v4 compatibility shims: restore the v3 Preflight defaults so
        the upgrade does not change any rendered style.
