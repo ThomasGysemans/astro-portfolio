@@ -206,19 +206,32 @@ async function claimCarousel(pb: PocketBase, projectId: string): Promise<void> {
     }
 }
 
-async function upsertTranslation(pb: PocketBase, projectId: string, locale: "fr" | "en", fields: Record<string, string>): Promise<void> {
+// Writes the row of a locale, or removes it when `fields` is undefined.
+async function writeTranslation(pb: PocketBase, projectId: string, locale: "fr" | "en", fields?: Record<string, string>): Promise<void> {
     const rows = await pb.collection("project_translations").getFullList({
         filter: pb.filter("project = {:id} && locale = {:locale}", { id: projectId, locale }),
     });
-    if (rows.length > 0) {
+    if (!fields) {
+        for (const row of rows) {
+            await pb.collection("project_translations").delete(row.id);
+        }
+    } else if (rows.length > 0) {
         await pb.collection("project_translations").update(rows[0].id, fields);
     } else {
         await pb.collection("project_translations").create({ project: projectId, locale, ...fields });
     }
 }
 
+// The English translation is optional (`localize()` falls back to the French
+// text field by field on the public site), but `project_translations` requires
+// `name`, `sub` and `description`: a blank English row is rejected by
+// PocketBase, so an untranslated project must simply have no English row.
+function hasEnglish(v: ProjectFormValues): boolean {
+    return !!(v.nameEn || v.subEn || v.descriptionEn || v.aboutEn || v.taglineEn || v.captionEn);
+}
+
 async function upsertTranslations(pb: PocketBase, projectId: string, v: ProjectFormValues): Promise<void> {
-    await upsertTranslation(pb, projectId, "fr", {
+    await writeTranslation(pb, projectId, "fr", {
         name: v.name,
         sub: v.sub,
         description: v.description,
@@ -226,14 +239,14 @@ async function upsertTranslations(pb: PocketBase, projectId: string, v: ProjectF
         tagline: v.tagline,
         caption: v.caption,
     });
-    await upsertTranslation(pb, projectId, "en", {
+    await writeTranslation(pb, projectId, "en", hasEnglish(v) ? {
         name: v.nameEn,
         sub: v.subEn,
         description: v.descriptionEn,
         about: v.aboutEn,
         tagline: v.taglineEn,
         caption: v.captionEn,
-    });
+    } : undefined);
 }
 
 async function loadTechOptions(pb: PocketBase): Promise<{ id: string, name: string }[]> {
@@ -310,7 +323,20 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
     };
 }
 
-export async function handleProjectPost(pb: PocketBase, data: FormData, id?: string): Promise<PostResult> {
+export async function handleProjectPost(pb: PocketBase, request: Request, id?: string): Promise<PostResult> {
+    // Read inside the handler, not in the page: parsing the multipart body
+    // throws on a truncated or oversized upload (the serverless platform caps
+    // the request size), and an uncaught throw there answers a bare 500.
+    let data: FormData;
+    try {
+        data = await request.formData();
+    } catch {
+        return {
+            error: "Impossible de lire le formulaire : l'envoi a été interrompu, probablement parce que les fichiers sont trop lourds. Allège les médias et réessaie.",
+            values: emptyValues(),
+        };
+    }
+
     const action = String(data.get("action") ?? "save");
     const values = parseForm(data);
 
@@ -321,6 +347,14 @@ export async function handleProjectPost(pb: PocketBase, data: FormData, id?: str
             }
             if (values.languages.length === 0) {
                 return { error: "Sélectionne au moins une langue du projet.", values };
+            }
+            // All-empty English is fine (the site falls back to French), but a
+            // partial one cannot be stored: those three columns are required.
+            if (hasEnglish(values) && !(values.nameEn && values.subEn && values.descriptionEn)) {
+                return {
+                    error: "Traduction anglaise incomplète : dès qu'un champ anglais est rempli, Nom, Sous-titre et Description (EN) le sont aussi. Laisse tous les champs anglais vides pour afficher le français.",
+                    values,
+                };
             }
 
             const payload = projectPayload(values);
@@ -336,11 +370,20 @@ export async function handleProjectPost(pb: PocketBase, data: FormData, id?: str
                 // `pictures` is required by the collection: default to the thumb.
                 payload.pictures = newPictures.length > 0 ? newPictures : [thumb];
                 const record = await pb.collection("projects").create(payload);
-                if (order && order.tokens.length > 0) {
-                    await applyPictureOrder(pb, record.id, record.pictures as string[], newPictures.length, order);
+                try {
+                    if (order && order.tokens.length > 0) {
+                        await applyPictureOrder(pb, record.id, record.pictures as string[], newPictures.length, order);
+                    }
+                    await upsertTranslations(pb, record.id, values);
+                    if (values.carousel) await claimCarousel(pb, record.id);
+                } catch (err) {
+                    // A project stored without its translations has no name at
+                    // all on the public site, and its slug then blocks any
+                    // retry (unique index): undo the creation entirely. The
+                    // translation rows cascade with it.
+                    await pb.collection("projects").delete(record.id).catch(() => {});
+                    throw err;
                 }
-                await upsertTranslations(pb, record.id, values);
-                if (values.carousel) await claimCarousel(pb, record.id);
                 invalidateCache();
                 return { redirect: `/admin/projects/${record.id}?created=1` };
             }

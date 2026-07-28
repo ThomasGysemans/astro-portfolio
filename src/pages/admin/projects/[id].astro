@@ -8,7 +8,7 @@ let error: string | undefined;
 let submitted;
 
 if (Astro.request.method === "POST") {
-    const result = await handleProjectPost(pb, await Astro.request.formData(), id);
+    const result = await handleProjectPost(pb, Astro.request, id);
     if ("redirect" in result) return Astro.redirect(result.redirect);
     error = result.error;
     submitted = result.values;
