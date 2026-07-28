@@ -38,3 +38,35 @@ export const TECH_ROLES: Record<TechRoleId, Localized> = {
     "markup": { fr: "markup", en: "markup" },
     "tooling": { fr: "outillage", en: "tooling" },
 };
+
+// The dictionaries above and the PocketBase select values are two parallel
+// lists. A value added in the dashboard (or by a migration) and assigned to a
+// record before the matching entry is deployed would be missing here, and a
+// raw `CATEGORIES[id].single[lang]` would throw — a 500 for every visitor of
+// the affected page, homepage included. The public pages therefore read the
+// labels through these accessors, which fall back to the raw identifier the
+// same way the back-office already does: the page stays up and the unknown
+// value is visible, so it can be fixed from /admin.
+// `tests/unit/schema-sync.test.ts` guards the other side: it fails the build
+// when a migration declares a select value the dictionaries don't know.
+
+function lookup<T>(dict: Record<string, T>, id: string): T | undefined {
+    return (dict as Record<string, T | undefined>)[id];
+}
+
+export function categoryMeta(id: string): CategoryMeta {
+    return lookup(CATEGORIES, id) ?? {
+        label: { fr: id, en: id },
+        single: { fr: id, en: id },
+        title: { fr: id, en: id },
+        dot: "var(--accent)",
+    };
+}
+
+export function contextLabel(id: string, lang: App.LangCode): string {
+    return lookup(CONTEXTS, id)?.[lang] ?? id;
+}
+
+export function techRoleLabel(id: string, lang: App.LangCode): string {
+    return lookup(TECH_ROLES, id)?.[lang] ?? id;
+}

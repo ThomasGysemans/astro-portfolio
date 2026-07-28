@@ -2,7 +2,7 @@
 import type { Project } from "@data/models";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAdjacentProjects } from "@data/projects";
-import { CATEGORIES, CONTEXTS, TECH_ROLES } from "@data/categories";
+import { categoryMeta, contextLabel, techRoleLabel } from "@data/categories";
 import MainLayout from "@layouts/MainLayout.astro";
 import { isVideo } from "@data/media";
 import trans from "@i18n";
@@ -18,10 +18,12 @@ const { prev, next } = await getAdjacentProjects(project.slug);
 const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
 const teamLabel = project.teamSize === 1 ? trans.common.solo[lang] : `${trans.common.teamof[lang]} ${project.teamSize}`;
 const languagesLabel = project.languages.map(l => l.toUpperCase()).join(" · ");
-const categoriesLabel = project.categories.map(c => CATEGORIES[c].single[lang]).join(" · ");
+const categoryNames = project.categories.map(c => categoryMeta(c).single[lang]);
+const categoriesLabel = categoryNames.join(" · ");
+const context = contextLabel(project.context, lang);
 const chips = [
-    ...project.categories.map(c => CATEGORIES[c].single[lang]),
-    CONTEXTS[project.context][lang],
+    ...categoryNames,
+    context,
     project.date,
     teamLabel,
     languagesLabel,
@@ -38,7 +40,7 @@ const detailRows = [
     { label: trans.detail.year[lang], value: project.date },
     { label: trans.detail.categories[lang], value: categoriesLabel },
     { label: trans.detail.team[lang], value: teamLabel },
-    { label: trans.detail.context[lang], value: CONTEXTS[project.context][lang] },
+    { label: trans.detail.context[lang], value: context },
     { label: trans.detail.languages[lang], value: languagesLabel },
 ];
 ---
@@ -99,7 +101,7 @@ const detailRows = [
                             <li class="flex items-center gap-2.25 text-xs font-semibold text-heading">
                                 <span class="w-2 h-2 rounded-full shrink-0" style={`background:${tech.color}`} />
                                 {tech.name}
-                                <span class="ml-auto text-[10px] text-muted font-normal">{TECH_ROLES[tech.role][lang]}</span>
+                                <span class="ml-auto text-[10px] text-muted font-normal">{techRoleLabel(tech.role, lang)}</span>
                             </li>
                         ))}
                     </ul>

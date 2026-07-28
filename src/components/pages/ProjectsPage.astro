@@ -2,7 +2,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAllProjects, countProjectsUsing } from "@data/projects";
 import { getTechnologies, GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
-import { CATEGORIES, CONTEXTS } from "@data/categories";
+import { CATEGORIES, categoryMeta, contextLabel } from "@data/categories";
 import ProjectsExplorer from "@components/svelte/ProjectsExplorer.svelte";
 import MainLayout from "@layouts/MainLayout.astro";
 import trans, { techSkills, schoolSkills } from "@i18n";
@@ -24,9 +24,12 @@ const explorerProjects = projects.map(p => ({
     featured: p.featured,
     teamIcon: p.teamSize === 1 ? "👤" : "👥",
     teamLabel: p.teamSize === 1 ? trans.common.solo[lang] : `${trans.common.teamof[lang]} ${p.teamSize}`,
-    contextLabel: CONTEXTS[p.context][lang],
+    contextLabel: contextLabel(p.context, lang),
     techs: p.techs.map(t => t.name),
-    cats: p.categories.map(c => ({ key: c, label: CATEGORIES[c].single[lang], dot: CATEGORIES[c].dot })),
+    cats: p.categories.map(c => {
+        const meta = categoryMeta(c);
+        return { key: c, label: meta.single[lang], dot: meta.dot };
+    }),
 }));
 
 const pills = [

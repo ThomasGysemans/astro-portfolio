@@ -1,7 +1,7 @@
 ---
 import type { Project } from "@data/models";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { CONTEXTS } from "@data/categories";
+import { contextLabel } from "@data/categories";
 import trans from "@i18n";
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 const { project, variant = "compact" } = Astro.props;
 const lang = Astro.locals.lang;
 const href = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
+const context = contextLabel(project.context, lang);
 ---
 
 {variant === "compact" ? (
@@ -27,7 +28,7 @@ const href = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
                 <div class="text-[15px] font-bold text-heading truncate">{project.name[lang]}</div>
                 <div class="text-[11.5px] text-muted mt-0.5 truncate">{project.sub[lang]}</div>
             </div>
-            <span class="text-[11px] text-accent font-bold whitespace-nowrap">{CONTEXTS[project.context][lang]} · {project.year}</span>
+            <span class="text-[11px] text-accent font-bold whitespace-nowrap">{context} · {project.year}</span>
         </div>
     </a>
 ) : (
@@ -36,7 +37,7 @@ const href = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
             <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
             <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
             <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1 px-2.5 rounded-md uppercase">
-                {CONTEXTS[project.context][lang]} · {project.year}
+                {context} · {project.year}
             </span>
         </div>
         <div class="bg-card-solid py-5 px-5 flex flex-col gap-2.5 flex-1">
