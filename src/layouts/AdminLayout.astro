@@ -33,6 +33,9 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
         <link rel="icon" type="image/png" href="/logo.png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="robots" content="noindex, nofollow">
+        <!-- Same two faces as the public site (see PageLayout): body text in
+             Source Sans 3, headings in Comfortaa. -->
+        <link rel="preload" href="/fonts/source-sans-3-vf.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/comfortaa-vf.woff2" as="font" type="font/woff2" crossorigin>
         <title>{nav ? `${title} - Admin` : title}</title>
     </head>

@@ -77,6 +77,13 @@ const structuredData = {
         <link rel="icon" type="image/png" href="/logo.png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="generator" content={Astro.generator}>
+        <!-- Both faces are needed for the first paint of every page (Source Sans 3
+             for the body text, Comfortaa for the headings and the logo), and a
+             @font-face in the stylesheet is only fetched once the CSS has been
+             parsed and a node using it has been laid out. Preloading starts both
+             downloads with the HTML instead, which is what keeps the swap from
+             being visible. Body font first: it covers most of the page. -->
+        <link rel="preload" href="/fonts/source-sans-3-vf.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/comfortaa-vf.woff2" as="font" type="font/woff2" crossorigin>
         <title>{title}</title>
 
