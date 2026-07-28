@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
+import { isFreelancePath, mailtoHref } from "@lib/contact";
 import trans, { LOCALES, stripLocale, pathInLocale } from "@i18n";
 import Logo from "@components/Logo.astro";
 
@@ -30,7 +31,11 @@ const localeLinks = LOCALES.map(locale => ({
     name: LOCALE_NAMES[locale],
     href: pathInLocale(locale, Astro.url.pathname),
 }));
-const contactHref = getRelativeLocaleUrl(lang, "/freelance");
+// "Me contacter" normally leads to the freelance page — but on that page it
+// would reload what the visitor is already reading, so it becomes the ask itself.
+const contactHref = isFreelancePath(langlessPathname)
+    ? mailtoHref(lang)
+    : getRelativeLocaleUrl(lang, "/freelance");
 ---
 
 <header class="relative z-30 flex items-center justify-between gap-4 flex-wrap py-4 px-page border-b border-edge bg-(--header-bg) transition-colors">

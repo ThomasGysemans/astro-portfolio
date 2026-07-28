@@ -11,6 +11,7 @@ import { detail } from "./translations/detail";
 import { showcase } from "./translations/showcase";
 import { freelance } from "./translations/freelance";
 import { footer, error } from "./translations/footer";
+import { contact } from "./translations/contact";
 
 const trans = {
     common,
@@ -23,6 +24,7 @@ const trans = {
     freelance,
     footer,
     error,
+    contact,
 };
 
 export default trans;

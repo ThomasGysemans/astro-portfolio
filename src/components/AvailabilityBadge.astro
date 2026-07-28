@@ -1,12 +1,18 @@
 ---
+import { isFreelancePath, mailtoHref } from "@lib/contact";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import trans from "@i18n";
+import trans, { stripLocale } from "@i18n";
 
 const lang = Astro.locals.lang;
+// The badge announces availability and offers to act on it. On the freelance
+// page itself that offer has to be the ask, not a link back to the same page.
+const href = isFreelancePath(stripLocale(Astro.url.pathname))
+    ? mailtoHref(lang)
+    : getRelativeLocaleUrl(lang, "/freelance");
 ---
 
 <a
-    href={getRelativeLocaleUrl(lang, "/freelance")}
+    {href}
     class="inline-flex items-center gap-2 text-xs font-bold tracking-[.1em] text-avail bg-avail-bg border border-avail-bd rounded-full py-1.5 px-3.5"
 >
     <span class="w-1.75 h-1.75 rounded-full bg-[#2fa866] inline-block shadow-[0_0_8px_#2fa866]" />

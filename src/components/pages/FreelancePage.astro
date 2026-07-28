@@ -6,11 +6,9 @@ import AvailabilityBadge from "@components/AvailabilityBadge.astro";
 import ProjectCard from "@components/ProjectCard.astro";
 import MainLayout from "@layouts/MainLayout.astro";
 import StatCard from "@components/StatCard.astro";
+import { EMAIL, MALT_URL, mailtoHref } from "@lib/contact";
 import { getReviews } from "@data/reviews";
 import trans from "@i18n";
-
-const EMAIL = "contact@thomasgysemans.dev";
-const MALT_URL = "https://malt.fr/profile/thomasgysemans";
 
 // Starting price of a showcase website, in euros, for the budget block.
 // While it is null the whole "how much does it cost" section is skipped, so
@@ -20,6 +18,8 @@ const MALT_URL = "https://malt.fr/profile/thomasgysemans";
 const STARTING_PRICE: number | null = 500;
 
 const lang = Astro.locals.lang;
+// Pre-filled quote request, shared by both CTAs of the page.
+const mailto = mailtoHref(lang);
 const [freelanceProjects, allProjects, reviews] = await Promise.all([
     getProfessionalProjects(),
     getAllProjects(),
@@ -75,7 +75,7 @@ const carePoints = [
                     <h1 class="text-[clamp(30px,3vw,48px)] font-bold leading-[1.18] m-0 text-heading" set:html={trans.freelance.herotitle[lang]} />
                     <p class="text-lg leading-[1.7] text-body mt-4.5 max-w-125">{trans.freelance.herointro[lang]}</p>
                     <div class="flex items-center gap-3 mt-8.5 flex-wrap">
-                        <a href={`mailto:${EMAIL}`} class="btn-primary inline-flex items-center gap-2 text-base py-3.25 px-6.5 shadow-btn-glow">
+                        <a href={mailto} class="btn-primary inline-flex items-center gap-2 text-base py-3.25 px-6.5 shadow-btn-glow">
                             <Icon name="mail" class="text-base" />
                             {trans.freelance.emailme[lang]}
                         </a>
@@ -85,6 +85,28 @@ const carePoints = [
                         </a>
                     </div>
                     <p class="text-sm text-muted mt-4">{trans.freelance.freequote[lang]}</p>
+                    <!-- A `mailto:` click cannot report failure: on a machine with no
+                         mail client the button silently does nothing. The address is
+                         therefore printed here, selectable and copyable, so the path
+                         to the ask never depends on a protocol handler existing. -->
+                    <div class="flex items-center gap-2.5 mt-2.5 text-sm">
+                        <a href={mailto} class="font-semibold text-accent hover:underline break-all">{EMAIL}</a>
+                        <button
+                            type="button"
+                            data-copy-email={EMAIL}
+                            data-copied-label={trans.contact.copied[lang]}
+                            data-failed-label={trans.contact.copyfailed[lang]}
+                            aria-label={trans.contact.copyaddress[lang]}
+                            title={trans.contact.copyaddress[lang]}
+                            class="copy-btn"
+                        >
+                            <svg data-copy-icon width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="8" y="8" width="14" height="14" rx="2" />
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                        </button>
+                        <span data-copy-status role="status" aria-live="polite" class="text-xs font-bold text-avail"></span>
+                    </div>
                 </div>
 
                 <div class="fl-timeline relative max-w-100 w-full justify-self-center py-2.5">
@@ -221,7 +243,7 @@ const carePoints = [
                         <p class="text-base text-body mt-2">{trans.freelance.ctasubtitle[lang]}</p>
                     </div>
                     <div class="flex gap-3 flex-wrap">
-                        <a href={`mailto:${EMAIL}`} class="btn-primary inline-flex items-center gap-2 text-base py-3.25 px-6 shadow-btn-glow">
+                        <a href={mailto} class="btn-primary inline-flex items-center gap-2 text-base py-3.25 px-6 shadow-btn-glow">
                             <Icon name="mail" class="text-base" />
                             {EMAIL}
                         </a>
@@ -245,6 +267,17 @@ const carePoints = [
         background:
             radial-gradient(ellipse 60% 50% at 75% 30%, rgba(97, 156, 243, .14), transparent 65%),
             linear-gradient(180deg, rgba(3, 15, 32, .3), #030F20 82%);
+    }
+
+    // Ghost icon control, deliberately not a button: the One Lit Button Rule
+    // keeps a single filled action in this viewport, and that action is "M'écrire".
+    .copy-btn {
+        @apply w-9 h-9 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-muted shrink-0;
+        transition: color .2s, border-color .2s;
+
+        &:hover {
+            @apply text-accent border-accent;
+        }
     }
 
     .malt-btn {
@@ -327,3 +360,60 @@ const carePoints = [
         }
     }
 </style>
+
+<script>
+    // Copy-to-clipboard for the e-mail address shown under the hero CTAs.
+    // The confirmation is text inside an aria-live region *and* an icon swap,
+    // never colour alone — the page claims RGAA conformity and has to hold it.
+    const CHECK_PATH = '<path d="M20 6 9 17l-5-5" />';
+
+    function setupCopyEmail() {
+        document.querySelectorAll<HTMLButtonElement>("[data-copy-email]").forEach(button => {
+            const row = button.parentElement;
+            const status = row?.querySelector<HTMLElement>("[data-copy-status]");
+            const icon = button.querySelector<SVGElement>("[data-copy-icon]");
+            const address = row?.querySelector<HTMLAnchorElement>("a[href^='mailto:']");
+            const copyIcon = icon?.innerHTML ?? "";
+            let timer: ReturnType<typeof setTimeout> | undefined;
+
+            button.addEventListener("click", async () => {
+                const email = button.dataset.copyEmail ?? "";
+                let copied = true;
+
+                try {
+                    await navigator.clipboard.writeText(email);
+                } catch {
+                    // Denied permission, or an insecure context where the
+                    // Clipboard API does not exist at all.
+                    copied = false;
+                }
+
+                if (status) {
+                    status.textContent = (copied ? button.dataset.copiedLabel : button.dataset.failedLabel) ?? "";
+                    status.classList.toggle("text-avail", copied);
+                    status.classList.toggle("text-muted", !copied);
+                }
+
+                if (copied) {
+                    if (icon) icon.innerHTML = CHECK_PATH;
+                } else if (address) {
+                    // Recovery: if the page cannot copy for them, it at least
+                    // selects the address so a manual copy is one shortcut away.
+                    const range = document.createRange();
+                    range.selectNodeContents(address);
+                    const selection = window.getSelection();
+                    selection?.removeAllRanges();
+                    selection?.addRange(range);
+                }
+
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    if (status) status.textContent = "";
+                    if (icon) icon.innerHTML = copyIcon;
+                }, 3000);
+            });
+        });
+    }
+
+    setupCopyEmail();
+</script>
