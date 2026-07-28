@@ -19,7 +19,7 @@ const { technologies, notice, error } = Astro.props;
 ---
 
 <AdminLayout title="Technologies" {notice}>
-    <h1 class="text-[24px] font-bold text-heading glow mb-7">Technologies <span class="text-muted text-[15px] font-normal">({technologies.length})</span></h1>
+    <h1 class="text-[24px] font-bold text-heading mb-7">Technologies <span class="text-muted text-[15px] font-normal">({technologies.length})</span></h1>
 
     {error && <p class="adm-banner adm-banner-error">{error}</p>}
 

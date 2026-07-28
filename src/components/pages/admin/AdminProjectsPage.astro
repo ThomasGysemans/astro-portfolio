@@ -18,7 +18,7 @@ const contextLabel = (id: string) => CONTEXTS[id as ProjectContext]?.fr ?? id;
 
 <AdminLayout title="Projets" {notice}>
     <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
-        <h1 class="text-[24px] font-bold text-heading glow">Projets <span class="text-muted text-[15px] font-normal">({projects.length})</span></h1>
+        <h1 class="text-[24px] font-bold text-heading">Projets <span class="text-muted text-[15px] font-normal">({projects.length})</span></h1>
         <a href="/admin/projects/new" class="adm-btn">+ Nouveau projet</a>
     </div>
 

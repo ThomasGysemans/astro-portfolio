@@ -1,5 +1,6 @@
 ---
 import type { Project } from "@data/models";
+import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAdjacentProjects } from "@data/projects";
 import { categoryMeta, contextLabel, techRoleLabel } from "@data/categories";
@@ -55,7 +56,7 @@ const detailRows = [
 
         <div class="flex justify-between items-start mb-5.5 gap-5 flex-wrap">
             <div>
-                <h1 class="text-[34px] font-bold mb-3 text-heading glow">{name}</h1>
+                <h1 class="text-[34px] font-bold mb-3 text-heading">{name}</h1>
                 <div class="flex gap-2 flex-wrap">
                     {chips.map(chip => (
                         <span class="text-[11px] font-bold text-chip-text bg-chip border border-edge-strong rounded-full py-1.5 px-3">{chip}</span>
@@ -88,7 +89,10 @@ const detailRows = [
                                 <img src={media.url} alt={media.caption} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
                             </div>
                         )}
-                        <figcaption class="py-2.75 px-4 text-[11px] text-muted border-t border-edge">{media.video ? "🎬" : "📷"} {media.caption}</figcaption>
+                        <figcaption class="flex items-center gap-2 py-2.75 px-4 text-[11px] text-muted border-t border-edge">
+                            <Icon name={media.video ? "film" : "camera"} class="text-sm shrink-0" aria-hidden="true" />
+                            {media.caption}
+                        </figcaption>
                     </figure>
                 ))}
             </div>

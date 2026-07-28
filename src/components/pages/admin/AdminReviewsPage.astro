@@ -23,7 +23,7 @@ const excerpt = (quote: string) => quote.length > 120 ? quote.slice(0, 120) + "â
 
 <AdminLayout title="Avis" {notice}>
     <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
-        <h1 class="text-[24px] font-bold text-heading glow">Avis clients <span class="text-muted text-[15px] font-normal">({reviews.length})</span></h1>
+        <h1 class="text-[24px] font-bold text-heading">Avis clients <span class="text-muted text-[15px] font-normal">({reviews.length})</span></h1>
         <a href="/admin/reviews/new" class="adm-btn">+ Nouvel avis</a>
     </div>
 

@@ -27,7 +27,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
 <AdminLayout {title} {notice}>
     <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
         <div class="flex items-center gap-4">
-            <h1 class="text-[24px] font-bold text-heading glow">{isNew ? "Nouveau projet" : values.name || values.slug}</h1>
+            <h1 class="text-[24px] font-bold text-heading">{isNew ? "Nouveau projet" : values.name || values.slug}</h1>
             {!isNew && <a href={`/projects/${values.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>}
         </div>
         <a href="/admin/projects" class="text-[13px] text-muted hover:text-accent transition-colors">← Retour à la liste</a>

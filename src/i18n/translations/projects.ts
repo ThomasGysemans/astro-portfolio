@@ -21,8 +21,8 @@ export const projects = {
     "results": text("résultats", "results"),
     "builtwith": text("Projets réalisés avec", "Showing projects built with"),
     "clicktofilter": text(
-        "cliquez sur une technologie pour filtrer, ✕ pour effacer",
-        "click any technology chip to filter, ✕ to clear",
+        "cliquez sur une technologie pour filtrer, sur la croix pour effacer",
+        "click any technology chip to filter, the cross to clear",
     ),
     "removetechfilter": text("Retirer le filtre", "Clear the filter"),
     "noprojectfound": text(
@@ -38,10 +38,10 @@ export const projects = {
     "technologies": text("technologies"),
     "project": text("projet", "project"),
     "projectcount": text("projets", "projects"),
-    "educationtitle": text("🎓 Mon parcours scolaire", "🎓 My educational background"),
+    "educationtitle": text("Mon parcours scolaire", "My educational background"),
     "education": text(
         "J'ai obtenu mon BAC Général au lycée Sacré-Cœur de Tourcoing avec mention très bien, puis j'ai continué à l'IUT de Villeneuve-d'Ascq où j'ai obtenu mon DUT Informatique. J'ai réalisé toute ma troisième année en alternance chez Tabuléo, en mettant mes compétences en pratique sur la plateforme éducative Quizéo, et j'ai obtenu mon BUT.",
         "I obtained my high-school diploma with highest honors (\"mention très bien\"), then continued my studies in France, in Lille, where I earned my DUT in Computer Science. I spent my whole third year as an apprentice at Tabuléo, putting my skills into practice on the educational platform Quizéo, and graduated with a BUT.",
     ),
-    "teamskillstitle": text("🤝 Compétences d'équipe & méthode", "🤝 Team & method skills"),
+    "teamskillstitle": text("Compétences d'équipe & méthode", "Team & method skills"),
 } satisfies Record<string, Localized>;

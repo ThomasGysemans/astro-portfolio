@@ -63,7 +63,6 @@
         --outline-bd: rgba(255, 255, 255, .3);
         --chip: rgba(255, 255, 255, .05);
         --chip-text: #c9d6ef;
-        --glow: 0 0 40px rgba(97, 156, 243, .35);
         --hero-scene: 1;
         --header-bg: transparent;
         --avail-bg: rgba(47, 168, 102, .12);
@@ -91,7 +90,6 @@
         --outline-bd: #062451;
         --chip: #ffffff;
         --chip-text: #062451;
-        --glow: none;
         --hero-scene: 0;
         --header-bg: #ffffff;
         --avail-bg: #e9f7ef;
@@ -156,11 +154,6 @@
     /* Main horizontal padding of every page section. */
     .px-page {
         padding-inline: clamp(20px, 3.5vw, 44px);
-    }
-
-    /* Headings glow in dark mode only (--glow is "none" in light mode). */
-    .glow {
-        text-shadow: var(--glow);
     }
 
     .btn-primary {

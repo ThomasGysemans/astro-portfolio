@@ -37,7 +37,6 @@ export default {
 				malt: '#FC5757',
 			},
 			boxShadow: {
-				glow: 'var(--glow)',
 				'btn-glow': 'var(--btn-glow)',
 			},
 			fontFamily: {

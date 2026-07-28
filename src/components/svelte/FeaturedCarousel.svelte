@@ -188,8 +188,17 @@
                 aria-label={paused ? labels.resume : labels.pause}
                 title={paused ? labels.resume : labels.pause}
                 onclick={() => paused = !paused}
-                class="w-7.5 h-7.5 rounded-full bg-[rgba(3,15,32,.72)] border border-white/25 text-white flex items-center justify-center text-[11px] transition-colors hover:border-accent-strong"
-            >{paused ? "▶" : "❚❚"}</button>
+                class="w-7.5 h-7.5 rounded-full bg-[rgba(3,15,32,.72)] border border-white/25 text-white flex items-center justify-center transition-colors hover:border-accent-strong"
+            >
+                <!-- Lucide play/pause, inlined: Astro's <Icon> can't render inside an island. -->
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    {#if paused}
+                        <path d="M5 4.5a1 1 0 0 1 1.5-.87l12 7.5a1 1 0 0 1 0 1.74l-12 7.5A1 1 0 0 1 5 19.5z" />
+                    {:else}
+                        <rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" />
+                    {/if}
+                </svg>
+            </button>
         </div>
     {/if}
 </div>

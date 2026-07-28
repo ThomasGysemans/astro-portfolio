@@ -1,10 +1,10 @@
 ---
+import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import trans, { LOCALES, stripLocale, pathInLocale } from "@i18n";
 import Logo from "@components/Logo.astro";
 
 const lang = Astro.locals.lang;
-const theme = Astro.locals.theme;
 const langlessPathname = stripLocale(Astro.url.pathname);
 
 const links = [
@@ -31,7 +31,6 @@ const localeLinks = LOCALES.map(locale => ({
     href: pathInLocale(locale, Astro.url.pathname),
 }));
 const contactHref = getRelativeLocaleUrl(lang, "/freelance");
-const themeIcon = theme === "dark" ? "☀️" : "🌙";
 ---
 
 <header class="relative z-30 flex items-center justify-between gap-4 flex-wrap py-4 px-page border-b border-edge bg-(--header-bg) transition-colors">
@@ -58,8 +57,11 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
             data-theme-toggle
             title={trans.common.switchtheme[lang]}
             aria-label={trans.common.switchtheme[lang]}
-            class="w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] hover:border-accent transition-colors"
-        >{themeIcon}</button>
+            class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] text-heading hover:border-accent transition-colors"
+        >
+            <Icon name="sun" class="icon-sun" />
+            <Icon name="moon" class="icon-moon" />
+        </button>
         <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
             {localeLinks.map(link => (
                 <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
@@ -83,7 +85,7 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
     <nav aria-label={trans.nav.mobilenav[lang]} class="drawer-panel fixed top-0 right-0 bottom-0 z-50 w-[min(300px,84vw)] bg-card-solid border-l border-edge py-6 px-6 flex flex-col gap-1.5 shadow-[-20px_0_60px_rgba(2,8,18,.45)]">
         <div class="flex justify-between items-center mb-3.5">
             <span class="font-bold text-heading text-sm">{trans.common.menu[lang]}</span>
-            <button type="button" data-drawer-close aria-label={trans.common.closemenu[lang]} class="w-9 h-9 rounded-full border border-edge-strong inline-flex items-center justify-center text-heading text-sm">✕</button>
+            <button type="button" data-drawer-close aria-label={trans.common.closemenu[lang]} class="w-9 h-9 rounded-full border border-edge-strong inline-flex items-center justify-center text-heading text-base"><Icon name="x" /></button>
         </div>
         {links.map(link => (
             <a
@@ -99,8 +101,11 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
                 type="button"
                 data-theme-toggle
                 aria-label={trans.common.switchtheme[lang]}
-                class="w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px]"
-            >{themeIcon}</button>
+                class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] text-heading"
+            >
+                <Icon name="sun" class="icon-sun" />
+                <Icon name="moon" class="icon-moon" />
+            </button>
             <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
                 {localeLinks.map(link => (
                     <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
@@ -112,6 +117,25 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
 </div>
 
 <style lang="scss">
+    // The theme toggle ships both icons and CSS picks the right one from the
+    // `data-theme` attribute the middleware renders on <html>. Doing it in CSS
+    // (rather than swapping the node in JS) keeps the button correct on the
+    // very first paint, with no flash and no client-side theme detection.
+    // `:global` is needed because the icons come from the <Icon> component.
+    .theme-toggle :global(.icon-moon) {
+        display: none;
+    }
+
+    html[data-theme="light"] {
+        .theme-toggle :global(.icon-sun) {
+            display: none;
+        }
+
+        .theme-toggle :global(.icon-moon) {
+            display: block;
+        }
+    }
+
     // Collapse the nav and the actions into the drawer on small screens.
     .hdr-burger {
         display: none;
@@ -161,9 +185,8 @@ const themeIcon = theme === "dark" ? "☀️" : "🌙";
                 const theme = html.dataset.theme === "dark" ? "light" : "dark";
                 html.dataset.theme = theme;
                 document.cookie = `theme=${theme};path=/;max-age=31536000;samesite=lax`;
-                document.querySelectorAll("[data-theme-toggle]").forEach(b => {
-                    b.textContent = theme === "dark" ? "☀️" : "🌙";
-                });
+                // The sun/moon swap is driven by CSS on html[data-theme] — the
+                // attribute above is the only thing this handler has to flip.
             });
         });
 

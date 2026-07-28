@@ -13,7 +13,10 @@
         thumb: string,
         categories: string[],
         featured: boolean,
-        teamIcon: string,
+        // true when the project was built alone: picks the single/multiple
+        // person icon. Astro can't render <Icon> inside this island, so the
+        // Lucide paths are inlined below (same set as public/icons/).
+        solo: boolean,
         teamLabel: string,
         contextLabel: string,
         techs: string[], // technology names, only used by the tech filter
@@ -124,7 +127,7 @@
 
 <!-- heading following the active filter -->
 <div class="px-page pt-11">
-    <h1 class="text-3xl font-bold m-0 text-heading glow">{title}</h1>
+    <h1 class="text-3xl font-bold m-0 text-heading">{title}</h1>
     <p class="text-[13px] text-body mt-1.5">{subtitle}</p>
 </div>
 
@@ -179,7 +182,7 @@
         >
             <span class="w-1.75 h-1.75 rounded-full" style="background:{techDot}" />
             {tech}
-            <span class="opacity-60">✕</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="opacity-60" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
         </button>
         <span class="text-muted">{labels.clickToFilter}</span>
     </div>
@@ -212,7 +215,16 @@
                     {/each}
                 </div>
                 <div class="border-t border-edge pt-2.5 flex gap-3.5 text-[10.5px] text-muted items-center">
-                    <span class="whitespace-nowrap">{p.teamIcon} {p.teamLabel}</span>
+                    <span class="inline-flex items-center gap-1.25 whitespace-nowrap">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            {#if p.solo}
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                            {:else}
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                            {/if}
+                        </svg>
+                        {p.teamLabel}
+                    </span>
                     <span class="whitespace-nowrap">{p.contextLabel}</span>
                     <span class="ml-auto text-accent font-bold whitespace-nowrap" aria-hidden="true">{labels.details} →</span>
                 </div>
@@ -237,11 +249,14 @@
 
 <!-- tech skills -->
 <section class="border-t border-edge mx-page-margin pt-10.5 pb-1.5">
-    <h2 class="text-[26px] font-bold m-0 text-heading glow">{labels.techSkillsTitle}</h2>
+    <h2 class="text-[26px] font-bold m-0 text-heading">{labels.techSkillsTitle}</h2>
     <p class="text-[13px] text-body mt-2 max-w-155 leading-[1.7]">{labels.techSkillsIntro}</p>
     <div class="flex gap-2.5 flex-wrap mt-6">
         {#each skillHighlights as highlight (highlight)}
-            <span class="inline-flex items-center gap-2 text-xs font-semibold leading-normal text-heading bg-card border border-edge-strong rounded-full py-2.5 px-4.5">🏅 {highlight}</span>
+            <span class="inline-flex items-center gap-2 text-xs font-semibold leading-normal text-heading bg-card border border-edge-strong rounded-full py-2.5 px-4.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent shrink-0" aria-hidden="true"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" /><path d="M11 12 5.12 2.2M13 12l5.88-9.8M8 7h8" /><circle cx="12" cy="17" r="5" /><path d="M12 18v-2h-.5" /></svg>
+                {highlight}
+            </span>
         {/each}
     </div>
     <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 mt-6.5">

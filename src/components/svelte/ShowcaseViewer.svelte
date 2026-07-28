@@ -119,7 +119,10 @@
     <a
         href={exitHref}
         class="absolute top-5 right-5 lg:top-6.5 lg:right-8 z-30 inline-flex items-center gap-2 text-xs font-bold text-[#c4dfe2] bg-[rgba(3,17,26,.72)] border border-[rgba(154,209,212,.3)] rounded-full py-2.5 px-4.5 backdrop-blur-lg hover:border-[#9ad1d4] hover:text-white transition-colors"
-    >{labels.exit}</a>
+    >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+        {labels.exit}
+    </a>
 
     <!-- left rail -->
     <nav class="absolute left-8 top-7 bottom-7 w-70 xl:w-80 2xl:w-96 z-20 max-lg:hidden flex flex-col" aria-label={labels.title}>

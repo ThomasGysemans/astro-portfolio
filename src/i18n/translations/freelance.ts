@@ -14,7 +14,7 @@ export const freelance = {
         "Design, code, hébergement : je m'occupe de tout, de A à Z. Vous validez mes maquettes, cliquez dans un prototype, et je livre votre produit fini en ligne, dans les délais.",
         "Design, code, hosting: I handle it all, from A to Z. You validate my mockups, click through a prototype, and I deliver your finished product live, on deadline.",
     ),
-    "emailme": text("✉ M'écrire", "✉ Email me"),
+    "emailme": text("M'écrire", "Email me"),
     "hireonmalt": text("Me recruter sur Malt", "Hire me on Malt"),
     "freequote": text("Votre devis est gratuit, sans engagement.", "Your quote is free, no commitment."),
     "step1title": text("1 · Design"),
