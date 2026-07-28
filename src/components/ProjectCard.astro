@@ -25,10 +25,10 @@ const context = contextLabel(project.context, lang);
         </div>
         <div class="flex justify-between items-center gap-2.5 bg-card-solid py-3.5 px-4.5">
             <div class="min-w-0">
-                <div class="text-[15px] font-bold text-heading truncate">{project.name[lang]}</div>
-                <div class="text-[11.5px] text-muted mt-0.5 truncate">{project.sub[lang]}</div>
+                <div class="text-lg font-bold text-heading truncate">{project.name[lang]}</div>
+                <div class="text-sm text-muted mt-0.5 truncate">{project.sub[lang]}</div>
             </div>
-            <span class="text-[11px] text-accent font-bold whitespace-nowrap">{context} · {project.year}</span>
+            <span class="text-xs text-accent font-bold whitespace-nowrap">{context} · {project.year}</span>
         </div>
     </a>
 ) : (
@@ -36,14 +36,14 @@ const context = contextLabel(project.context, lang);
         <div class="relative aspect-video overflow-hidden">
             <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
             <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
-            <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-[10px] font-bold py-1 px-2.5 rounded-md uppercase">
+            <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-xs font-bold py-1 px-2.5 rounded-md uppercase">
                 {context} · {project.year}
             </span>
         </div>
         <div class="bg-card-solid py-5 px-5 flex flex-col gap-2.5 flex-1">
-            <h3 class="text-base font-bold m-0 text-heading">{project.name[lang]}</h3>
-            <p class="text-[12.5px] leading-relaxed text-body">{project.description[lang]}</p>
-            <span class="mt-auto pt-1.5 text-xs font-bold text-accent">{trans.common.details[lang]} →</span>
+            <h3 class="text-lg font-bold m-0 text-heading">{project.name[lang]}</h3>
+            <p class="text-sm text-body">{project.description[lang]}</p>
+            <span class="mt-auto pt-1.5 text-sm font-bold text-accent">{trans.common.details[lang]} →</span>
         </div>
     </a>
 )}

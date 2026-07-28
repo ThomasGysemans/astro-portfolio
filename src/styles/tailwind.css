@@ -4,14 +4,33 @@
    hocus variant) as the single source of truth for the theme. */
 @config "../../tailwind.config.mjs";
 
-/* Self-hosted Comfortaa (variable, wght 300-700): no request to Google Fonts,
-   so no visitor IP leaves the site just to render text (GDPR). The single
-   WOFF2 covers every weight used; heavier ones (e.g. font-extrabold) are
-   synthesized from 700, exactly as with the former hosted CSS. License in
-   /fonts/OFL.txt; sources in public/fonts/Comfortaa/ (gitignored). */
+/* Both faces are self-hosted (variable, wght 300-700): no request to Google
+   Fonts, so no visitor IP leaves the site just to render text (GDPR). Each
+   single WOFF2 covers every weight used; heavier ones (e.g. font-extrabold)
+   are synthesized from 700, and italics are synthesized from the roman —
+   the site only uses italic for a couple of 13px notes.
+   Licenses in /fonts/OFL.txt and /fonts/OFL-SourceSans3.txt; the raw sources
+   live in public/fonts/<family>/ (gitignored).
+
+   Comfortaa is a display face: low x-height, geometric, rounded. It carries
+   the brand on headings and the logo, but it is not made for running text,
+   which is why body copy had drifted down to 11-12px to stay compact. Source
+   Sans 3 takes over everything below heading level, at readable sizes: it is
+   a humanist face, so it stays quiet under the geometric headings instead of
+   competing with them. */
 @font-face {
     font-family: "Comfortaa";
     src: url("/fonts/comfortaa-vf.woff2") format("woff2-variations");
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Subset to latin + latin-ext + the arrows/symbols the UI uses, with the
+   `wght` axis clipped to 300-700 (the source ships 200-900). */
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("/fonts/source-sans-3-vf.woff2") format("woff2-variations");
     font-weight: 300 700;
     font-style: normal;
     font-display: swap;
@@ -99,8 +118,17 @@
     }
 
     body {
-        @apply bg-page text-text font-sans;
+        @apply bg-page text-text font-sans text-base;
         transition: background-color .3s, color .3s;
+    }
+
+    /* Headings carry the brand face; body copy stays on Source Sans 3.
+       Setting it here means a new heading is on the display face by default,
+       instead of every template having to remember `font-display`. */
+    h1,
+    h2,
+    h3 {
+        @apply font-display;
     }
 
     strong {

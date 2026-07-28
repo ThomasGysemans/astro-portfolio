@@ -73,10 +73,10 @@ const aboutCards = [
                         <AvailabilityBadge />
                     </div>
                     <h1 class="text-[clamp(34px,3.4vw,60px)] font-bold leading-[1.16] mb-4 text-heading" set:html={trans.home.herotitle[lang]} />
-                    <p class="text-[clamp(14.5px,1vw,16.5px)] leading-[1.7] text-body max-w-120 mb-6" set:html={trans.home.herointro[lang]} />
+                    <p class="text-[clamp(16px,1.1vw,18px)] leading-[1.7] text-body max-w-125 mb-6" set:html={trans.home.herointro[lang]} />
                     <div class="flex items-center gap-3 mb-6.5 flex-wrap">
                         <a href={freelanceUrl} class="btn-primary text-sm font-extrabold py-3.75 px-7.5 rounded-[10px]">{trans.home.createproject[lang]}</a>
-                        <a href={showcaseUrl} class="btn-outline text-[13px] py-3 px-5.5">{trans.home.showcasemode[lang]}</a>
+                        <a href={showcaseUrl} class="btn-outline text-sm py-3 px-5.5">{trans.home.showcasemode[lang]}</a>
                         <div class="flex gap-2 ml-1.5">
                             <a href="https://github.com/ThomasGysemans" target="_blank" rel="noopener" aria-label={`${trans.common.mygithubaccount[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="github" class="text-lg text-heading" /></a>
                             <a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" rel="noopener" aria-label={`${trans.common.mylinkedinaccount[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="linkedin" class="text-lg text-heading" /></a>
@@ -85,7 +85,7 @@ const aboutCards = [
                     </div>
                     <div class="flex gap-2.5 flex-wrap">
                         {roleChips.map(chip => (
-                            <span class="token-chip text-[12.5px] py-2 px-4">
+                            <span class="token-chip text-sm py-2 px-4">
                                 <Icon name={chip.icon} class="text-sm text-accent-strong" />
                                 {chip.label}
                             </span>
@@ -112,8 +112,8 @@ const aboutCards = [
             {carouselInfo && carouselMedia.length > 0 && (
                 <section class="px-page pt-1.5 pb-10">
                     <div class="flex justify-between items-baseline mb-4 gap-4 flex-wrap">
-                        <h2 class="text-[23px] font-bold m-0 text-heading">{trans.home.featuredprojects[lang]}</h2>
-                        <a href={showcaseUrl} class="text-[13px] font-bold text-accent hover:underline hover:brightness-110">{trans.home.opentheshowcase[lang]}</a>
+                        <h2 class="text-2xl font-bold m-0 text-heading">{trans.home.featuredprojects[lang]}</h2>
+                        <a href={showcaseUrl} class="text-sm font-bold text-accent hover:underline hover:brightness-110">{trans.home.opentheshowcase[lang]}</a>
                     </div>
                     <FeaturedCarousel project={carouselInfo} media={carouselMedia} labels={carouselLabels} client:visible />
                 </section>
@@ -122,8 +122,8 @@ const aboutCards = [
             <!-- selected projects -->
             <section class="px-page pb-10">
                 <div class="flex justify-between items-baseline mb-5 gap-4 flex-wrap">
-                    <h2 class="text-[23px] font-bold m-0 text-heading">{trans.home.selectedprojects[lang]}</h2>
-                    <a href={projectsUrl} class="text-[13px] font-bold text-accent hover:underline hover:brightness-110">{allProjectsLabel}</a>
+                    <h2 class="text-2xl font-bold m-0 text-heading">{trans.home.selectedprojects[lang]}</h2>
+                    <a href={projectsUrl} class="text-sm font-bold text-accent hover:underline hover:brightness-110">{allProjectsLabel}</a>
                 </div>
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(min(380px,100%),1fr))] gap-5">
                     {featured.map(project => (
@@ -131,21 +131,21 @@ const aboutCards = [
                     ))}
                 </div>
                 <div class="flex justify-center mt-6">
-                    <a href={projectsUrl} class="btn-outline text-[13px] py-3 px-6.5">{trans.common.seemore[lang]}</a>
+                    <a href={projectsUrl} class="btn-outline text-sm py-3 px-6.5">{trans.common.seemore[lang]}</a>
                 </div>
             </section>
 
             <!-- about -->
             <section class="px-page pt-1 pb-11">
-                <h2 class="text-[23px] font-bold mb-5 text-heading">{trans.home.aboutme[lang]}</h2>
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-4">
+                <h2 class="text-2xl font-bold mb-5 text-heading">{trans.home.aboutme[lang]}</h2>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
                     {aboutCards.map(card => (
                         <div class="surface-card p-5">
-                            <h3 class="flex items-center gap-2 text-[13px] font-bold text-accent-heading mb-2">
+                            <h3 class="flex items-center gap-2 text-base font-bold text-accent-heading mb-2.5">
                                 <Icon name={card.icon} class="text-base shrink-0" />
                                 {card.title}
                             </h3>
-                            <p class="text-[11.5px] leading-[1.7] text-body" set:html={card.text} />
+                            <p class="text-sm text-body" set:html={card.text} />
                         </div>
                     ))}
                 </div>

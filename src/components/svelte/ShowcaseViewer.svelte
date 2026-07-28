@@ -126,29 +126,29 @@
 
     <!-- left rail -->
     <nav class="absolute left-8 top-7 bottom-7 w-70 xl:w-80 2xl:w-96 z-20 max-lg:hidden flex flex-col" aria-label={labels.title}>
-        <div class="text-[12px] xl:text-[13px] 2xl:text-[14px] font-bold tracking-[.22em] text-[#9ad1d4] mb-2">{labels.label}</div>
-        <div class="text-[23px] xl:text-[27px] 2xl:text-[31px] font-bold leading-[1.3] mb-5">{labels.title}</div>
+        <div class="text-xs 2xl:text-sm font-bold tracking-[.22em] text-[#9ad1d4] mb-2">{labels.label}</div>
+        <div class="font-display text-2xl 2xl:text-3xl font-bold mb-5">{labels.title}</div>
         <div class="flex flex-col gap-1">
             {#each items as item, i (item.href)}
                 <button
                     type="button"
                     aria-current={i === index ? "true" : undefined}
                     onclick={() => select(i)}
-                    class="flex items-center gap-2.5 text-[15px] xl:text-[17px] 2xl:text-[19px] py-2.5 xl:py-3 px-3 rounded-[9px] border text-left transition-colors {i === index ? 'text-white font-bold bg-[rgba(154,209,212,.12)] border-[rgba(154,209,212,.35)]' : 'text-[#8fb4ba] border-transparent hover:text-white'}"
+                    class="flex items-center gap-2.5 text-base 2xl:text-lg py-2.5 xl:py-3 px-3 rounded-[9px] border text-left transition-colors {i === index ? 'text-white font-bold bg-[rgba(154,209,212,.12)] border-[rgba(154,209,212,.35)]' : 'text-[#8fb4ba] border-transparent hover:text-white'}"
                 >
-                    <span class="text-[11.5px] xl:text-[13px] 2xl:text-[14.5px] font-bold {i === index ? 'text-[#9ad1d4]' : 'text-[rgba(143,180,186,.6)]'}">{pad(i + 1)}</span>
+                    <span class="text-xs 2xl:text-sm font-bold {i === index ? 'text-[#9ad1d4]' : 'text-[rgba(143,180,186,.6)]'}">{pad(i + 1)}</span>
                     {item.name}
                 </button>
             {/each}
         </div>
-        <div class="mt-auto text-[12.5px] xl:text-[14px] 2xl:text-[15.5px] text-[#7da3ab] leading-[1.7]">{labels.travelTip}</div>
+        <div class="mt-auto text-sm 2xl:text-base text-[#7da3ab]">{labels.travelTip}</div>
     </nav>
 
     <!-- center title -->
     {#key index}
         <div class="absolute z-10 text-center left-1/2 top-[16%] w-full px-5 lg:w-auto lg:px-0 lg:left-[56%] lg:top-[34%] -translate-x-1/2 lg:-translate-y-1/2 showcase-fade-title">
             <h1 class="text-[clamp(32px,4.8vw,46px)] font-bold m-0 [text-shadow:0_0_44px_rgba(154,209,212,.55)]">{current.name}</h1>
-            <div class="text-sm md:text-[15px] text-[#9fc3c9] mt-2.5 tracking-[.08em] [text-shadow:0_1px_14px_rgba(2,10,16,.9)] uppercase">{current.tagline}</div>
+            <div class="text-sm md:text-base text-[#9fc3c9] mt-2.5 tracking-[.08em] [text-shadow:0_1px_14px_rgba(2,10,16,.9)] uppercase">{current.tagline}</div>
         </div>
     {/key}
 
@@ -161,16 +161,16 @@
             </div>
             <div class="flex justify-between items-baseline mb-1.75">
                 <span class="text-base font-bold">{current.name}</span>
-                <span class="text-[10.5px] text-[#9ad1d4] font-bold">{counter}</span>
+                <span class="text-xs text-[#9ad1d4] font-bold">{counter}</span>
             </div>
-            <p class="text-[11.5px] leading-[1.65] text-[#b8d6da] mb-3">{current.desc}</p>
+            <p class="text-sm text-[#b8d6da] mb-3">{current.desc}</p>
             <div class="flex gap-1.5 mb-3.5 flex-wrap max-sm:hidden">
                 {#each current.techs as tech (tech)}
-                    <span class="text-[10px] font-semibold text-[#c4dfe2] border border-white/20 rounded-full py-1 px-2.75">{tech}</span>
+                    <span class="text-xs font-semibold text-[#c4dfe2] border border-white/20 rounded-full py-1.5 px-3">{tech}</span>
                 {/each}
             </div>
             <div class="flex gap-2">
-                <a href={current.href} class="flex-1 text-center bg-white text-night text-xs font-bold py-2.75 rounded-lg hover:brightness-90 transition-[filter]">{labels.learnMore}</a>
+                <a href={current.href} class="flex-1 text-center bg-white text-night text-sm font-bold py-3 rounded-lg hover:brightness-90 transition-[filter]">{labels.learnMore}</a>
                 <button type="button" aria-label={labels.previous} onclick={() => go(-1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">‹</button>
                 <button type="button" aria-label={labels.next} onclick={() => go(1)} class="w-11 text-center border border-white/25 rounded-lg text-sm py-2.5 hover:bg-white/10 transition-colors">›</button>
             </div>

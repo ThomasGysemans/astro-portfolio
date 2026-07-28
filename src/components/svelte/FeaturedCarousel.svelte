@@ -146,9 +146,9 @@
 
     <div class="absolute left-[clamp(14px,2vw,28px)] right-[clamp(14px,2vw,28px)] bottom-[clamp(12px,1.6vw,22px)] flex items-end gap-5 flex-wrap">
         <div class="flex-1 min-w-0">
-            <div class="text-[10.5px] font-bold tracking-[.14em] text-[#9fc1f7] [text-shadow:0_1px_8px_rgba(0,0,0,.6)] max-sm:hidden">{project.tagline}</div>
-            <h3 class="text-[clamp(18px,2vw,26px)] font-bold mt-1.5 mb-0 text-white [text-shadow:0_2px_12px_rgba(0,0,0,.5)]">{project.name}</h3>
-            <div class="text-[12.5px] text-[#c9d6ef] mt-1 [text-shadow:0_1px_8px_rgba(0,0,0,.6)] max-sm:hidden">{project.caption}</div>
+            <div class="text-xs font-bold tracking-[.14em] text-[#9fc1f7] [text-shadow:0_1px_8px_rgba(0,0,0,.6)] max-sm:hidden">{project.tagline}</div>
+            <h3 class="text-[clamp(20px,2vw,26px)] font-bold mt-1.5 mb-0 text-white [text-shadow:0_2px_12px_rgba(0,0,0,.5)]">{project.name}</h3>
+            <div class="text-sm text-[#c9d6ef] mt-1 [text-shadow:0_1px_8px_rgba(0,0,0,.6)] max-sm:hidden">{project.caption}</div>
         </div>
         <a
             href={project.href}
@@ -171,7 +171,7 @@
         >›</button>
 
         <div class="absolute top-4.5 right-5 flex items-center gap-3">
-            <span class="text-[10.5px] font-bold text-[#c9d6ef] tracking-widest whitespace-nowrap [text-shadow:0_1px_8px_rgba(0,0,0,.6)]">{index + 1} / {media.length}</span>
+            <span class="text-xs font-bold text-[#c9d6ef] tracking-widest whitespace-nowrap [text-shadow:0_1px_8px_rgba(0,0,0,.6)]">{index + 1} / {media.length}</span>
             <div class="flex gap-1.5 items-center max-sm:hidden">
                 {#each media as item, i (item.src)}
                     <button

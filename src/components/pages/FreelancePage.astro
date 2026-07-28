@@ -55,9 +55,9 @@ const carePoints = [
                         <AvailabilityBadge />
                     </div>
                     <h1 class="text-[clamp(30px,3vw,48px)] font-bold leading-[1.18] m-0 text-heading" set:html={trans.freelance.herotitle[lang]} />
-                    <p class="text-[15px] leading-[1.8] text-body mt-4.5 max-w-110">{trans.freelance.herointro[lang]}</p>
+                    <p class="text-lg leading-[1.7] text-body mt-4.5 max-w-125">{trans.freelance.herointro[lang]}</p>
                     <div class="flex items-center gap-3 mt-8.5 flex-wrap">
-                        <a href={`mailto:${EMAIL}`} class="btn-primary inline-flex items-center gap-2 text-[13px] py-3.25 px-6.5 shadow-btn-glow">
+                        <a href={`mailto:${EMAIL}`} class="btn-primary inline-flex items-center gap-2 text-base py-3.25 px-6.5 shadow-btn-glow">
                             <Icon name="mail" class="text-base" />
                             {trans.freelance.emailme[lang]}
                         </a>
@@ -66,7 +66,7 @@ const carePoints = [
                             {trans.freelance.hireonmalt[lang]}
                         </a>
                     </div>
-                    <p class="text-[12.5px] text-muted mt-4">{trans.freelance.freequote[lang]}</p>
+                    <p class="text-sm text-muted mt-4">{trans.freelance.freequote[lang]}</p>
                 </div>
 
                 <div class="fl-timeline relative max-w-100 w-full justify-self-center py-2.5">
@@ -79,8 +79,8 @@ const carePoints = [
                                     <Icon name={step.icon} class="text-xl" style={`color:${step.border}`} />
                                 </span>
                                 <div>
-                                    <div class="text-[15px] font-bold text-heading">{step.title}</div>
-                                    <div class="text-xs text-body mt-0.75 leading-[1.55]">{step.text}</div>
+                                    <div class="font-display text-lg font-bold text-heading">{step.title}</div>
+                                    <div class="text-sm text-body mt-1">{step.text}</div>
                                 </div>
                             </li>
                         ))}
@@ -103,13 +103,13 @@ const carePoints = [
                         <Icon name="shield-check" class="text-2xl text-[#2fa866]" />
                     </span>
                     <div>
-                        <h2 class="text-[17px] font-bold m-0 text-heading">{trans.freelance.guaranteetitle[lang]}</h2>
-                        <p class="text-[12.5px] text-body leading-[1.7] mt-1.25">{trans.freelance.guarantee[lang]}</p>
+                        <h2 class="text-xl font-bold m-0 text-heading">{trans.freelance.guaranteetitle[lang]}</h2>
+                        <p class="text-sm text-body mt-1.5">{trans.freelance.guarantee[lang]}</p>
                     </div>
                 </div>
                 <div class="surface-card py-7 px-8.5">
-                    <h2 class="text-base font-bold mb-4 text-heading">{trans.freelance.aititle[lang]}</h2>
-                    <ul class="flex flex-col gap-3 text-[13px] font-semibold text-body">
+                    <h2 class="text-xl font-bold mb-4 text-heading">{trans.freelance.aititle[lang]}</h2>
+                    <ul class="flex flex-col gap-3.5 text-sm font-semibold text-body">
                         {aiPoints.map(point => (
                             <li class="flex items-center gap-2.5 flex-wrap">
                                 <Icon name={point.icon} class="text-base text-accent shrink-0" aria-hidden="true" />
@@ -120,8 +120,8 @@ const carePoints = [
                     </ul>
                 </div>
                 <div class="surface-card py-7 px-8.5">
-                    <h2 class="text-base font-bold mb-4 text-heading">{trans.freelance.carestitle[lang]}</h2>
-                    <ul class="flex flex-col gap-3 text-[13px] font-semibold text-body">
+                    <h2 class="text-xl font-bold mb-4 text-heading">{trans.freelance.carestitle[lang]}</h2>
+                    <ul class="flex flex-col gap-3.5 text-sm font-semibold text-body">
                         {carePoints.map(point => (
                             <li class="flex items-center gap-2.5 flex-wrap">
                                 <Icon name={point.icon} class="text-base text-accent shrink-0" aria-hidden="true" />
@@ -136,8 +136,8 @@ const carePoints = [
             <!-- freelance projects -->
             <section class="px-page pb-20">
                 <div class="flex justify-between items-baseline mb-7 gap-4 flex-wrap">
-                    <h2 class="text-[23px] font-bold m-0 text-heading">{trans.freelance.deliveredforclients[lang]}</h2>
-                    <a href={projectsUrl} class="text-[13px] font-bold text-accent hover:underline hover:brightness-110">{allProjectsLabel}</a>
+                    <h2 class="text-2xl font-bold m-0 text-heading">{trans.freelance.deliveredforclients[lang]}</h2>
+                    <a href={projectsUrl} class="text-sm font-bold text-accent hover:underline hover:brightness-110">{allProjectsLabel}</a>
                 </div>
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
                     {freelanceProjects.map(project => (
@@ -148,25 +148,25 @@ const carePoints = [
 
             <!-- reviews -->
             <section class="px-page pb-20">
-                <h2 class="text-[23px] font-bold mb-7 text-heading">{trans.freelance.reviewstitle[lang]}</h2>
+                <h2 class="text-2xl font-bold mb-7 text-heading">{trans.freelance.reviewstitle[lang]}</h2>
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
                     {reviews.map(review => (
                         <figure class="surface-card py-7 px-7 flex flex-col gap-3.5">
-                            <div class="text-[13px] tracking-[2px]">
+                            <div class="text-base tracking-[2px]">
                                 <span class="text-accent" aria-hidden="true">{"★".repeat(review.rating)}<span class="text-muted">{"☆".repeat(5 - review.rating)}</span></span>
                                 <span class="sr-only">{lang === "fr" ? `Note : ${review.rating} sur 5` : `Rating: ${review.rating} out of 5`}</span>
                             </div>
                             <!-- The quotation marks come from the page, not the data (localized style). -->
-                            <blockquote class="text-[13.5px] leading-[1.7] text-body">{lang === "fr" ? `« ${review.quote[lang]} »` : `“${review.quote[lang]}”`}</blockquote>
+                            <blockquote class="text-base text-body">{lang === "fr" ? `« ${review.quote[lang]} »` : `“${review.quote[lang]}”`}</blockquote>
                             <figcaption class="mt-auto border-t border-edge pt-3 flex justify-between items-center gap-2.5">
-                                <div class="text-[11px] text-muted leading-normal">
+                                <div class="text-xs text-muted leading-normal">
                                     {review.role[lang]}<br />
                                     <span class="font-bold text-heading text-xs">{review.company[lang]}</span>
                                     {lang === "en" && review.translated && (
-                                        <span class="block text-[10px] italic text-muted">Translated from French</span>
+                                        <span class="block text-xs italic text-muted">Translated from French</span>
                                     )}
                                 </div>
-                                <span class="text-[10px] font-bold text-accent border border-edge-strong rounded-full py-1 px-2.5 whitespace-nowrap">{review.year}</span>
+                                <span class="text-xs font-bold text-accent border border-edge-strong rounded-full py-1 px-2.5 whitespace-nowrap">{review.year}</span>
                             </figcaption>
                         </figure>
                     ))}
@@ -177,11 +177,11 @@ const carePoints = [
             <section class="px-page pb-22">
                 <div class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-2xl py-10 px-11 flex items-center justify-between gap-6 flex-wrap">
                     <div>
-                        <h2 class="text-[21px] font-bold text-heading m-0">{trans.freelance.ctatitle[lang]}</h2>
-                        <p class="text-[12.5px] text-body mt-1.25">{trans.freelance.ctasubtitle[lang]}</p>
+                        <h2 class="text-2xl font-bold text-heading m-0">{trans.freelance.ctatitle[lang]}</h2>
+                        <p class="text-base text-body mt-2">{trans.freelance.ctasubtitle[lang]}</p>
                     </div>
                     <div class="flex gap-3 flex-wrap">
-                        <a href={`mailto:${EMAIL}`} class="btn-primary inline-flex items-center gap-2 text-[13px] py-3.25 px-6 shadow-btn-glow">
+                        <a href={`mailto:${EMAIL}`} class="btn-primary inline-flex items-center gap-2 text-base py-3.25 px-6 shadow-btn-glow">
                             <Icon name="mail" class="text-base" />
                             {EMAIL}
                         </a>
@@ -208,7 +208,7 @@ const carePoints = [
     }
 
     .malt-btn {
-        @apply inline-flex items-center gap-2 border-[1.5px] border-malt text-heading text-[13px] font-bold py-3 px-5.5 rounded-[9px] whitespace-nowrap;
+        @apply inline-flex items-center gap-2 border-[1.5px] border-malt text-heading text-base font-bold py-3 px-5.5 rounded-[9px] whitespace-nowrap;
         transition: background .2s, transform .2s;
 
         &:hover {
@@ -243,7 +243,7 @@ const carePoints = [
     }
 
     .fl-step-icon {
-        @apply w-12 h-12 rounded-full bg-card-solid border-2 flex items-center justify-center text-[19px] shrink-0;
+        @apply w-12 h-12 rounded-full bg-card-solid border-2 flex items-center justify-center shrink-0;
         animation: fl-pulse 1.4s ease;
     }
 

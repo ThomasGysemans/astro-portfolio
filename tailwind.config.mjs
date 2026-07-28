@@ -40,8 +40,25 @@ export default {
 				'btn-glow': 'var(--btn-glow)',
 			},
 			fontFamily: {
-				sans: ['"Comfortaa"', ...defaultTheme.fontFamily.sans],
-			}
+				// Body face: everything that is read rather than glanced at.
+				sans: ['"Source Sans 3"', ...defaultTheme.fontFamily.sans],
+				// Display face: headings, the logo wordmark and the stat numbers.
+				display: ['"Comfortaa"', ...defaultTheme.fontFamily.sans],
+			},
+		},
+		// Type scale, overriding Tailwind's defaults so that `text-xs` is a
+		// real floor (13px) instead of 12px, and there is a continuous ramp
+		// between body copy and headings. Sizes below `xs` are deliberately
+		// unavailable: the previous design had 22 distinct hardcoded sizes,
+		// 10px included, with nothing at all between 13px and 34px.
+		fontSize: {
+			xs: ['0.8125rem', { lineHeight: '1.5' }],    // 13px — meta, chips, captions, badges
+			sm: ['0.9375rem', { lineHeight: '1.6' }],    // 15px — dense card copy, secondary text
+			base: ['1rem', { lineHeight: '1.7' }],       // 16px — body copy
+			lg: ['1.125rem', { lineHeight: '1.5' }],     // 18px — card titles, lead-in
+			xl: ['1.3125rem', { lineHeight: '1.4' }],    // 21px — minor headings
+			'2xl': ['1.625rem', { lineHeight: '1.3' }],  // 26px — section headings
+			'3xl': ['2.125rem', { lineHeight: '1.2' }],  // 34px — page titles
 		},
 	},
 	plugins: [

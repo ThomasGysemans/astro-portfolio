@@ -140,20 +140,20 @@ const titles: Record<string, string> = {
         <section class="px-page pt-8 pb-14">
             <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
                 <div class="surface-card py-5.5 px-6">
-                    <h2 class="flex items-center gap-2 text-[13px] font-bold text-accent-heading mb-2.5">
+                    <h2 class="flex items-center gap-2 text-lg font-bold text-accent-heading mb-3">
                         <Icon name="graduation-cap" class="text-base shrink-0" />
                         {trans.projects.educationtitle[lang]}
                     </h2>
-                    <p class="text-[12.5px] leading-[1.85] text-body">{trans.projects.education[lang]}</p>
+                    <p class="text-sm text-body">{trans.projects.education[lang]}</p>
                 </div>
                 <div class="surface-card py-5.5 px-6">
-                    <h2 class="flex items-center gap-2 text-[13px] font-bold text-accent-heading mb-3">
+                    <h2 class="flex items-center gap-2 text-lg font-bold text-accent-heading mb-3.5">
                         <Icon name="handshake" class="text-base shrink-0" />
                         {trans.projects.teamskillstitle[lang]}
                     </h2>
                     <ul class="flex flex-col gap-2.5">
                         {schoolSkills.map(skill => (
-                            <li class="flex gap-2 text-xs leading-[1.6] text-body">
+                            <li class="flex gap-2 text-sm text-body">
                                 <Icon name="award" class="text-sm text-accent shrink-0 mt-px" aria-hidden="true" />
                                 <span>{skill[lang]}</span>
                             </li>

@@ -36,10 +36,10 @@ const contactHref = getRelativeLocaleUrl(lang, "/freelance");
 <header class="relative z-30 flex items-center justify-between gap-4 flex-wrap py-4 px-page border-b border-edge bg-(--header-bg) transition-colors">
     <a href={getRelativeLocaleUrl(lang, "/")} class="flex items-center gap-3">
         <Logo />
-        <span class="font-bold text-heading text-sm leading-tight">Thomas<br />Gysemans</span>
+        <span class="font-display font-bold text-heading text-sm leading-tight">Thomas<br />Gysemans</span>
     </a>
 
-    <nav aria-label={trans.nav.mainnav[lang]} class="hdr-nav flex gap-[clamp(14px,2.5vw,30px)] flex-wrap text-[13px] font-semibold">
+    <nav aria-label={trans.nav.mainnav[lang]} class="hdr-nav flex gap-[clamp(14px,2.5vw,30px)] flex-wrap text-sm font-semibold">
         {links.map(link => (
             <a
                 href={link.href}
@@ -57,17 +57,17 @@ const contactHref = getRelativeLocaleUrl(lang, "/freelance");
             data-theme-toggle
             title={trans.common.switchtheme[lang]}
             aria-label={trans.common.switchtheme[lang]}
-            class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] text-heading hover:border-accent transition-colors"
+            class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-base text-heading hover:border-accent transition-colors"
         >
             <Icon name="sun" class="icon-sun" />
             <Icon name="moon" class="icon-moon" />
         </button>
-        <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
+        <div class="flex items-center h-9.5 gap-0.5 text-xs font-bold border border-edge-strong rounded-full p-1.5">
             {localeLinks.map(link => (
                 <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
             ))}
         </div>
-        <a href={contactHref} class="btn-primary text-[12.5px] px-5 py-2.5">{trans.common.contactme[lang]}</a>
+        <a href={contactHref} class="btn-primary text-sm px-5 py-2.5">{trans.common.contactme[lang]}</a>
     </div>
 
     <button
@@ -84,14 +84,14 @@ const contactHref = getRelativeLocaleUrl(lang, "/freelance");
     <button type="button" data-drawer-close tabindex="-1" aria-hidden="true" class="drawer-backdrop fixed inset-0 z-40 bg-[rgba(2,8,18,.6)] backdrop-blur-[3px]"></button>
     <nav aria-label={trans.nav.mobilenav[lang]} class="drawer-panel fixed top-0 right-0 bottom-0 z-50 w-[min(300px,84vw)] bg-card-solid border-l border-edge py-6 px-6 flex flex-col gap-1.5 shadow-[-20px_0_60px_rgba(2,8,18,.45)]">
         <div class="flex justify-between items-center mb-3.5">
-            <span class="font-bold text-heading text-sm">{trans.common.menu[lang]}</span>
+            <span class="font-display font-bold text-heading text-base">{trans.common.menu[lang]}</span>
             <button type="button" data-drawer-close aria-label={trans.common.closemenu[lang]} class="w-9 h-9 rounded-full border border-edge-strong inline-flex items-center justify-center text-heading text-base"><Icon name="x" /></button>
         </div>
         {links.map(link => (
             <a
                 href={link.href}
                 aria-current={isActive(link.route) ? "page" : undefined}
-                class={`text-sm font-bold py-3 px-3 rounded-lg hover:bg-chip hover:text-heading ${isActive(link.route) ? "text-heading" : "text-muted"}`}
+                class={`text-base font-bold py-3 px-3 rounded-lg hover:bg-chip hover:text-heading ${isActive(link.route) ? "text-heading" : "text-muted"}`}
             >
                 {link.label}
             </a>
@@ -101,18 +101,18 @@ const contactHref = getRelativeLocaleUrl(lang, "/freelance");
                 type="button"
                 data-theme-toggle
                 aria-label={trans.common.switchtheme[lang]}
-                class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-[15px] text-heading"
+                class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-base text-heading"
             >
                 <Icon name="sun" class="icon-sun" />
                 <Icon name="moon" class="icon-moon" />
             </button>
-            <div class="flex items-center h-9.5 gap-0.5 text-[11.5px] font-bold border border-edge-strong rounded-full p-1.5">
+            <div class="flex items-center h-9.5 gap-0.5 text-xs font-bold border border-edge-strong rounded-full p-1.5">
                 {localeLinks.map(link => (
                     <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
                 ))}
             </div>
         </div>
-        <a href={contactHref} class="btn-primary text-[13px] py-3 px-5 mt-2">{trans.common.contactme[lang]}</a>
+        <a href={contactHref} class="btn-primary text-base py-3 px-5 mt-2">{trans.common.contactme[lang]}</a>
     </nav>
 </div>
 

@@ -48,7 +48,7 @@ const detailRows = [
 
 <MainLayout title={`${trans.common.title[lang]} - ${name}`} description={project.description[lang]} image={project.thumbLarge}>
     <main id="main-content" class="pt-6.5 px-page pb-11 w-full max-w-415 mx-auto">
-        <nav class="text-[11.5px] text-muted mb-4" aria-label={trans.detail.allprojects[lang]}>
+        <nav class="text-sm text-muted mb-4" aria-label={trans.detail.allprojects[lang]}>
             <a href={projectsUrl} class="text-accent font-bold">‹ {trans.detail.allprojects[lang]}</a>
             <span class="mx-2">/</span>
             <span>{name}</span>
@@ -56,19 +56,19 @@ const detailRows = [
 
         <div class="flex justify-between items-start mb-5.5 gap-5 flex-wrap">
             <div>
-                <h1 class="text-[34px] font-bold mb-3 text-heading">{name}</h1>
+                <h1 class="text-3xl font-bold mb-3 text-heading">{name}</h1>
                 <div class="flex gap-2 flex-wrap">
                     {chips.map(chip => (
-                        <span class="text-[11px] font-bold text-chip-text bg-chip border border-edge-strong rounded-full py-1.5 px-3">{chip}</span>
+                        <span class="text-xs font-bold text-chip-text bg-chip border border-edge-strong rounded-full py-1.5 px-3">{chip}</span>
                     ))}
                 </div>
             </div>
             <div class="flex gap-2.5 flex-wrap">
                 {project.link && (
-                    <a href={project.link} target="_blank" rel="noopener" aria-label={`${trans.detail.visit[lang]} (${trans.common.newwindow[lang]})`} class="btn-primary text-[12.5px] py-3 px-5.5 shadow-btn-glow">{trans.detail.visit[lang]}</a>
+                    <a href={project.link} target="_blank" rel="noopener" aria-label={`${trans.detail.visit[lang]} (${trans.common.newwindow[lang]})`} class="btn-primary text-sm py-3 px-5.5 shadow-btn-glow">{trans.detail.visit[lang]}</a>
                 )}
                 {project.github && (
-                    <a href={project.github} target="_blank" rel="noopener" aria-label={`${trans.detail.githubrepo[lang]} (${trans.common.newwindow[lang]})`} class="btn-outline text-[12.5px] py-2.75 px-5">{trans.detail.githubrepo[lang]}</a>
+                    <a href={project.github} target="_blank" rel="noopener" aria-label={`${trans.detail.githubrepo[lang]} (${trans.common.newwindow[lang]})`} class="btn-outline text-sm py-2.75 px-5">{trans.detail.githubrepo[lang]}</a>
                 )}
             </div>
         </div>
@@ -76,8 +76,8 @@ const detailRows = [
         <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5.5 items-start">
             <div class="flex flex-col gap-4.5">
                 <section class="surface-card py-5.5 px-6">
-                    <h2 class="text-[13px] font-bold text-accent-heading mb-2.5">{trans.detail.aboutproject[lang]}</h2>
-                    <p class="text-[13px] leading-[1.8] text-body">{project.about[lang]}</p>
+                    <h2 class="text-lg font-bold text-accent-heading mb-3">{trans.detail.aboutproject[lang]}</h2>
+                    <p class="text-base text-body">{project.about[lang]}</p>
                 </section>
                 {gallery.map(media => (
                     <figure class="surface-card overflow-hidden">
@@ -89,7 +89,7 @@ const detailRows = [
                                 <img src={media.url} alt={media.caption} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
                             </div>
                         )}
-                        <figcaption class="flex items-center gap-2 py-2.75 px-4 text-[11px] text-muted border-t border-edge">
+                        <figcaption class="flex items-center gap-2 py-2.75 px-4 text-xs text-muted border-t border-edge">
                             <Icon name={media.video ? "film" : "camera"} class="text-sm shrink-0" aria-hidden="true" />
                             {media.caption}
                         </figcaption>
@@ -99,21 +99,21 @@ const detailRows = [
 
             <div class="flex flex-col gap-3.5">
                 <section class="surface-card py-4.5 px-5">
-                    <h2 class="text-xs font-bold text-accent-heading mb-3">{trans.detail.techstack[lang]}</h2>
+                    <h2 class="text-lg font-bold text-accent-heading mb-3.5">{trans.detail.techstack[lang]}</h2>
                     <ul class="flex flex-col gap-2">
                         {project.techs.map(tech => (
-                            <li class="flex items-center gap-2.25 text-xs font-semibold text-heading">
+                            <li class="flex items-center gap-2.25 text-sm leading-tight font-semibold text-heading">
                                 <span class="w-2 h-2 rounded-full shrink-0" style={`background:${tech.color}`} />
                                 {tech.name}
-                                <span class="ml-auto text-[10px] text-muted font-normal">{techRoleLabel(tech.role, lang)}</span>
+                                <span class="ml-auto text-xs text-muted font-normal">{techRoleLabel(tech.role, lang)}</span>
                             </li>
                         ))}
                     </ul>
                 </section>
 
                 <section class="surface-card py-4.5 px-5">
-                    <h2 class="text-xs font-bold text-accent-heading mb-3">{trans.common.details[lang]}</h2>
-                    <dl class="flex flex-col gap-2.25 text-[11.5px]">
+                    <h2 class="text-lg font-bold text-accent-heading mb-3.5">{trans.common.details[lang]}</h2>
+                    <dl class="flex flex-col gap-2.5 text-sm leading-tight">
                         {detailRows.map(row => (
                             <div class="flex justify-between gap-4">
                                 <dt class="text-muted">{row.label}</dt>
@@ -125,8 +125,8 @@ const detailRows = [
 
                 {prev && next && (
                     <nav class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-[13px] py-4.5 px-5" aria-label={trans.detail.moreprojects[lang]}>
-                        <h2 class="text-xs font-bold mb-2.5 text-heading">{trans.detail.moreprojects[lang]}</h2>
-                        <div class="flex justify-between gap-4 text-xs font-bold">
+                        <h2 class="text-lg font-bold mb-3 text-heading">{trans.detail.moreprojects[lang]}</h2>
+                        <div class="flex justify-between gap-4 text-sm font-bold">
                             <a href={getRelativeLocaleUrl(lang, `/projects/${prev.slug}`)} class="text-accent hover:underline">‹ {prev.name[lang]}</a>
                             <a href={getRelativeLocaleUrl(lang, `/projects/${next.slug}`)} class="text-accent hover:underline text-right">{next.name[lang]} ›</a>
                         </div>
