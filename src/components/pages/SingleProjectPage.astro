@@ -5,6 +5,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAdjacentProjects } from "@data/projects";
 import { categoryMeta, contextLabel, techRoleLabel } from "@data/categories";
 import MainLayout from "@layouts/MainLayout.astro";
+import ImageLightbox from "@components/svelte/ImageLightbox.svelte";
 import { isVideo } from "@data/media";
 import trans from "@i18n";
 
@@ -32,11 +33,22 @@ const chips = [
 // The gallery shows every picture of the project, each with its own
 // caption (also used as the alt text); pictures without one fall back
 // to the project's legacy thumbnail caption.
-const gallery = project.pictures.map(picture => ({
-    url: picture.url,
-    video: isVideo(picture.url),
-    caption: picture.caption[lang] || project.caption[lang],
-}));
+// Images (not videos, which have their own controls) are clickable and open
+// the fullscreen viewer; `lightboxIndex` is their position in the images-only
+// list handed to the island — that is the contract between the two.
+let lightboxIndex = 0;
+const gallery = project.pictures.map(picture => {
+    const video = isVideo(picture.url);
+    return {
+        url: picture.url,
+        video,
+        lightboxIndex: video ? null : lightboxIndex++,
+        caption: picture.caption[lang] || project.caption[lang],
+    };
+});
+const zoomablePictures = gallery
+    .filter(media => !media.video)
+    .map(media => ({ src: media.url, caption: media.caption }));
 const detailRows = [
     { label: trans.detail.year[lang], value: project.date },
     { label: trans.detail.categories[lang], value: categoriesLabel },
@@ -84,10 +96,18 @@ const detailRows = [
                         {media.video ? (
                             <video src={media.url} controls muted playsinline preload="metadata" aria-label={media.caption} class="w-full aspect-video object-contain bg-[#04101f]" />
                         ) : (
-                            <div class="relative aspect-video overflow-hidden">
+                            <a
+                                href={media.url}
+                                data-lightbox-index={media.lightboxIndex}
+                                aria-label={`${trans.detail.enlarge[lang]} : ${media.caption}`}
+                                class="group relative block aspect-video overflow-hidden cursor-zoom-in"
+                            >
                                 <img src={media.url} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
                                 <img src={media.url} alt={media.caption} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
-                            </div>
+                                <span class="absolute top-3 right-3 w-8 h-8 rounded-full bg-[rgba(3,15,32,.72)] border border-white/25 text-white flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true">
+                                    <Icon name="search" class="text-sm" />
+                                </span>
+                            </a>
                         )}
                         <figcaption class="flex items-center gap-2 py-2.75 px-4 text-xs text-muted border-t border-edge">
                             <Icon name={media.video ? "film" : "camera"} class="text-sm shrink-0" aria-hidden="true" />
@@ -134,5 +154,20 @@ const detailRows = [
                 )}
             </div>
         </div>
+
+        {zoomablePictures.length > 0 && (
+            <ImageLightbox
+                client:idle
+                pictures={zoomablePictures}
+                labels={{
+                    gallery: trans.detail.gallery[lang],
+                    close: trans.detail.closepicture[lang],
+                    previous: trans.carousel.previouspicture[lang],
+                    next: trans.carousel.nextpicture[lang],
+                    zoomIn: trans.detail.zoomin[lang],
+                    zoomOut: trans.detail.zoomout[lang],
+                }}
+            />
+        )}
     </main>
 </MainLayout>

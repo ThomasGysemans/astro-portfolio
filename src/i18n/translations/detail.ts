@@ -12,4 +12,9 @@ export const detail = {
     "context": text("Contexte", "Context"),
     "languages": text("Langues", "Languages"),
     "moreprojects": text("Autres projets", "More projects"),
+    "gallery": text("Galerie du projet", "Project gallery"),
+    "enlarge": text("Agrandir l'image", "Enlarge the picture"),
+    "closepicture": text("Fermer l'image", "Close the picture"),
+    "zoomin": text("Zoomer sur l'image", "Zoom into the picture"),
+    "zoomout": text("Dézoomer", "Zoom out"),
 } satisfies Record<string, Localized>;
