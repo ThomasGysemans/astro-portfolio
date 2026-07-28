@@ -28,7 +28,8 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
     <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
         <div class="flex items-center gap-4">
             <h1 class="text-[24px] font-bold text-heading">{isNew ? "Nouveau projet" : values.name || values.slug}</h1>
-            {!isNew && <a href={`/projects/${values.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>}
+            {!isNew && values.hidden && <span class="text-[10.5px] uppercase tracking-wider text-muted border border-edge rounded-sm px-1.5 py-0.5 align-middle">masqué</span>}
+            {!isNew && !values.hidden && <a href={`/projects/${values.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>}
         </div>
         <a href="/admin/projects" class="text-[13px] text-muted hover:text-accent transition-colors">← Retour à la liste</a>
     </div>
@@ -54,6 +55,15 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
                         <input type="checkbox" name="carousel" checked={values.carousel}>
                         Projet du carrousel d'accueil (décoche automatiquement les autres)
                     </label>
+                </div>
+                <div class="adm-field">
+                    <label class="adm-check pb-2.5">
+                        <input type="checkbox" name="hidden" checked={values.hidden}>
+                        Masquer le projet (invisible sur tout le site)
+                    </label>
+                    <p class="text-[12px] text-muted">
+                        Un projet masqué disparaît de l'accueil, de /projects, du showcase, de /freelance et du sitemap, et sa page publique renvoie une 404. Il reste modifiable ici.
+                    </p>
                 </div>
             </div>
             {!isNew && <p class="text-[12px] text-muted mt-3">⚠ Le slug est l'URL publique du projet (SEO) : ne le change pas après publication.</p>}

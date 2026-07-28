@@ -60,10 +60,14 @@ function mapProject(record: RecordModel): Project {
 }
 
 // All projects, newest first (`created` keeps a stable order within a year).
+// Every public read derives from this list, so the `hidden` projects are
+// filtered out here once and for all: they vanish from the cards, the
+// showcase, the carousel, the sitemap and their own detail page (404).
 export async function getAllProjects(): Promise<Project[]> {
     return cached("projects", async () => {
         const records = await pb.collection("projects").getFullList({
             sort: "-year,created",
+            filter: "hidden != true",
             expand: EXPAND,
         });
         return records.map(mapProject);

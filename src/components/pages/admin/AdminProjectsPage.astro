@@ -33,12 +33,13 @@ const contextLabel = (id: string) => CONTEXTS[id as ProjectContext]?.fr ?? id;
                         {project.name}
                         {project.featured && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-accent border border-accent rounded-sm px-1.5 py-0.5 align-middle">vitrine</span>}
                         {project.carousel && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-heading border border-edge rounded-sm px-1.5 py-0.5 align-middle">carousel</span>}
+                        {project.hidden && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-muted border border-edge rounded-sm px-1.5 py-0.5 align-middle">masqué</span>}
                     </div>
                     <div class="text-[12.5px] text-muted mt-0.5">
                         /{project.slug} · {project.year} · {categoriesLabel(project.categories)} · {contextLabel(project.context)}
                     </div>
                 </div>
-                <a href={`/projects/${project.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>
+                {!project.hidden && <a href={`/projects/${project.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>}
                 <a href={`/admin/projects/${project.id}`} class="adm-btn-outline">Modifier</a>
                 <form method="POST" data-confirm={`Supprimer le projet « ${project.name} » ? Ses traductions et technologies seront supprimées avec lui.`}>
                     <input type="hidden" name="action" value="delete">

@@ -11,6 +11,7 @@ export type ProjectFormValues = {
     slug: string,
     featured: boolean,
     carousel: boolean,
+    hidden: boolean, // hidden projects are filtered out of every public query
     categories: string[],
     context: string,
     year: string,
@@ -66,6 +67,7 @@ export type AdminProjectRow = {
     context: string,
     featured: boolean,
     carousel: boolean,
+    hidden: boolean,
     thumbUrl: string,
 };
 
@@ -76,6 +78,7 @@ function emptyValues(): ProjectFormValues {
         slug: "",
         featured: false,
         carousel: false,
+        hidden: false,
         categories: [],
         context: "personal",
         year: String(new Date().getFullYear()),
@@ -104,6 +107,7 @@ function parseForm(data: FormData): ProjectFormValues {
         slug: text(data, "slug"),
         featured: data.has("featured"),
         carousel: data.has("carousel"),
+        hidden: data.has("hidden"),
         categories: data.getAll("categories").map(String),
         context: text(data, "context"),
         year: text(data, "year"),
@@ -133,6 +137,7 @@ function projectPayload(v: ProjectFormValues): Record<string, unknown> {
         slug: v.slug,
         featured: v.featured,
         carousel: v.carousel,
+        hidden: v.hidden,
         categories: v.categories,
         context: v.context,
         year: Number(v.year),
@@ -290,6 +295,7 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
             slug: record.slug,
             featured: !!record.featured,
             carousel: !!record.carousel,
+            hidden: !!record.hidden,
             categories: record.categories ?? [],
             context: record.context,
             year: String(record.year ?? ""),
@@ -455,6 +461,7 @@ export async function listAdminProjects(pb: PocketBase): Promise<AdminProjectRow
         context: record.context,
         featured: !!record.featured,
         carousel: !!record.carousel,
+        hidden: !!record.hidden,
         thumbUrl: pb.files.getURL(record, record.thumb, { thumb: "800x0" }),
     }));
 }
