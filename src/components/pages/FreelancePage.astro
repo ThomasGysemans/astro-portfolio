@@ -12,6 +12,13 @@ import trans from "@i18n";
 const EMAIL = "contact@thomasgysemans.dev";
 const MALT_URL = "https://malt.fr/profile/thomasgysemans";
 
+// Starting price of a showcase website, in euros, for the budget block.
+// While it is null the whole "how much does it cost" section is skipped, so
+// the page can never ship with a placeholder figure in front of a prospect.
+// Set it to a real number to switch the block on — that is the only change
+// needed, the copy and the layout are already in place.
+const STARTING_PRICE: number | null = 500;
+
 const lang = Astro.locals.lang;
 const [freelanceProjects, allProjects, reviews] = await Promise.all([
     getProfessionalProjects(),
@@ -34,8 +41,19 @@ const aiPoints = [
     { icon: "zap", label: trans.freelance.ai1a[lang], result: trans.freelance.ai1b[lang] },
     { icon: "search", label: trans.freelance.ai2a[lang], result: trans.freelance.ai2b[lang] },
     { icon: "eye", label: trans.freelance.ai3a[lang], result: trans.freelance.ai3b[lang] },
-    { icon: "euro", label: trans.freelance.ai4a[lang], result: trans.freelance.ai4b[lang] },
+    { icon: "list-checks", label: trans.freelance.ai4a[lang], result: trans.freelance.ai4b[lang] },
 ];
+
+// Currency formatting follows the locale: "1 200 €" in French, "€1,200" in
+// English, rather than a hardcoded string repeated in both translations.
+const priceFrom = STARTING_PRICE === null ? null : trans.freelance.price1from[lang].replace(
+    "{price}",
+    new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-GB", {
+        style: "currency",
+        currency: "EUR",
+        maximumFractionDigits: 0,
+    }).format(STARTING_PRICE),
+);
 
 const carePoints = [
     { icon: "accessibility", label: trans.freelance.care1a[lang], result: trans.freelance.care1b[lang] },
@@ -91,7 +109,7 @@ const carePoints = [
             <!-- stats -->
             <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-5 px-page pt-8 pb-18">
                 <StatCard value={trans.freelance.stat1num[lang]}>{trans.freelance.stat1[lang]}</StatCard>
-                <StatCard value={trans.freelance.stat2num[lang]}>{trans.freelance.stat2[lang]}</StatCard>
+                <StatCard value={`${freelanceProjects.length}`}>{trans.freelance.stat2[lang]}</StatCard>
                 <StatCard value={trans.freelance.stat3num[lang]}>{trans.freelance.stat3[lang]}</StatCard>
                 <StatCard value={`${totalProjects}`}>{trans.freelance.stat4[lang].replace("{year}", `${firstYear}`)}</StatCard>
             </section>
@@ -172,6 +190,28 @@ const carePoints = [
                     ))}
                 </div>
             </section>
+
+            <!-- budget anchor: placed after the proof (projects, reviews) and
+                 right before the ask, so the figure lands once the visitor is
+                 already convinced. Skipped entirely while STARTING_PRICE is null. -->
+            {priceFrom && (
+                <section class="px-page pb-20">
+                    <h2 class="text-2xl font-bold mb-7 text-heading">{trans.freelance.pricingtitle[lang]}</h2>
+                    <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5 max-w-215">
+                        <div class="surface-card py-7 px-7">
+                            <h3 class="text-lg font-bold text-heading m-0">{trans.freelance.price1label[lang]}</h3>
+                            <p class="font-display text-2xl font-bold text-accent mt-2">{priceFrom}</p>
+                            <p class="text-sm text-body mt-2.5">{trans.freelance.price1desc[lang]}</p>
+                        </div>
+                        <div class="surface-card py-7 px-7">
+                            <h3 class="text-lg font-bold text-heading m-0">{trans.freelance.price2label[lang]}</h3>
+                            <p class="font-display text-2xl font-bold text-accent mt-2">{trans.freelance.price2value[lang]}</p>
+                            <p class="text-sm text-body mt-2.5">{trans.freelance.price2desc[lang]}</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-muted mt-5 max-w-215">{trans.freelance.pricingnote[lang]}</p>
+                </section>
+            )}
 
             <!-- contact -->
             <section class="px-page pb-22">
