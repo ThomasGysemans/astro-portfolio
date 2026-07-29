@@ -131,7 +131,7 @@ const carePoints = [
             <!-- stats -->
             <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-5 px-page pt-8 pb-18">
                 <StatCard value={trans.freelance.stat1num[lang]}>{trans.freelance.stat1[lang]}</StatCard>
-                <StatCard value={`${freelanceProjects.length}`}>{trans.freelance.stat2[lang]}</StatCard>
+                <StatCard value={`+${freelanceProjects.length}`}>{trans.freelance.stat2[lang]}</StatCard>
                 <StatCard value={trans.freelance.stat3num[lang]}>{trans.freelance.stat3[lang]}</StatCard>
                 <StatCard value={`${totalProjects}`}>{trans.freelance.stat4[lang].replace("{year}", `${firstYear}`)}</StatCard>
             </section>

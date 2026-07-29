@@ -25,7 +25,10 @@ export const freelance = {
     "step3": text("En ligne, dans les délais, code & clés inclus.", "Live, on deadline, code & keys included."),
     "stat1num": text("A→Z"),
     "stat1": text("du design au déploiement", "design to deployment"),
-    "stat2": text("projets livrés pour des clients", "projects delivered for clients"),
+    "stat2": text(
+        "projets livrés pour des clients, certains ne sont pas publics",
+        "projects delivered for clients, some of them are not public",
+    ),
     "stat3num": text("48h"),
     "stat3": text("pour une première réponse et un devis gratuit", "to get a first reply and a free quote"),
     "stat4": text("projets au total, depuis {year}", "projects in total, since {year}"),
