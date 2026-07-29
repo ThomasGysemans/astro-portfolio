@@ -19,8 +19,13 @@ export const home = {
     "stat1": text("années de code en autodidacte, depuis mes 13 ans", "years of self-taught code, since age 13"),
     "stat2": text("projets (scolaires, personnels & clients)", "projects (school, personal & client work)"),
     "stat3": text("technologies, frameworks et outils variés que je maîtrise", "technologies, frameworks and various programming tools that I master"),
-    "stat4num": text("A→Z"),
-    "stat4": text("projets freelance créés de zéro et déployés", "freelance projects made from scratch and deployed"),
+    // The "A→Z" promise already lives in the h1 above; this card carries the
+    // guarantee instead — a verifiable commitment, and a number like the others.
+    "stat4num": text("1 an", "1 year"),
+    "stat4": text(
+        "de garantie : un bug après livraison est corrigé gratuitement",
+        "of guarantee: a bug after delivery is fixed free of charge",
+    ),
     "featuredprojects": text("Projet à la une", "Featured project"),
     "opentheshowcase": text("Ouvrir la vitrine →", "Open the showcase →"),
     "selectedprojects": text("Projets sélectionnés", "Selected projects"),
