@@ -1,0 +1,48 @@
+---
+// Presentation media of a project, as it appears on every card of the site:
+// the picture letterboxed over a blurred copy of itself, so a 4:3 or a
+// portrait thumbnail still fills the 16:9 frame without being cropped.
+//
+// When the project carries a `thumbVideo`, the picture becomes the video's
+// poster and the video plays in its place — muted, looping, and only while
+// the card is on screen (see `@lib/thumb-video`). The blurred backdrop stays
+// the still image: a second decoded video stream for a background nobody
+// looks at is not worth the frames.
+
+interface Props {
+    thumb: string;
+    video?: string;
+    alt: string;
+    // Extra classes for the frame (the compact and freelance cards differ).
+    class?: string;
+}
+
+const { thumb, video, alt, class: className } = Astro.props;
+---
+
+<div class:list={["relative aspect-video overflow-hidden", className]}>
+    <img src={thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+    {video ? (
+        <video
+            data-thumb-video
+            data-src={video}
+            poster={thumb}
+            muted
+            loop
+            playsinline
+            preload="none"
+            aria-label={alt}
+            class="relative w-full h-full object-contain"
+        ></video>
+    ) : (
+        <img src={thumb} alt={alt} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+    )}
+    <slot />
+</div>
+
+<script>
+    // Hoisted and bundled once per page by Astro, however many cards there are.
+    import { mountThumbVideos } from "@lib/thumb-video";
+
+    mountThumbVideos();
+</script>

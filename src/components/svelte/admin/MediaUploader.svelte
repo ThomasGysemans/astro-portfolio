@@ -1,12 +1,13 @@
 <script lang="ts">
-    // Media block of the project form: live thumbnail preview and a single
-    // ordered list mixing the already-uploaded pictures and the files staged
-    // for upload. The rows are reordered by drag & drop (or the keyboard) and
-    // each media carries its French/English caption. It is rendered inside
-    // the main project <form>: the `thumb`/`pictures` file inputs, the
-    // per-row `picture_order` hidden inputs and the `picture_alt_fr`/`_en`
-    // caption inputs are submitted with it, in the DOM order of the rows, so
-    // the server can rebuild the full display order and the captions map.
+    // Media block of the project form: live previews of the thumbnail and of
+    // its optional looping video, plus a single ordered list mixing the
+    // already-uploaded pictures and the files staged for upload. The rows are
+    // reordered by drag & drop (or the keyboard) and each media carries its
+    // French/English caption. It is rendered inside the main project <form>:
+    // the `thumb`/`thumb_video`/`pictures` file inputs, the per-row
+    // `picture_order` hidden inputs and the `picture_alt_fr`/`_en` caption
+    // inputs are submitted with it, in the DOM order of the rows, so the
+    // server can rebuild the full display order and the captions map.
     // A DataTransfer keeps the pictures input's FileList in sync with the
     // staged rows, so the admin can add files in several batches and drop
     // one before saving.
@@ -31,13 +32,18 @@
 
     interface Props {
         thumbUrl?: string;
+        thumbVideoUrl?: string;
         pictures: Picture[];
         isNew: boolean;
     }
 
-    const { thumbUrl, pictures, isNew }: Props = $props();
+    const { thumbUrl, thumbVideoUrl, pictures, isNew }: Props = $props();
 
     let thumbPreview = $state<string | null>(null);
+    let videoPreview = $state<string | null>(null);
+    // A file input can say "replace this file" but never "delete it": the
+    // video is optional, so removing it needs its own explicit checkbox.
+    let removeVideo = $state(false);
     let items = $state<Item[]>(pictures.map(p => ({
         key: `existing:${p.name}`,
         name: p.name,
@@ -56,6 +62,7 @@
     });
 
     let thumbInput: HTMLInputElement;
+    let videoInput: HTMLInputElement;
     let picturesInput: HTMLInputElement;
     // Accumulates the picks; its FileList is mirrored onto the input so the
     // form submits exactly what the rows show.
@@ -77,6 +84,20 @@
         thumbPreview = null;
         // Clear the file input so the form no longer submits the picked file.
         thumbInput.value = "";
+    }
+
+    function onVideoChange(event: Event): void {
+        const file = (event.currentTarget as HTMLInputElement).files?.[0];
+        if (videoPreview) URL.revokeObjectURL(videoPreview);
+        videoPreview = file ? URL.createObjectURL(file) : null;
+        // Uploading and deleting at once makes no sense; the upload wins.
+        if (videoPreview) removeVideo = false;
+    }
+
+    function clearVideo(): void {
+        if (videoPreview) URL.revokeObjectURL(videoPreview);
+        videoPreview = null;
+        videoInput.value = "";
     }
 
     function syncPicturesInput(): void {
@@ -196,6 +217,48 @@
             {/if}
         </div>
         <input id="thumb" name="thumb" type="file" accept="image/*" class="adm-file" required={isNew} bind:this={thumbInput} onchange={onThumbChange} />
+    </div>
+
+    <div>
+        <span class="adm-label">Vidéo de vignette (optionnelle)</span>
+        <p class="text-[12.5px] text-muted mb-2.5">
+            Jouée en boucle, sans son, à la place de la vignette sur les cartes du site (accueil, /projects, /freelance, showcase).
+            La vignette reste affichée pendant le chargement, pour les visiteurs qui ont désactivé les animations, et comme image de partage.
+        </p>
+        <div class={["flex items-start gap-3 flex-wrap mb-3", { hidden: !thumbVideoUrl && !videoPreview }]}>
+            {#if thumbVideoUrl}
+                <figure class="adm-media-card w-50" class:adm-media-removed={videoPreview || removeVideo}>
+                    <!-- svelte-ignore a11y_media_has_caption -->
+                    <video src={thumbVideoUrl} muted loop playsinline controls preload="metadata"></video>
+                    <figcaption class="text-[11.5px] text-muted">
+                        {videoPreview ? "Remplacée à l'enregistrement" : removeVideo ? "Supprimée à l'enregistrement" : "Vidéo actuelle"}
+                    </figcaption>
+                </figure>
+            {/if}
+            {#if videoPreview}
+                <figure class="adm-media-card w-50">
+                    <!-- svelte-ignore a11y_media_has_caption -->
+                    <video src={videoPreview} muted loop playsinline controls preload="metadata"></video>
+                    <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vidéo</figcaption>
+                    <button type="button" class="adm-btn-danger px-2! py-1! text-[11px]!" onclick={clearVideo}>✕ Retirer</button>
+                </figure>
+            {/if}
+        </div>
+        {#if thumbVideoUrl}
+            <label class="adm-check mb-2.5">
+                <input type="checkbox" name="thumb_video_remove" bind:checked={removeVideo} disabled={!!videoPreview} />
+                Supprimer la vidéo (revenir à la vignette fixe)
+            </label>
+        {/if}
+        <input
+            id="thumb_video"
+            name="thumb_video"
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime"
+            class="adm-file"
+            bind:this={videoInput}
+            onchange={onVideoChange}
+        />
     </div>
 
     <div>

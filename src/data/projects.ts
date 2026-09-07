@@ -46,6 +46,8 @@ function mapProject(record: RecordModel): Project {
         languages: record.languages,
         thumb: pb.files.getURL(record, record.thumb, { thumb: "800x0" }),
         thumbLarge: pb.files.getURL(record, record.thumb, { thumb: "1200x0" }),
+        // No thumb size on a video: PocketBase only resizes images.
+        thumbVideo: record.thumb_video ? pb.files.getURL(record, record.thumb_video) : undefined,
         pictures,
         github: record.github || undefined,
         link: record.link || undefined,

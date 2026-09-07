@@ -2,6 +2,7 @@
 import type { Project } from "@data/models";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { contextLabel } from "@data/categories";
+import ProjectThumb from "@components/ProjectThumb.astro";
 import trans from "@i18n";
 
 interface Props {
@@ -19,10 +20,7 @@ const context = contextLabel(project.context, lang);
 
 {variant === "compact" ? (
     <a {href} class="project-card block rounded-[13px] overflow-hidden border border-edge">
-        <div class="relative aspect-video overflow-hidden">
-            <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
-            <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
-        </div>
+        <ProjectThumb thumb={project.thumb} video={project.thumbVideo} alt={project.name[lang]} />
         <div class="flex justify-between items-center gap-2.5 bg-card-solid py-3.5 px-4.5">
             <div class="min-w-0">
                 <div class="text-lg font-bold text-heading truncate">{project.name[lang]}</div>
@@ -33,13 +31,11 @@ const context = contextLabel(project.context, lang);
     </a>
 ) : (
     <a {href} class="project-card flex flex-col rounded-[13px] overflow-hidden border border-edge">
-        <div class="relative aspect-video overflow-hidden">
-            <img src={project.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
-            <img src={project.thumb} alt={project.name[lang]} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+        <ProjectThumb thumb={project.thumb} video={project.thumbVideo} alt={project.name[lang]}>
             <span class="absolute top-2.5 right-2.5 bg-[rgba(3,15,32,.85)] border border-white/20 text-white text-xs font-bold py-1 px-2.5 rounded-md uppercase">
                 {context} · {project.year}
             </span>
-        </div>
+        </ProjectThumb>
         <div class="bg-card-solid py-5 px-5 flex flex-col gap-2.5 flex-1">
             <h3 class="text-lg font-bold m-0 text-heading">{project.name[lang]}</h3>
             <p class="text-sm text-body">{project.description[lang]}</p>

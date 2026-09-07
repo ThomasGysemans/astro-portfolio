@@ -12,6 +12,7 @@ const items = (await getFeaturedProjects()).map(p => ({
     tagline: p.tagline[lang],
     desc: p.description[lang],
     thumb: p.thumb,
+    thumbVideo: p.thumbVideo,
     href: getRelativeLocaleUrl(lang, `/projects/${p.slug}`),
     techs: p.techs.map(t => t.name),
 }));

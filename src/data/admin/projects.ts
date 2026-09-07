@@ -53,6 +53,7 @@ export type AdminPicture = {
 export type ProjectFormState = {
     values: ProjectFormValues,
     thumbUrl?: string,
+    thumbVideoUrl?: string,
     pictures: AdminPicture[],
     techs: AdminTechRow[],
     availableTechs: { id: string, name: string }[],
@@ -318,6 +319,7 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
             captionEn: en?.caption ?? "",
         },
         thumbUrl: pb.files.getURL(record, record.thumb, { thumb: "800x0" }),
+        thumbVideoUrl: record.thumb_video ? pb.files.getURL(record, record.thumb_video) : undefined,
         pictures: ((record.pictures as string[] | undefined) ?? []).map(name => ({
             name,
             url: pb.files.getURL(record, name),
@@ -365,6 +367,7 @@ export async function handleProjectPost(pb: PocketBase, request: Request, id?: s
 
             const payload = projectPayload(values);
             const thumb = file(data, "thumb");
+            const thumbVideo = file(data, "thumb_video");
             const newPictures = files(data, "pictures");
             const order = parsePictureOrder(data);
 
@@ -373,6 +376,7 @@ export async function handleProjectPost(pb: PocketBase, request: Request, id?: s
                     return { error: "La vignette (thumb) est requise pour créer un projet.", values };
                 }
                 payload.thumb = thumb;
+                if (thumbVideo) payload.thumb_video = thumbVideo;
                 // `pictures` is required by the collection: default to the thumb.
                 payload.pictures = newPictures.length > 0 ? newPictures : [thumb];
                 const record = await pb.collection("projects").create(payload);
@@ -401,6 +405,11 @@ export async function handleProjectPost(pb: PocketBase, request: Request, id?: s
             }
 
             if (thumb) payload.thumb = thumb;
+            // An upload replaces the video; the checkbox alone clears it (the
+            // PocketBase SDK sends `null` as an empty value, which deletes the
+            // stored file and puts the project back on its still thumbnail).
+            if (thumbVideo) payload.thumb_video = thumbVideo;
+            else if (data.has("thumb_video_remove")) payload.thumb_video = null;
             if (newPictures.length > 0) payload["pictures+"] = newPictures;
 
             const record = await pb.collection("projects").update(id, payload);

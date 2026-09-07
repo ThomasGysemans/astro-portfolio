@@ -61,6 +61,10 @@ export type Project = {
     languages: App.LangCode[], // languages supported by the project itself
     thumb: string, // presentation picture URL, ~800px wide (cards)
     thumbLarge: string, // presentation picture URL, ~1200px wide (detail page)
+    // Optional looping muted video played in place of the presentation
+    // picture. `thumb` stays its poster, its reduced-motion fallback and the
+    // social-share image, so this one is purely decorative.
+    thumbVideo?: string,
     pictures: ProjectPicture[], // the `pictures` files (images and videos), in display order, with their captions
     github?: string,
     link?: string,

@@ -33,6 +33,11 @@ function replayMigrations(): Map<string, Collection> {
                 if (existing === -1) fields.splice(index, 0, field);
                 else fields[existing] = field;
             },
+            // `add` is `addAt` at the end of the list (what the dashboard
+            // writes when a field is appended rather than inserted).
+            add(field: Field) {
+                this.addAt(fields.length, field);
+            },
             removeById(id: string) {
                 const index = fields.findIndex(f => f.id === id);
                 if (index !== -1) fields.splice(index, 1);

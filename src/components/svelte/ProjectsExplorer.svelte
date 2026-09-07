@@ -2,6 +2,7 @@
     // Interactive explorer of the projects page: category pills, search,
     // year sorting, technology filter and the tech skills section.
     // It is server-rendered by Astro with the default state, then hydrated.
+    import ProjectThumb from "./ProjectThumb.svelte";
 
     type ExplorerProject = {
         slug: string,
@@ -11,6 +12,7 @@
         date: string,
         desc: string,
         thumb: string,
+        thumbVideo?: string,
         categories: string[],
         featured: boolean,
         // true when the project was built alone: picks the single/multiple
@@ -192,10 +194,7 @@
 <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5 px-page mt-6 pb-6">
     {#each filtered as p (p.slug)}
         <article class="explorer-card relative rounded-[13px] overflow-hidden border border-edge flex flex-col">
-            <div class="relative aspect-video overflow-hidden">
-                <img src={p.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
-                <img src={p.thumb} alt={p.name} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
-            </div>
+            <ProjectThumb thumb={p.thumb} video={p.thumbVideo} alt={p.name} />
             <div class="bg-card-solid pt-3.75 px-4.25 pb-3.25 flex flex-col gap-2.25 flex-1">
                 <div class="flex justify-between items-baseline gap-2">
                     <h3 class="m-0"><a href={p.href} class="card-link text-lg font-bold text-heading">{p.name}</a></h3>

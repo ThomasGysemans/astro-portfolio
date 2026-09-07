@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { id, state, notice, error } = Astro.props;
-const { values, thumbUrl, pictures, techs, availableTechs } = state;
+const { values, thumbUrl, thumbVideoUrl, pictures, techs, availableTechs } = state;
 const isNew = !id;
 const title = isNew ? "Nouveau projet" : `Projet : ${values.name || values.slug}`;
 
@@ -133,7 +133,7 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
 
         <section class="adm-card">
             <h2 class="text-[16px] font-bold text-heading mb-4">Médias</h2>
-            <MediaUploader {thumbUrl} {pictures} {isNew} client:load />
+            <MediaUploader {thumbUrl} {thumbVideoUrl} {pictures} {isNew} client:load />
         </section>
 
         <section class="adm-card">
