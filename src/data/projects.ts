@@ -106,3 +106,20 @@ export async function getAdjacentProjects(slug: string): Promise<{ prev?: Projec
 export function countProjectsUsing(projects: Project[], tech: string): number {
     return projects.filter(p => p.techs.some(t => t.name === tech)).length;
 }
+
+// The years a visitor actually reads live in `date` (a free string, e.g.
+// "2023" or "2018 → 2025"); `year` is only the sorting key, so a project
+// still maintained today carries a recent `year` next to a much older
+// `date`. The range shown above the list must follow the cards, hence every
+// 4-digit year found in `date`, with `year` as the fallback when it holds
+// no year at all. Undefined when there is nothing to derive a range from.
+export function projectsYearRange(projects: Project[]): { from: number, to: number } | undefined {
+    const years = projects
+        .flatMap(p => {
+            const found = (p.date?.match(/\d{4}/g) ?? []).map(Number);
+            return found.length > 0 ? found : [p.year];
+        })
+        .filter(y => Number.isFinite(y));
+    if (years.length === 0) return undefined;
+    return { from: Math.min(...years), to: Math.max(...years) };
+}

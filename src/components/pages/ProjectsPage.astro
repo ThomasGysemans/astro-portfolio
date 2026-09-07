@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getAllProjects, countProjectsUsing } from "@data/projects";
+import { getAllProjects, countProjectsUsing, projectsYearRange } from "@data/projects";
 import { getTechnologies, GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
 import { CATEGORIES, categoryMeta, contextLabel } from "@data/categories";
 import ProjectsExplorer from "@components/svelte/ProjectsExplorer.svelte";
@@ -104,12 +104,12 @@ const initialQuery = searchParams.get("q") ?? "";
 
 // The year range follows the actual projects instead of a hardcoded copy
 // (computed from the already-loaded list, so it never goes stale).
-const years = projects.map(p => p.year);
 const currentYear = new Date().getFullYear();
+const range = projectsYearRange(projects) ?? { from: currentYear, to: currentYear };
 const subtitle = trans.projects.subtitle[lang]
     .replace("{count}", `${projects.length}`)
-    .replace("{from}", `${years.length > 0 ? Math.min(...years) : currentYear}`)
-    .replace("{to}", `${years.length > 0 ? Math.max(...years) : currentYear}`);
+    .replace("{from}", `${range.from}`)
+    .replace("{to}", `${range.to}`);
 
 // The heading follows the active filter pill (rendered inside the island so
 // it updates live; the SSR output already matches the ?filter= of the URL).
