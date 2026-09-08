@@ -1,12 +1,17 @@
 <script lang="ts">
-    // Carousel of the homepage: it cycles through the pictures (images and
-    // videos) of a single project, the one flagged as `carousel` in the
-    // back-office — not through several projects.
+    // Carousel of the homepage: it cycles through the media (images, uploaded
+    // videos and YouTube links) of a single project, the one flagged as
+    // `carousel` in the back-office — not through several projects.
     import { onDestroy, onMount } from "svelte";
 
     type Media = {
         src: string,
-        video: boolean,
+        kind: "image" | "video" | "youtube",
+        // YouTube only: the still shown until the visitor presses play, the
+        // still to fall back on when it does not exist, and the player URL.
+        poster?: string,
+        posterFallback?: string,
+        embedUrl?: string,
     };
 
     type ProjectInfo = {
@@ -23,6 +28,7 @@
         gotoPicture: string,
         pause: string,
         resume: string,
+        playVideo: string,
     };
 
     let { project, media, labels }: {
@@ -38,6 +44,10 @@
     let timer: ReturnType<typeof setInterval> | undefined;
     let videos = $state<(HTMLVideoElement | undefined)[]>([]);
     let portrait = $state<boolean[]>([]);
+    // Index of the YouTube slide whose player has been mounted, if any: only
+    // one at a time, and only after an explicit click — an iframe per slide
+    // would download a full player for every picture of the project.
+    let playingEmbed = $state<number | null>(null);
 
     // A portrait media (e.g. a mobile screenshot) cannot fill the wide frame
     // without being cropped beyond recognition, so it is displayed whole
@@ -57,6 +67,20 @@
         return { destroy: () => node.removeEventListener(event, measure) };
     }
 
+    // `maxresdefault` 404s for videos that were never uploaded in HD; swap in
+    // the always-present `hqdefault` rather than showing a broken slide.
+    function onPosterError(event: Event, item: Media) {
+        const img = event.currentTarget as HTMLImageElement;
+        if (item.posterFallback && img.src !== item.posterFallback) img.src = item.posterFallback;
+    }
+
+    // Playing a YouTube slide freezes the slideshow: at 5s per slide the video
+    // would otherwise scroll out of view before it even started.
+    function playEmbed(i: number) {
+        playingEmbed = i;
+        paused = true;
+    }
+
     function startTimer() {
         clearInterval(timer);
         if (media.length > 1) {
@@ -73,6 +97,12 @@
         index = (i + media.length) % media.length;
         startTimer();
     }
+
+    // Leaving a YouTube slide unmounts its player: an iframe kept alive
+    // off-screen goes on playing its sound behind the next picture.
+    $effect(() => {
+        if (playingEmbed !== null && playingEmbed !== index) playingEmbed = null;
+    });
 
     // The visible video plays only while the carousel is running; pausing the
     // slideshow (manually or via reduced-motion) freezes it in place, and the
@@ -103,11 +133,13 @@
 <div class="relative rounded-2xl overflow-hidden border border-edge shadow-[0_24px_70px_rgba(2,8,18,.35)]" role="region" aria-roledescription="carousel" aria-label={project.name}>
     <div class="relative aspect-4/3 md:aspect-video lg:aspect-2/1 bg-[#04101f]">
         {#each media as item, i (item.src)}
+            <!-- The slides are stacked: the hidden ones must not intercept the
+                 clicks aimed at the visible one (YouTube play button). -->
             <div
-                class="absolute inset-0 transition-opacity duration-450 {i === index ? 'opacity-100' : 'opacity-0'}"
+                class="absolute inset-0 transition-opacity duration-450 {i === index ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
                 aria-hidden={i === index ? "false" : "true"}
             >
-                {#if portrait[i] && !item.video}
+                {#if portrait[i] && item.kind === "image"}
                     <!-- Blurred copy filling the sides left empty by a portrait picture. -->
                     <img
                         src={item.src}
@@ -118,7 +150,44 @@
                         class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-60"
                     />
                 {/if}
-                {#if item.video}
+                {#if item.kind === "youtube"}
+                    {#if playingEmbed === i}
+                        <iframe
+                            src={item.embedUrl}
+                            title={project.caption}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen
+                            class="absolute inset-0 w-full h-full border-0"
+                        ></iframe>
+                    {:else}
+                        <!-- A still until the visitor asks for the player: the
+                             whole slide is the play button. -->
+                        <button
+                            type="button"
+                            aria-label={labels.playVideo}
+                            tabindex={i === index ? 0 : -1}
+                            onclick={() => playEmbed(i)}
+                            class="group absolute inset-0 w-full h-full"
+                        >
+                            <img
+                                src={item.poster}
+                                alt={i === index ? project.caption : ""}
+                                loading={i === 0 ? "eager" : "lazy"}
+                                decoding="async"
+                                onerror={event => onPosterError(event, item)}
+                                class="absolute inset-0 w-full h-full object-cover"
+                            />
+                            <span class="absolute inset-0 flex items-center justify-center" aria-hidden="true">
+                                <span class="w-16 h-11 rounded-xl bg-[rgba(3,15,32,.72)] border border-white/25 flex items-center justify-center text-white transition group-hover:bg-[#ff0033] group-hover:border-transparent group-hover:scale-110">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                        <path d="M5 4.5a1 1 0 0 1 1.5-.87l12 7.5a1 1 0 0 1 0 1.74l-12 7.5A1 1 0 0 1 5 19.5z" />
+                                    </svg>
+                                </span>
+                            </span>
+                        </button>
+                    {/if}
+                {:else if item.kind === "video"}
                     <video
                         bind:this={videos[i]}
                         use:detectOrientation={i}

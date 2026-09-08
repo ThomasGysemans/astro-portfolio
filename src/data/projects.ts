@@ -1,6 +1,7 @@
 import type { RecordModel } from "pocketbase";
 import type { Localized, Project, ProjectPicture, ProjectTech } from "./models";
 import { cached, pb } from "./pb";
+import { mediaKind, mergeMedia, parseEmbeds, youtubeId } from "./media";
 
 const EXPAND = "project_translations_via_project,project_techs_via_project.technology";
 
@@ -22,14 +23,25 @@ function mapProject(record: RecordModel): Project {
     }));
     const text = (key: string) => localize(translations, key);
 
-    // Per-picture captions written by the back-office, keyed by filename.
+    // Per-picture captions written by the back-office, keyed by the stored
+    // filename for an upload and by the link itself for a YouTube embed.
     const captions = (record.picture_captions ?? {}) as Record<string, { fr?: string, en?: string }>;
-    const pictures: ProjectPicture[] = ((record.pictures as string[] | undefined) ?? []).map(name => {
-        const fr = captions[name]?.fr ?? "";
+    // The media list has two storages (the `pictures` files and the
+    // `picture_embeds` links) but one display order: rebuild it here so every
+    // page consumes a single, already-ordered array.
+    const slots = mergeMedia((record.pictures as string[] | undefined) ?? [], parseEmbeds(record.picture_embeds));
+    const pictures: ProjectPicture[] = slots.map(slot => {
+        const fr = captions[slot.name]?.fr ?? "";
+        const caption = { fr, en: captions[slot.name]?.en || fr };
+        if (slot.youtube) {
+            // Non-null: `parseEmbeds` only keeps the links that parse.
+            return { url: slot.name, kind: "youtube" as const, youtubeId: youtubeId(slot.name)!, caption };
+        }
         return {
             // No thumb sizes are declared on `pictures` (it also holds videos): full-size URLs.
-            url: pb.files.getURL(record, name),
-            caption: { fr, en: captions[name]?.en || fr },
+            url: pb.files.getURL(record, slot.name),
+            kind: mediaKind(slot.name),
+            caption,
         };
     });
 

@@ -9,7 +9,7 @@ import ProjectCard from "@components/ProjectCard.astro";
 import StatCard from "@components/StatCard.astro";
 import MainLayout from "@layouts/MainLayout.astro";
 import Earth from "@components/svelte/Earth.svelte";
-import { isVideo } from "@data/media";
+import { youtubeEmbedUrl, youtubeThumbnail } from "@data/media";
 import trans from "@i18n";
 
 const lang = Astro.locals.lang;
@@ -29,7 +29,17 @@ const showcaseUrl = getRelativeLocaleUrl(lang, "/showcase");
 const freelanceUrl = getRelativeLocaleUrl(lang, "/freelance");
 
 // The carousel explores the pictures of a single project (picked in the back-office).
-const carouselMedia = (carouselProject?.pictures ?? []).map(({ url }) => ({ src: url, video: isVideo(url) }));
+// A YouTube slide ships as a still plus the URLs the island needs to swap in
+// the player on demand: mounting an iframe per slide would load a full player
+// for every picture of the project.
+const carouselMedia = (carouselProject?.pictures ?? []).map(picture => ({
+    src: picture.url,
+    kind: picture.kind,
+    poster: picture.youtubeId ? youtubeThumbnail(picture.youtubeId) : undefined,
+    // `maxresdefault` only exists for videos uploaded in HD.
+    posterFallback: picture.youtubeId ? youtubeThumbnail(picture.youtubeId, true) : undefined,
+    embedUrl: picture.youtubeId ? youtubeEmbedUrl(picture.youtubeId, true) : undefined,
+}));
 const carouselInfo = carouselProject && {
     name: carouselProject.name[lang],
     tagline: carouselProject.tagline[lang],
@@ -44,6 +54,7 @@ const carouselLabels = {
     gotoPicture: trans.carousel.gotopicture[lang],
     pause: trans.carousel.pause[lang],
     resume: trans.carousel.resume[lang],
+    playVideo: trans.carousel.playvideo[lang],
 };
 
 const roleChips = [

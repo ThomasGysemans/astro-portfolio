@@ -6,4 +6,5 @@ export const carousel = {
     "gotopicture": text("Aller à l'image", "Go to picture"),
     "pause": text("Mettre le défilement en pause", "Pause automatic slideshow"),
     "resume": text("Reprendre le défilement", "Resume automatic slideshow"),
+    "playvideo": text("Lire la vidéo YouTube", "Play the YouTube video"),
 } satisfies Record<string, Localized>;

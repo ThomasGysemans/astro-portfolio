@@ -1,29 +1,32 @@
 <script lang="ts">
     // Media block of the project form: live previews of the thumbnail and of
     // its optional looping video, plus a single ordered list mixing the
-    // already-uploaded pictures and the files staged for upload. The rows are
-    // reordered by drag & drop (or the keyboard) and each media carries its
-    // French/English caption. It is rendered inside the main project <form>:
-    // the `thumb`/`thumb_video`/`pictures` file inputs, the per-row
-    // `picture_order` hidden inputs and the `picture_alt_fr`/`_en` caption
-    // inputs are submitted with it, in the DOM order of the rows, so the
-    // server can rebuild the full display order and the captions map.
+    // already-uploaded pictures, the files staged for upload and the YouTube
+    // links. The rows are reordered by drag & drop (or the keyboard) and each
+    // media carries its French/English caption. It is rendered inside the main
+    // project <form>: the `thumb`/`thumb_video`/`pictures` file inputs, the
+    // per-row `picture_order` hidden inputs and the `picture_alt_fr`/`_en`
+    // caption inputs are submitted with it, in the DOM order of the rows, so
+    // the server can rebuild the full display order and the captions map.
     // A DataTransfer keeps the pictures input's FileList in sync with the
     // staged rows, so the admin can add files in several batches and drop
     // one before saving.
     import { flip } from "svelte/animate";
     import { tick } from "svelte";
-    import { isVideo } from "@data/media";
+    import { isVideo, youtubeId, youtubeThumbnail } from "@data/media";
 
-    type Picture = { name: string; url: string; captionFr: string; captionEn: string };
+    type Picture = { name: string; url: string; youtube: boolean; captionFr: string; captionEn: string };
 
-    // One row of the media list: an already-uploaded file (`name` set) or a
-    // staged upload (`file` set). Removed existing rows stay visible (grayed
-    // out) with their inputs disabled so they are not submitted.
+    // One row of the media list: an already-uploaded file (`name` set), a
+    // staged upload (`file` set) or a YouTube link (`youtube`, `name` being
+    // the link itself). Removed existing files stay visible (grayed out) with
+    // their inputs disabled so they are not submitted; a link, which destroys
+    // nothing on the server, simply disappears.
     type Item = {
         key: string;
         name?: string;
         file?: File;
+        youtube?: boolean;
         url: string;
         removed: boolean;
         captionFr: string;
@@ -45,21 +48,29 @@
     // video is optional, so removing it needs its own explicit checkbox.
     let removeVideo = $state(false);
     let items = $state<Item[]>(pictures.map(p => ({
-        key: `existing:${p.name}`,
+        key: `${p.youtube ? "youtube" : "existing"}:${p.name}`,
         name: p.name,
+        youtube: p.youtube,
         url: p.url,
         removed: false,
         captionFr: p.captionFr,
         captionEn: p.captionEn,
     })));
 
-    // `existing:<filename>` or `new:<index in the pictures FileList>`; the
-    // file indexes follow the rows order because the FileList is rebuilt by
-    // iterating the same array.
+    // `existing:<filename>`, `new:<index in the pictures FileList>` or
+    // `youtube:<link>`; the file indexes follow the rows order because the
+    // FileList is rebuilt by iterating the same array.
     let tokens = $derived.by(() => {
         let fileIndex = 0;
-        return items.map(item => item.file ? `new:${fileIndex++}` : `existing:${item.name}`);
+        return items.map(item => {
+            if (item.youtube) return `youtube:${item.name}`;
+            return item.file ? `new:${fileIndex++}` : `existing:${item.name}`;
+        });
     });
+
+    // The link being typed in the "add a YouTube video" field.
+    let youtubeUrl = $state("");
+    let youtubeError = $state("");
 
     let thumbInput: HTMLInputElement;
     let videoInput: HTMLInputElement;
@@ -131,9 +142,47 @@
         syncPicturesInput();
     }
 
+    // A YouTube link is not a file: it is stored in its own column, so it
+    // never goes through the `pictures` input — only through a row (and its
+    // `youtube:` token). `youtubeId` is the same validator the server runs.
+    function addYouTube(): void {
+        const url = youtubeUrl.trim();
+        if (!url) return;
+        if (!youtubeId(url)) {
+            youtubeError = "Lien YouTube non reconnu (ex. https://youtu.be/0IFQUaUi2pw).";
+            return;
+        }
+        if (items.some(item => item.youtube && item.name === url)) {
+            youtubeError = "Cette vidéo est déjà dans la liste.";
+            return;
+        }
+        items.push({
+            key: `youtube:${url}`,
+            name: url,
+            youtube: true,
+            url,
+            removed: false,
+            captionFr: "",
+            captionEn: "",
+        });
+        youtubeUrl = "";
+        youtubeError = "";
+    }
+
+    // Inside the project <form>, Enter would submit the whole thing: in this
+    // field it means "add this link".
+    function onYouTubeKey(event: KeyboardEvent): void {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        addYouTube();
+    }
+
     function removeItem(i: number): void {
         const item = items[i];
-        if (item.file) {
+        if (item.youtube) {
+            // Nothing is stored server-side for a link: drop the row outright.
+            items.splice(i, 1);
+        } else if (item.file) {
             // Staged rows just disappear (and leave the FileList).
             URL.revokeObjectURL(item.url);
             items.splice(i, 1);
@@ -291,15 +340,20 @@
                             ondragend={() => (dragIndex = null)}
                             onkeydown={e => handleKey(e, i)}
                         >⠿</span>
-                        <div class="media-preview self-center shrink-0">
-                            {#if item.file ? item.file.type.startsWith("video/") : isVideo(item.name ?? "")}
+                        <div class="media-preview self-center shrink-0 relative">
+                            {#if item.youtube}
+                                <img src={youtubeThumbnail(youtubeId(item.url) ?? "", true)} alt={rowLabel(item)} loading="lazy" />
+                                <span class="yt-badge" aria-hidden="true">&#9654;</span>
+                            {:else if item.file ? item.file.type.startsWith("video/") : isVideo(item.name ?? "")}
                                 <video src={item.url} muted playsinline preload="metadata"></video>
                             {:else}
                                 <img src={item.url} alt={rowLabel(item)} loading="lazy" />
                             {/if}
                         </div>
                         <div class="flex flex-col gap-1.5 flex-1 min-w-50">
-                            {#if item.name}
+                            {#if item.youtube}
+                                <a href={item.url} target="_blank" rel="noopener" class="text-[11.5px] text-accent hover:underline truncate">YouTube : {item.name}</a>
+                            {:else if item.name}
                                 <a href={item.url} target="_blank" rel="noopener" class="text-[11.5px] text-accent hover:underline truncate">{item.name}</a>
                             {:else}
                                 <span class="text-[11.5px] font-bold text-accent truncate">Nouveau : {item.file?.name}</span>
@@ -352,6 +406,27 @@
             bind:this={picturesInput}
             onchange={onPicturesChange}
         />
+
+        <label for="youtube_url" class="text-[12.5px] text-muted block mt-4 mb-1.5">
+            Ou ajouter une vid&eacute;o YouTube (elle s'ins&egrave;re dans la liste ci-dessus et se r&eacute;ordonne comme les autres m&eacute;dias) :
+        </label>
+        <div class="flex gap-2 flex-wrap">
+            <input
+                id="youtube_url"
+                type="url"
+                inputmode="url"
+                class="adm-input flex-1 min-w-60"
+                placeholder="https://youtu.be/0IFQUaUi2pw"
+                aria-describedby="youtube_help"
+                bind:value={youtubeUrl}
+                oninput={() => (youtubeError = "")}
+                onkeydown={onYouTubeKey}
+            />
+            <button type="button" class="adm-btn-outline" onclick={addYouTube}>+ Ajouter la vid&eacute;o</button>
+        </div>
+        <p id="youtube_help" class="text-[12px] mt-1.5 {youtubeError ? 'text-[#f27b81]' : 'text-muted'}">
+            {youtubeError || "Le lien n'est pas un fichier : il ne compte pas dans la limite de 10 fichiers. Le projet doit toutefois garder au moins une image ou vidéo importée."}
+        </p>
     </div>
 </div>
 
@@ -396,6 +471,20 @@
     li.media-removed .media-preview img,
     li.media-removed .media-preview video {
         filter: grayscale(1);
+    }
+
+    /* Marks a row as a YouTube link rather than an uploaded still. */
+    .yt-badge {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        color: #fff;
+        background: rgba(3, 15, 32, 0.45);
+        border-radius: 0.5rem;
+        pointer-events: none;
     }
 
     .media-preview img,

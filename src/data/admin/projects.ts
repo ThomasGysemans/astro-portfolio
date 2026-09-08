@@ -3,6 +3,7 @@
 import type PocketBase from "pocketbase";
 import type { RecordModel } from "pocketbase";
 import { invalidateCache } from "@data/pb";
+import { type MediaEmbed, mergeMedia, parseEmbeds, youtubeId } from "@data/media";
 import { file, files, pbErrorMessage, text } from "./forms";
 
 // Everything is kept as strings (except the checkboxes) so the values can
@@ -43,9 +44,13 @@ export type AdminTechRow = {
     role: string,
 };
 
+// One row of the media editor. `name` is the key the row is addressed by, on
+// both sides: the stored filename for an upload, the link itself for a
+// YouTube embed (which is also how its caption is keyed).
 export type AdminPicture = {
     name: string,
     url: string,
+    youtube: boolean,
     captionFr: string,
     captionEn: string,
 };
@@ -157,8 +162,9 @@ function pictureCaptions(record: RecordModel): PictureCaptions {
 }
 
 // The media list of the form submits one `picture_order` token per kept
-// media (`existing:<filename>` or `new:<index into the uploaded files>`),
-// aligned with the `picture_alt_fr`/`picture_alt_en` caption inputs.
+// media (`existing:<filename>`, `new:<index into the uploaded files>` or
+// `youtube:<link>`), aligned with the `picture_alt_fr`/`picture_alt_en`
+// caption inputs.
 type PictureOrder = {
     tokens: string[],
     captionsFr: string[],
@@ -176,29 +182,58 @@ function parsePictureOrder(data: FormData): PictureOrder | undefined {
     };
 }
 
-// Applies the submitted order and captions to the record's pictures.
+// True when the submitted order keeps at least one uploaded file. A YouTube
+// link cannot stand in for one: `pictures` is a required file field, so a
+// project whose media list holds nothing but embeds cannot be stored.
+function keepsAFile(order: PictureOrder): boolean {
+    return order.tokens.some(token => !token.startsWith("youtube:"));
+}
+
+// Applies the submitted order and captions to the record's media.
 // The files uploaded in this save were appended at the end of the field,
 // in submission order: resolve the `new:<i>` tokens against that tail,
 // then rewrite the full filename list (PocketBase reorders the kept files
 // and deletes the omitted ones) along with the captions map.
+//
+// The YouTube links go to their own column, since a file field cannot hold a
+// URL — but they share the one display order the admin sees: an embed records
+// the index it occupies in the merged list, which is simply how many media
+// were kept before it. Both columns are written in the same update, so they
+// can never drift apart.
 async function applyPictureOrder(pb: PocketBase, recordId: string, stored: string[], uploadedCount: number, order: PictureOrder): Promise<void> {
     const appended = uploadedCount > 0 ? stored.slice(stored.length - uploadedCount) : [];
     const desired: string[] = [];
+    const embeds: MediaEmbed[] = [];
     const captions: PictureCaptions = {};
     order.tokens.forEach((token, i) => {
-        const name = token.startsWith("new:")
-            ? appended[Number(token.slice("new:".length))]
-            : token.slice("existing:".length);
-        if (!name || !stored.includes(name) || desired.includes(name)) return;
-        desired.push(name);
+        // The key a caption is stored under: the filename, or the link.
+        let key: string;
+        if (token.startsWith("youtube:")) {
+            const url = token.slice("youtube:".length).trim();
+            if (!youtubeId(url) || embeds.some(embed => embed.url === url)) return;
+            embeds.push({ url, position: desired.length + embeds.length });
+            key = url;
+        } else {
+            const name = token.startsWith("new:")
+                ? appended[Number(token.slice("new:".length))]
+                : token.slice("existing:".length);
+            if (!name || !stored.includes(name) || desired.includes(name)) return;
+            desired.push(name);
+            key = name;
+        }
         const fr = order.captionsFr[i]?.trim() ?? "";
         const en = order.captionsEn[i]?.trim() ?? "";
-        if (fr || en) captions[name] = { fr, en };
+        if (fr || en) captions[key] = { fr, en };
     });
     // `pictures` is required: never wipe it entirely from here (the POST
-    // handler rejects a fully emptied list before writing anything).
+    // handler rejects a fully emptied list before writing anything). The
+    // embeds keep their positions, so the kept files land after them.
     if (desired.length === 0) desired.push(...stored);
-    await pb.collection("projects").update(recordId, { pictures: desired, picture_captions: captions });
+    await pb.collection("projects").update(recordId, {
+        pictures: desired,
+        picture_embeds: embeds,
+        picture_captions: captions,
+    });
 }
 
 // Only one project may fill the homepage carousel: flagging one unflags the others.
@@ -320,12 +355,15 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
         },
         thumbUrl: pb.files.getURL(record, record.thumb, { thumb: "800x0" }),
         thumbVideoUrl: record.thumb_video ? pb.files.getURL(record, record.thumb_video) : undefined,
-        pictures: ((record.pictures as string[] | undefined) ?? []).map(name => ({
-            name,
-            url: pb.files.getURL(record, name),
-            captionFr: pictureCaptions(record)[name]?.fr ?? "",
-            captionEn: pictureCaptions(record)[name]?.en ?? "",
-        })),
+        // Same merge as the public site, so the editor shows the real order.
+        pictures: mergeMedia((record.pictures as string[] | undefined) ?? [], parseEmbeds(record.picture_embeds))
+            .map(slot => ({
+                name: slot.name,
+                url: slot.youtube ? slot.name : pb.files.getURL(record, slot.name),
+                youtube: slot.youtube,
+                captionFr: pictureCaptions(record)[slot.name]?.fr ?? "",
+                captionEn: pictureCaptions(record)[slot.name]?.en ?? "",
+            })),
         techs,
         availableTechs: allTechs.filter(t => !usedTechIds.has(t.id)),
     };
@@ -400,8 +438,9 @@ export async function handleProjectPost(pb: PocketBase, request: Request, id?: s
 
             // An emptied media list would leave the project without any
             // picture, which the collection forbids: reject before writing.
-            if (order && order.tokens.length === 0 && newPictures.length === 0) {
-                return { error: "Le projet doit garder au moins une image ou vidéo.", values };
+            // YouTube links do not count — they live in another column.
+            if (order && !keepsAFile(order) && newPictures.length === 0) {
+                return { error: "Le projet doit garder au moins une image ou vidéo importée : un lien YouTube ne peut pas être son seul média.", values };
             }
 
             if (thumb) payload.thumb = thumb;

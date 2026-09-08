@@ -6,7 +6,7 @@ import { getAdjacentProjects } from "@data/projects";
 import { categoryMeta, contextLabel, techRoleLabel } from "@data/categories";
 import MainLayout from "@layouts/MainLayout.astro";
 import ImageLightbox from "@components/svelte/ImageLightbox.svelte";
-import { isVideo } from "@data/media";
+import { youtubeEmbedUrl } from "@data/media";
 import trans from "@i18n";
 
 interface Props {
@@ -30,24 +30,25 @@ const chips = [
     teamLabel,
     languagesLabel,
 ];
-// The gallery shows every picture of the project, each with its own
-// caption (also used as the alt text); pictures without one fall back
+// The gallery shows every media of the project, each with its own
+// caption (also used as the alt text); media without one fall back
 // to the project's legacy thumbnail caption.
-// Images (not videos, which have their own controls) are clickable and open
-// the fullscreen viewer; `lightboxIndex` is their position in the images-only
-// list handed to the island — that is the contract between the two.
+// Only the images are clickable and open the fullscreen viewer — the uploaded
+// videos and the YouTube embeds have their own controls; `lightboxIndex` is
+// their position in the images-only list handed to the island — that is the
+// contract between the two.
 let lightboxIndex = 0;
-const gallery = project.pictures.map(picture => {
-    const video = isVideo(picture.url);
-    return {
-        url: picture.url,
-        video,
-        lightboxIndex: video ? null : lightboxIndex++,
-        caption: picture.caption[lang] || project.caption[lang],
-    };
-});
+const gallery = project.pictures.map(picture => ({
+    url: picture.url,
+    kind: picture.kind,
+    // The player URL is built server-side: `youtubeId` was already resolved
+    // when the record was mapped.
+    embedUrl: picture.youtubeId ? youtubeEmbedUrl(picture.youtubeId) : undefined,
+    lightboxIndex: picture.kind === "image" ? lightboxIndex++ : null,
+    caption: picture.caption[lang] || project.caption[lang],
+}));
 const zoomablePictures = gallery
-    .filter(media => !media.video)
+    .filter(media => media.kind === "image")
     .map(media => ({ src: media.url, caption: media.caption }));
 const detailRows = [
     { label: trans.detail.year[lang], value: project.date },
@@ -93,7 +94,17 @@ const detailRows = [
                 </section>
                 {gallery.map(media => (
                     <figure class="surface-card overflow-hidden">
-                        {media.video ? (
+                        {media.kind === "youtube" ? (
+                            <iframe
+                                src={media.embedUrl}
+                                title={media.caption}
+                                loading="lazy"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen
+                                class="w-full aspect-video border-0 bg-[#04101f]"
+                            />
+                        ) : media.kind === "video" ? (
                             <video src={media.url} controls muted playsinline preload="metadata" aria-label={media.caption} class="w-full aspect-video object-contain bg-[#04101f]" />
                         ) : (
                             <a
@@ -110,7 +121,7 @@ const detailRows = [
                             </a>
                         )}
                         <figcaption class="flex items-center gap-2 py-2.75 px-4 text-xs text-muted border-t border-edge">
-                            <Icon name={media.video ? "film" : "camera"} class="text-sm shrink-0" aria-hidden="true" />
+                            <Icon name={media.kind === "youtube" ? "play" : media.kind === "video" ? "film" : "camera"} class="text-sm shrink-0" aria-hidden="true" />
                             {media.caption}
                         </figcaption>
                     </figure>

@@ -1,6 +1,7 @@
 // Models of the portfolio, as consumed by the pages.
 // They are built from the PocketBase records by the functions of this folder.
 import type { Localized } from "@i18n/text";
+import type { MediaKind } from "./media";
 
 export type { Localized };
 
@@ -44,7 +45,12 @@ export type ProjectTech = {
 };
 
 export type ProjectPicture = {
-    url: string, // full-size URL of the file (image or video)
+    // Full-size URL of the uploaded file, or the YouTube link as it was pasted.
+    url: string,
+    kind: MediaKind,
+    // Set only on a `youtube` media: the 11-character video id, resolved once
+    // server-side so the pages and the islands never re-parse the URL.
+    youtubeId?: string,
     caption: Localized, // per-picture caption/alt text; may be empty (pages fall back to the project caption)
 };
 
@@ -65,7 +71,9 @@ export type Project = {
     // picture. `thumb` stays its poster, its reduced-motion fallback and the
     // social-share image, so this one is purely decorative.
     thumbVideo?: string,
-    pictures: ProjectPicture[], // the `pictures` files (images and videos), in display order, with their captions
+    // The whole media list in display order, with the captions: the uploaded
+    // `pictures` files (images and videos) merged with the YouTube embeds.
+    pictures: ProjectPicture[],
     github?: string,
     link?: string,
     sub: Localized, // one-line subtitle shown on compact cards
