@@ -47,6 +47,10 @@
     // A file input can say "replace this file" but never "delete it": the
     // video is optional, so removing it needs its own explicit checkbox.
     let removeVideo = $state(false);
+    // Seeded from the props on purpose, so the rows stay editable: `pictures`
+    // is the server-rendered list this island starts from, not a value to
+    // track. A `$derived` would throw away the admin's pending edits.
+    // svelte-ignore state_referenced_locally
     let items = $state<Item[]>(pictures.map(p => ({
         key: `${p.youtube ? "youtube" : "existing"}:${p.name}`,
         name: p.name,
@@ -258,11 +262,17 @@
                 </figure>
             {/if}
             {#if thumbPreview}
-                <figure class="adm-media-card w-50">
-                    <img src={thumbPreview} alt="Nouvelle vignette" />
-                    <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vignette</figcaption>
+                <!-- The button is a control acting on the figure, not part of
+                     its content: it stays outside so the caption remains the
+                     last child. `contents` drops the figure from the layout,
+                     leaving the card's flex column exactly as it was. -->
+                <div class="adm-media-card w-50">
+                    <figure class="contents">
+                        <img src={thumbPreview} alt="Nouvelle vignette" />
+                        <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vignette</figcaption>
+                    </figure>
                     <button type="button" class="adm-btn-danger px-2! py-1! text-[11px]!" onclick={clearThumb}>✕ Retirer</button>
-                </figure>
+                </div>
             {/if}
         </div>
         <input id="thumb" name="thumb" type="file" accept="image/*" class="adm-file" required={isNew} bind:this={thumbInput} onchange={onThumbChange} />
@@ -285,12 +295,14 @@
                 </figure>
             {/if}
             {#if videoPreview}
-                <figure class="adm-media-card w-50">
-                    <!-- svelte-ignore a11y_media_has_caption -->
-                    <video src={videoPreview} muted loop playsinline controls preload="metadata"></video>
-                    <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vidéo</figcaption>
+                <div class="adm-media-card w-50">
+                    <figure class="contents">
+                        <!-- svelte-ignore a11y_media_has_caption -->
+                        <video src={videoPreview} muted loop playsinline controls preload="metadata"></video>
+                        <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vidéo</figcaption>
+                    </figure>
                     <button type="button" class="adm-btn-danger px-2! py-1! text-[11px]!" onclick={clearVideo}>✕ Retirer</button>
-                </figure>
+                </div>
             {/if}
         </div>
         {#if thumbVideoUrl}

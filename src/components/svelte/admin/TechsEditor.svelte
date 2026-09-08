@@ -24,15 +24,22 @@
 
     const { techs, availableTechs, roles }: Props = $props();
 
+    // The four seeds below capture the props on purpose: they are the
+    // server-rendered starting point of an editable list, not values to track.
+    // A `$derived` would discard the admin's pending edits on any invalidation.
+    // svelte-ignore state_referenced_locally
     let rows = $state<Row[]>(
         techs.map(t => ({ ref: t.id, technologyId: t.technologyId, name: t.name, role: t.role })),
     );
     // Junction ids to delete server-side (existing rows removed here).
     let removed = $state<string[]>([]);
     // Techs not currently in the list, offered by the "add" select.
+    // svelte-ignore state_referenced_locally
     let available = $state<Tech[]>([...availableTechs]);
 
+    // svelte-ignore state_referenced_locally
     let addTechId = $state(availableTechs[0]?.id ?? "");
+    // svelte-ignore state_referenced_locally
     let addRole = $state(roles[0]?.id ?? "");
 
     let dragIndex = $state<number | null>(null);
