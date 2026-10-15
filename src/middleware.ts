@@ -107,6 +107,19 @@ export const adminMiddleware = defineMiddleware(async (context, next) => {
     return next();
 });
 
+// Works around an Astro bug in the production runtime (the dev server is not
+// affected): a `/en/*` URL is matched straight to the shared page through its
+// `fallbackRoutes`, and `getDefaultStatusCode()` then gives it the status meant
+// for `fallbackType: "redirect"` — a 302 — although `rewrite` renders the page
+// in place and sends no `Location`. Crawlers would see every English page as a
+// broken redirect. A 302 without `Location` can only come from there (every
+// real redirect carries one), so it is turned back into the 200 it should be.
+export const fallbackStatusMiddleware = defineMiddleware(async (_context, next) => {
+    const response = await next();
+    if (response.status !== 302 || response.headers.has("Location")) return response;
+    return new Response(response.body, { status: 200, headers: response.headers });
+});
+
 // Astro's i18n middleware runs automatically now that `routing` is no longer
 // "manual", so it no longer needs to be added to the sequence by hand.
-export const onRequest = sequence(clientIPMiddleware, userMiddleware, adminMiddleware);
+export const onRequest = sequence(clientIPMiddleware, fallbackStatusMiddleware, userMiddleware, adminMiddleware);
