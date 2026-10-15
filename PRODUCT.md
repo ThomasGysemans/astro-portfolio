@@ -48,7 +48,7 @@ Three claims the site is entitled to make, confirmed by the owner, that a neighb
 ## Brand Commitments
 
 - Name and voice: **Thomas Gysemans**, first person singular, French-first. Direct, concrete, no agency plural, no corporate jargon. English is a faithful translation of the same voice, not a different register.
-- Existing assets that are binding: the logo (`public/logo.png`), the social share card (`public/og-default.png`, generated from `public/header.png` — **never modify or delete `header.png` or `cv.pdf`**), Comfortaa for headings and Source Sans 3 for body text (both self-hosted variable fonts), and the local SVG icon set in `public/icons/`.
+- Existing assets that are binding: the logo (`public/logo.png`), the social share cards (`public/og-fr.png` / `public/og-en.png`, one per locale), `public/cv.pdf` (**never modify or delete it**), Comfortaa for headings and Source Sans 3 for body text (both self-hosted variable fonts), and the local SVG icon set in `public/icons/`.
 - The visual system inherits from the "Portfolio Prototype v2" design direction; colors are CSS variables and must always be used through the token classes rather than hardcoded.
 - Public identities: `github.com/ThomasGysemans`, `fr.linkedin.com/in/thomas-gysemans-950536268`, `malt.fr/profile/thomasgysemans`.
 

@@ -11,12 +11,15 @@ interface Props {
 
 const DOMAIN = "https://thomasgysemans.dev";
 const DEFAULT_IMAGE = `${DOMAIN}/logo.png`;
-// Social-share card used when a page passes no `image` of its own. Its intrinsic
-// size is advertised so scrapers can lay the card out before fetching the file.
-// 1200x630 is the recommended Open Graph size (scrapers download it on every
-// share); PNG on purpose, the text stays crisper than JPEG. Generated from
-// public/header.png, the untouched original (kept in the repo like cv.pdf).
-const DEFAULT_SOCIAL_IMAGE = `${DOMAIN}/og-default.png`;
+// Social-share card used when a page passes no `image` of its own, one per
+// locale since the card carries text. Its intrinsic size is advertised so
+// scrapers can lay the card out before fetching the file. 1200x630 is the
+// recommended Open Graph size (scrapers download it on every share); PNG on
+// purpose, the text stays crisper than JPEG.
+const DEFAULT_SOCIAL_IMAGE = {
+    "fr": `${DOMAIN}/og-fr.png`,
+    "en": `${DOMAIN}/og-en.png`,
+} satisfies Record<App.LangCode, string>;
 const DEFAULT_SOCIAL_IMAGE_SIZE = { width: 1200, height: 630 };
 
 const { title, description, image, noindex = false } = Astro.props;
@@ -49,7 +52,7 @@ const canonical = `${DOMAIN}${pathInLocale(lang, Astro.url.pathname)}`;
 // root-relative ones are resolved against the domain. Only the default card has
 // known dimensions — a custom `image` (a project thumbnail cropped to 1200px
 // wide) has a height we can't assert here, so its size meta is omitted.
-const rawImage = image ?? DEFAULT_SOCIAL_IMAGE;
+const rawImage = image ?? DEFAULT_SOCIAL_IMAGE[lang];
 const socialImage = /^https?:\/\//.test(rawImage) ? rawImage : `${DOMAIN}${rawImage}`;
 const usingDefaultImage = image === undefined;
 

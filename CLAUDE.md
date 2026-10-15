@@ -27,7 +27,7 @@ No linter is configured. Node 24.x (`engines`). The only required environment va
 - Answer in French, keep technical terms in English. Explain your changes simply.
 - Code and comments in English. The owner does git commits himself — never commit for him.
 - Project slugs must stay stable: they match the URLs of the production site (SEO).
-- **Never delete or modify `public/cv.pdf` or `public/header.png`**, even if they look unreferenced. `header.png` is the untouched original of the social-share card (`og-default.png` is generated from it).
+- **Never delete or modify `public/cv.pdf`**, even if it looks unreferenced.
 
 ## Architecture
 
@@ -87,7 +87,7 @@ All of it is centralised in `PageLayout.astro` (canonical, OG/Twitter, hreflang,
 - **Each language version is self-canonical**, so both stay indexable. Under the i18n fallback *rewrite* `Astro.url.pathname` has already lost its `/en` prefix, so the canonical is rebuilt from the served locale with `pathInLocale()` — never from the raw pathname.
 - **`pathInLocale()` drops the trailing slash** (except at the root), which is what makes the canonical URLs, the hreflang alternates and the sitemap agree on one single URL form per page. `alternateLinks()` adds `x-default` → default locale.
 
-`src/pages/sitemap.xml.ts` is an **SSR route** (`prerender = false`), so it always reflects the current PocketBase content without a rebuild: one `<url>` per locale variant, each carrying the full hreflang set, with `<lastmod>` from the project's `updated` (listing pages use the most recent one). Social card defaults to `/og-default.png` (1200×630, generated from `header.png`).
+`src/pages/sitemap.xml.ts` is an **SSR route** (`prerender = false`), so it always reflects the current PocketBase content without a rebuild: one `<url>` per locale variant, each carrying the full hreflang set, with `<lastmod>` from the project's `updated` (listing pages use the most recent one). Social card defaults to `/og-fr.png` or `/og-en.png` (1200×630) depending on the served locale. Bots (link-preview scrapers, crawlers) are never language-redirected, so a shared link to `/` always previews the French card.
 
 Two self-hosted variable fonts (`public/fonts/*.woff2`, raw sources gitignored): **Comfortaa** for headings (`font-display`, auto-applied to `h1`–`h6` in `tailwind.css`) and **Source Sans 3** for body (`font-sans`). Icons are local SVGs in `public/icons/` served through `astro-icon`.
 

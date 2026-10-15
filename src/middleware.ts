@@ -36,6 +36,16 @@ function isNavigablePage(context: APIContext): boolean {
     return (context.request.headers.get("accept") ?? "").includes("text/html");
 }
 
+// Link-preview scrapers and search crawlers keep no `lang` cookie and send
+// arbitrary `Accept-Language` headers (often en-US). Redirecting them would make
+// a shared link to the default URL preview in English, so they always get the
+// URL they asked for — sharing https://thomasgysemans.dev/ shows the French card.
+const BOT_USER_AGENT = /bot\b|crawler|spider|facebookexternalhit|facebot|slack|whatsapp|telegram|discord|skypeuripreview|embedly|pinterest|vkshare|quora link preview/i;
+
+function isBot(context: APIContext): boolean {
+    return BOT_USER_AGENT.test(context.request.headers.get("user-agent") ?? "");
+}
+
 export const userMiddleware = defineMiddleware((context, next) => {
     const themeCookie = context.cookies.get("theme");
     context.locals.theme = themeCookie?.value === "light" ? "light" : "dark";
@@ -59,7 +69,7 @@ export const userMiddleware = defineMiddleware((context, next) => {
         // default URLs, send the visitor to their preferred language — their past
         // choice (the `lang` cookie, set by the switch) first, otherwise their
         // browser's `Accept-Language`.
-        if (urlLocale === DEFAULT_LOCALE) {
+        if (urlLocale === DEFAULT_LOCALE && !isBot(context)) {
             const target = preference ?? preferredLocale(context.request.headers.get("accept-language"));
             if (target !== DEFAULT_LOCALE) {
                 context.cookies.set(LANG_COOKIE, target, LANG_COOKIE_OPTS);
