@@ -10,6 +10,7 @@ interface Props {
 }
 
 const DOMAIN = "https://thomasgysemans.dev";
+const AUTHOR = "Thomas Gysemans";
 const DEFAULT_IMAGE = `${DOMAIN}/logo.png`;
 // Social-share card used when a page passes no `image` of its own, one per
 // locale since the card carries text. Its intrinsic size is advertised so
@@ -62,13 +63,14 @@ const alternates = alternateLinks(Astro.url.pathname, DOMAIN);
 const structuredData = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "Thomas Gysemans",
+    name: AUTHOR,
     url: DOMAIN,
     image: DEFAULT_IMAGE,
     jobTitle: lang === "fr" ? "Développeur d'applications et de sites internet" : "Application and website developer",
     description: og.description[lang],
     sameAs: [
         "https://github.com/ThomasGysemans",
+        "https://www.linkedin.com/in/thomas-gysemans-950536268",
     ],
 };
 ---
@@ -108,6 +110,9 @@ const structuredData = {
             </>
         )}
         <meta name="description" content={metaDescription}>
+        <!-- Read by link-preview scrapers (LinkedIn's Post Inspector reports
+             "No author found" without it). -->
+        <meta name="author" content={AUTHOR}>
         <meta name="keywords" content="portfolio, Thomas Gysemans, développeur, développeur web, développeur d'applications, freelance, web developer, mobile developer, developer, webmaster, back-end, backend, frontend, front-end, designer">
 
         <meta name="twitter:card" content="summary_large_image">
