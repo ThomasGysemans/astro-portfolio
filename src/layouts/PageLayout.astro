@@ -6,6 +6,7 @@ interface Props {
     title: string;
     description?: string;
     image?: string; // absolute or root-relative URL of the social-share image
+    imageAlt?: string; // description of `image` (required by it, ignored without it)
     noindex?: boolean; // keep the page out of search engines (404, etc.)
 }
 
@@ -22,8 +23,13 @@ const DEFAULT_SOCIAL_IMAGE = {
     "en": `${DOMAIN}/og-en.png`,
 } satisfies Record<App.LangCode, string>;
 const DEFAULT_SOCIAL_IMAGE_SIZE = { width: 1200, height: 630 };
+// Transcribes the text of the card, which is all of its content.
+const DEFAULT_SOCIAL_IMAGE_ALT = {
+    "fr": "Thomas Gysemans, développeur freelance disponible pour de nouveaux projets : applications iOS & Android et sites web rapides, accessibles (RGAA) et respectueux des données (RGPD).",
+    "en": "Thomas Gysemans, freelance developer available for new projects: iOS & Android apps and fast websites, accessible (RGAA & WCAG) and GDPR-compliant.",
+} satisfies Record<App.LangCode, string>;
 
-const { title, description, image, noindex = false } = Astro.props;
+const { title, description, image, imageAlt, noindex = false } = Astro.props;
 const lang = Astro.locals.lang;
 const theme = Astro.locals.theme;
 const og = {
@@ -56,6 +62,9 @@ const canonical = `${DOMAIN}${pathInLocale(lang, Astro.url.pathname)}`;
 const rawImage = image ?? DEFAULT_SOCIAL_IMAGE[lang];
 const socialImage = /^https?:\/\//.test(rawImage) ? rawImage : `${DOMAIN}${rawImage}`;
 const usingDefaultImage = image === undefined;
+// A custom image without a description falls back to the page title rather
+// than the default card's text, which would describe another picture.
+const socialImageAlt = usingDefaultImage ? DEFAULT_SOCIAL_IMAGE_ALT[lang] : (imageAlt || title);
 
 const alternates = alternateLinks(Astro.url.pathname, DOMAIN);
 
@@ -102,6 +111,7 @@ const structuredData = {
         <meta property="og:site_name" content={og.site_name[lang]}>
         <meta property="og:description" content={metaDescription}>
         <meta property="og:image" content={socialImage}>
+        <meta property="og:image:alt" content={socialImageAlt}>
         {usingDefaultImage && (
             <>
                 <meta property="og:image:width" content={String(DEFAULT_SOCIAL_IMAGE_SIZE.width)}>
@@ -119,6 +129,7 @@ const structuredData = {
         <meta name="twitter:title" content={title}>
         <meta name="twitter:description" content={metaDescription}>
         <meta name="twitter:image" content={socialImage}>
+        <meta name="twitter:image:alt" content={socialImageAlt}>
 
         <meta http-equiv="content-language" content={lang} />
 

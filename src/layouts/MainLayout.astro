@@ -7,16 +7,17 @@ import trans from "@i18n";
 interface Props {
     title: string;
     description?: string;
-    image?: string; // social-share image (defaults to the site logo)
+    image?: string; // social-share image (defaults to the locale's OG card)
+    imageAlt?: string; // description of `image`
     noindex?: boolean; // keep the page out of search engines
     footerCta?: boolean; // hide the "get in touch" button (404 page)
 }
 
-const { title, description, image, noindex, footerCta = true } = Astro.props;
+const { title, description, image, imageAlt, noindex, footerCta = true } = Astro.props;
 const lang = Astro.locals.lang;
 ---
 
-<PageLayout {title} {description} {image} {noindex}>
+<PageLayout {title} {description} {image} {imageAlt} {noindex}>
     <!-- Full-height column so the footer reaches the bottom on short pages (404). -->
     <div class="min-h-dvh flex flex-col">
         <a href="#main-content" class="skip-link">{trans.common.skiptocontent[lang]}</a>
