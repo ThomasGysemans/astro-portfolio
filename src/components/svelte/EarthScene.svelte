@@ -4,6 +4,7 @@
     import { T, Canvas } from "@threlte/core";
     import { OrbitControls } from "@threlte/extras";
     import Grabbable from "@components/svelte/Grabbable.svelte";
+    import PauseOffscreen from "./PauseOffscreen.svelte";
     import Planet from "./Planet.svelte";
 
     let { dragLabel, onready }: {
@@ -30,7 +31,11 @@
 
 <div class="relative w-full h-full">
     <Grabbable>
-        <Canvas>
+        <!-- The planet is at most 540px wide: past a 2x pixel ratio the extra
+             pixels are invisible but still shaded on every frame. -->
+        <Canvas dpr={[1, 2]}>
+            <PauseOffscreen />
+
             <T.PerspectiveCamera
                 makeDefault
                 position={[10, 10, 10]}
