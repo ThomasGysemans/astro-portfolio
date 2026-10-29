@@ -1,10 +1,32 @@
 // Server-side logic of the back-office review form (create + edit).
 import type PocketBase from "pocketbase";
 import { invalidateCache } from "@data/pb";
-import { pbErrorMessage, text } from "./forms";
+import { type FormResult, ScopedError, failure, text } from "./forms";
 import type { ReviewFormValues } from "@components/pages/admin/AdminReviewFormPage.astro";
+import type { AdminReviewRow } from "@components/pages/admin/AdminReviewsPage.astro";
 
-type PostResult = { redirect: string } | { error: string, values: ReviewFormValues };
+type PostResult = FormResult<ReviewFormValues>;
+
+// Memoised per client (one per request), like `listAdminProjects`: the
+// reviews page and the layout's explorer share one query.
+const reviewLists = new WeakMap<PocketBase, Promise<AdminReviewRow[]>>();
+
+export function listAdminReviews(pb: PocketBase): Promise<AdminReviewRow[]> {
+    let list = reviewLists.get(pb);
+    if (!list) {
+        list = pb.collection("reviews").getFullList({ sort: "-year" }).then(records => records.map(r => ({
+            id: r.id,
+            quote: r.quote_fr,
+            role: r.role_fr,
+            company: r.company_fr,
+            year: r.year,
+            rating: Math.min(5, Math.max(1, r.rating || 5)),
+            translated: !!r.quote_en,
+        })));
+        reviewLists.set(pb, list);
+    }
+    return list;
+}
 
 export function parseReviewForm(data: FormData): ReviewFormValues {
     return {
@@ -59,6 +81,7 @@ export async function handleReviewPost(pb: PocketBase, data: FormData, id?: stri
         invalidateCache();
         return { redirect: "/admin/reviews?saved=1" };
     } catch (err) {
-        return { error: pbErrorMessage(err), values };
+        // The French columns are `<control>_fr`, the English ones match.
+        return failure(new ScopedError(err, column => column.replace(/_fr$/, "")), values);
     }
 }

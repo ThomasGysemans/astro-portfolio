@@ -269,7 +269,7 @@ Components are **soft but crisp**: generous radii and a warm silhouette, held by
 
 ### Inputs / Fields
 
-The public site's only input is the projects search field, which follows the toolbar's language: `--card` background, 1px `--edge`, 11px radius, body-coloured text, and the global 3px accent focus outline. There is no bordered-input tradition to inherit here; anything new should stay on the same glass-and-hairline material rather than introducing a filled field style. Back-office forms use their own plain stylesheet (`src/styles/admin.css`) and are deliberately outside this system.
+The public site's only input is the projects search field, which follows the toolbar's language: `--card` background, 1px `--edge`, 11px radius, body-coloured text, and the global 3px accent focus outline. There is no bordered-input tradition to inherit here; anything new should stay on the same glass-and-hairline material rather than introducing a filled field style. Back-office forms are deliberately outside this system; they follow the admin's own rules in "Back-office: the Editor Workbench" below.
 
 ### Navigation
 
@@ -308,5 +308,124 @@ Each landing surface opens with a `.hero-scene` layer — stacked radial ellipse
 - **Don't** spend Signal Green on a generic success state — it currently means "available for freelance", and there is no status palette yet.
 - **Don't** let category dot colours spread beyond the filter chips onto cards, headings or backgrounds.
 - **Don't** migrate the showcase's Iced Teal into the token system, or import its glass-and-glow treatments into ordinary pages.
-- **Don't** apply this system to `/admin`: the back-office runs on its own plain stylesheet and is intentionally outside the brand.
+- **Don't** apply this system to `/admin`: the back-office has its own system, documented in "Back-office: the Editor Workbench" below, and is intentionally outside the brand.
 - **Don't** let a decorative layer sit above content in the tab order or intercept pointer events — atmosphere layers are `pointer-events-none` and `aria-hidden`.
+
+## Back-office: the Editor Workbench
+
+This section records the `/admin` system as built (`src/styles/admin.css`, `AdminLayout.astro`, `src/components/admin/`, the admin page components and islands, `src/lib/admin/runtime.ts`). It is a separate world from the Observation Deck: none of the public rules above (Comfortaa/Source Sans, the 13px floor, the no-monospace rule, glows, 8–13px radii) apply here, and none of the rules below apply to public pages. The YAML frontmatter at the top of this file describes the public system only; the admin's tokens live as `--a-*` custom properties on `body.adm` and are normative there.
+
+### Overview
+
+**Creative North Star: "The Editor Workbench"**
+
+The back-office is the owner's own code editor, not a SaaS dashboard: an explorer on the left listing every project and review, the record open as a document in the middle, a problems panel docked under it that points at the faulty field, and a full-width status bar whose fill *is* the save state. Night-shift blue graphite panes, hairline seams instead of cards, the system UI face, monospace only where the content is data. It is French-only, dense, keyboard-first (`/` filters the explorer, ⌘S / Ctrl+S saves), and never loses what was typed or picked.
+
+**Key Characteristics:**
+- Panes and seams, not cards: depth is a 1px line and a one-step change of ground.
+- One accent (Clear Blue) for cursor, selection, focus and the single primary action; amber means "modified"; red means "problem".
+- State is shown where an editor shows it: a dot on the field label, a dot on the title and the explorer entry, the colour of the status bar.
+
+### Colors
+
+Blue graphite neutrals with three signal hues, each tied to one meaning. Every value is redefined under `html[data-theme="light"] body.adm`; style only through the `--a-*` variables.
+
+| Role | Token | Dark | Light |
+|---|---|---|---|
+| Editor ground | `--a-bg` | #0e1729 | #ffffff |
+| Explorer / problems / affix ground | `--a-side` | #0a1222 | #f3f5f9 |
+| Raised controls (inputs, chips, rows, dialog) | `--a-raised` | #131f37 | #f6f8fb |
+| Hover ground | `--a-hover` | #18263f | #eaeef5 |
+| Selection wash | `--a-select` | rgba(97,156,243,.17) | rgba(47,102,196,.12) |
+| Hairline seam | `--a-line` | #1f2d48 | #e1e6ee |
+| Control stroke | `--a-line-strong` | #2d3f62 | #c9d1de |
+| Text | `--a-text` | #dde5f2 | #18202e |
+| Secondary text | `--a-dim` | #a3b0c8 | #4f5b70 |
+| Tertiary text, icons, placeholders | `--a-faint` | #8593b0 | #5f6b80 |
+| Accent (links, focus ring, required asterisk) | `--a-accent` / `--a-focus` | #8ab4f8 | #2f66c4 |
+| Primary fill / text on it | `--a-fill` / `--a-on-fill` | #619cf3 / #06101f | #2f66c4 / #ffffff |
+| Modified (amber) | `--a-mod` | #e7b85a | #9a6400 |
+| Added (green) | `--a-add` | #7fd19c | #1f7a46 |
+| Error text / wash / stroke | `--a-err` / `--a-err-bg` / `--a-err-line` | #ff9a9a / rgba(255,110,110,.1) / rgba(255,130,130,.6) | #c3283a / #fdf0f1 / #e7a3ab |
+
+**Status bar fills**, one pair (fill / text) per save state:
+
+| State | Meaning | Dark | Light |
+|---|---|---|---|
+| `idle` | everything saved | #619cf3 / #06101f | #2f66c4 / #ffffff |
+| `dirty` | unsaved changes | #e7b85a / #1f1500 | #f0c463 / #2a1c00 |
+| `error` | the save failed | #ff7f7f / #2a0505 | #c9303f / #ffffff |
+| `saved` | just saved (reverts to idle after 5s) | #7fd19c / #04170b | #23794a / #ffffff |
+| `saving` | in flight | keeps the current fill plus a slow white sweep (1.1s loop) | same |
+
+**The One Meaning Per Hue Rule.** Blue is cursor, selection and the primary action; amber is "modified" (and, by extension, star ratings and the featured mark); red is "problem"; green is only "just saved". Never spend a signal hue on decoration.
+
+**The Mixed Not Literal Rule.** Tinted borders and washes are derived with `color-mix(in srgb, var(--a-…) N%, transparent)` from the tokens, so both themes follow. The only literals are the dialog/drawer backdrop (rgba(4,9,18,.5–.6)) and the status-item hover darkening (rgba(0,0,0,.12)).
+
+### Typography
+
+**Interface Font:** system UI stack (`--a-sans`: system-ui, -apple-system, Segoe UI, Roboto…)
+**Data Font:** UI monospace stack (`--a-mono`: ui-monospace, SF Mono, Menlo, Consolas…), with tabular numerals
+
+Base is 14px / 1.5. Headings inherit the system face (the public Comfortaa rule is overridden). Steps actually used:
+
+- **Page title** (650, 19px, 1.3, -0.01em): the editor header `h1`.
+- **Section title** (650, 15px, 1.4): settings-section and dialog titles.
+- **Body / inputs** (14px): field values, row titles.
+- **Control text** (13–13.5px; 600 for labels and buttons): labels, chips, tabs, tree items, table cells.
+- **Help / secondary** (12.5px): help text, inline errors, crumbs, explorer foot.
+- **Group labels** (700, 11.5–12px, uppercase, 0.05–0.06em tracking): explorer group heads, table headers, problems title, FR/EN column heads.
+- **Data** (mono, 11–13px): slugs, filenames, years, counts, usage numbers, keycaps, the ⌘S hint.
+
+**The Data-Only Monospace Rule.** Monospace marks content that is data (identifiers, counts, years, colours, field names in the problems panel), never labels or prose.
+
+### Layout
+
+The shell is a full-viewport grid (`100dvh`): a 264px explorer column on the left; the editor (`main`, scrolls on its own) on the right; the problems panel docked under the editor (max 34vh, only when there are problems); a 26px status bar spanning the full width at the bottom.
+
+The editor header is sticky (blurred 92% editor ground, hairline below): breadcrumb, title with count/dirty dot/badges, actions on the right (the one Save button), and on long forms a row of in-page section links. Documents are capped at 1120px with 28px side padding. A form is a stack of settings sections: a 180–240px intro column (title and explanation) beside the controls, separated by hairlines, 28px vertical rhythm; fields stack with 18px gaps, grids use `auto-fill/auto-fit minmax(190px | 260px, 1fr)`.
+
+Responsive: at 1100px the section intro stacks above its controls; at 900px the explorer becomes an off-canvas drawer (min(300px, 86vw), slides in over a backdrop, opened from a menu button in the header and in the status bar), padding drops to 16px, tables restack into grid rows, technology rows stack beside their swatch, the FR/EN grid becomes one column, and the status bar hides its secondary items. At 520px long button labels are dropped.
+
+### Elevation & Depth
+
+Flat panes. Depth is the ground step (`--a-side` < `--a-bg` < `--a-raised`) plus a 1px seam. The only shadow is `--a-shadow` (dark: 0 12px 32px rgba(2,6,14,.5); light: 0 12px 32px rgba(20,32,54,.16)), reserved for layers that truly float: the confirm dialog, the login panel and the mobile explorer drawer. Focus is a 2px `--a-focus` outline (offset 2px); inputs additionally get a 3px Clear Blue halo (`--a-fill` at 25%).
+
+### Shapes
+
+Small, tight corners: 3px for keycaps and colour swatches, 4px for small hit targets (icon buttons, tree actions, badges, thumbnails, segment buttons), 5px for controls (inputs, buttons, chips, affix), 6px for grouped containers (row lists, switch groups, segmented control, notes, media cards), 8px only for floating layers (dialog, login panel). Full circles only for status dots (7–9px). Dashed strokes mean "drop a file here" or "hidden".
+
+### Components
+
+- **Settings sections and switch rows:** title + explanation on the left, controls on the right. Boolean flags are hairline-separated rows in a 6px-rounded group (checkbox, bold title, dim explanation); a checked row takes the selection wash.
+- **Fields:** 13px semibold label above the control; required controls get a Clear Blue asterisk automatically; a field changed since load shows a 7px amber dot before its label. Inputs are 34px high, `--a-raised` ground, `--a-line-strong` stroke, 5px radius, Clear Blue border + halo on focus. Invalid fields take the error wash and stroke, with a 12.5px semibold red message (prefixed ✕) under the control. Slug-type inputs carry a monospace prefix affix; file inputs are dashed drop zones with a small native button.
+- **Chips (multi-select):** 32px, 5px radius, dim text on `--a-raised`; checked becomes the selection wash, a 60% blue stroke and a trailing ✓; optional 8px colour dot.
+- **Badges:** 22px outlined labels, 4px radius: featured in amber, carousel in blue, hidden dashed and faint.
+- **Buttons:** 32px (28px small, square icon variants), 5px radius, 13px semibold. Primary = Clear Blue fill (one per page, the Save); outline = raised ground with strong stroke, blue stroke on hover; ghost = text only, hover ground; danger = red text and 40% red stroke, error wash on hover.
+- **Tables:** uppercase faint 11.5px sticky headers, hairline rows, 28px outer padding, 72px 16:9 thumbnails, actions right-aligned; hidden records read like ignored files (faint italic), as in the explorer.
+- **Editable rows:** row lists (media, techs) are hairline-separated rows in a 6px group with a grip handle; a dragged row dims to 55% over the selection wash. Technology rows save individually: their Save button stays invisible until the row is dirty, then takes the amber dirty fill.
+- **Parallel FR / EN grid:** two equal columns with uppercase flag-headed column labels; the English head notes that empty falls back to French.
+- **Problems panel:** `--a-side` ground with a 2px red top edge, red uppercase title, one row per problem (✕, message, monospace field name on the right); clicking a row scrolls to the field. Section links in the header show a red count badge and turn red when their section has problems.
+- **Status bar:** 26px, 12px text, fill per save state (see Colors), items are flat buttons darkening on hover; holds the explorer toggle, the state text, the problems count, the ⌘S hint, a site link and the theme toggle.
+- **Explorer:** sticky uppercase group heads with monospace counts and a + action, collapsible; 28px items with icon, ellipsised name and trailing decorations (amber star, blue carousel, faint eye-off). The open record takes the selection wash with a blue inset ring, gains an amber ● while unsaved and turns red after a failed save.
+- **Login frame:** the same workbench with an empty explorer pane and a status bar ("Non connecté" / red "Connexion refusée"); a 360px floating panel in the editor area that names nothing about what it protects. The drawer pane disappears at 900px.
+- **Confirm dialog:** native `<dialog>`, 440px, raised ground, 8px radius, `--a-shadow`, red titled with a trash icon, outline Cancel beside danger Delete; enters with a 0.18s rise.
+
+### Do's and Don'ts
+
+#### Do:
+
+- **Do** style admin surfaces only through `--a-*` tokens (or `color-mix` of them) so the light theme follows.
+- **Do** keep exactly one filled primary button per page (the Save), everything else outline, ghost or danger.
+- **Do** show unsaved, saving, saved and failed states through the existing channels: amber field dot, title dot, explorer ●, status bar fill.
+- **Do** report errors twice: inline under the field and as a row in the problems panel pointing at it.
+- **Do** use monospace for data values only, and the uppercase 11.5px label for group heads.
+- **Do** build new forms as settings sections, with French and English side by side in the parallel grid.
+
+#### Don't:
+
+- **Don't** wrap admin content in cards, resting shadows or the public glass treatments; separate with hairlines and ground steps.
+- **Don't** use a radius above 6px except on floating layers (8px).
+- **Don't** use amber, red or green for anything but modified, problem and just-saved.
+- **Don't** add looping motion beyond the status bar's saving sweep.
+- **Don't** let a new admin element set a `display` that defeats `[hidden]`; the filters and problems panel depend on it.

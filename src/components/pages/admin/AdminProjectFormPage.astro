@@ -1,8 +1,11 @@
 ---
 import "flag-icons/css/flag-icons.min.css";
 import AdminLayout from "@layouts/AdminLayout.astro";
+import AdminIcon from "@components/admin/AdminIcon.astro";
+import EditorHeader from "@components/admin/EditorHeader.astro";
 import MediaUploader from "@components/svelte/admin/MediaUploader.svelte";
 import TechsEditor from "@components/svelte/admin/TechsEditor.svelte";
+import type { FieldErrors } from "@data/admin/forms";
 import type { ProjectFormState } from "@data/admin/projects";
 import { CATEGORIES, CONTEXTS, TECH_ROLES } from "@data/categories";
 import { LOCALES } from "@i18n/config";
@@ -12,103 +15,145 @@ interface Props {
     state: ProjectFormState;
     notice?: string;
     error?: string;
+    fields?: FieldErrors;
 }
 
-const { id, state, notice, error } = Astro.props;
+const { id, state, notice, error, fields } = Astro.props;
 const { values, thumbUrl, thumbVideoUrl, pictures, techs, availableTechs } = state;
 const isNew = !id;
-const title = isNew ? "Nouveau projet" : `Projet : ${values.name || values.slug}`;
+const heading = isNew ? "Nouveau projet" : values.name || values.slug;
+const title = isNew ? "Nouveau projet" : `Projet : ${heading}`;
 
 // Passed to the Svelte techs editor, which stays French-only like the rest
 // of the back-office.
 const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: label.fr }));
+
+const sections = [
+    { id: "identite", label: "Identité" },
+    { id: "classement", label: "Classement" },
+    { id: "liens", label: "Liens" },
+    { id: "medias", label: "Médias" },
+    { id: "textes", label: "Textes FR / EN" },
+    { id: "technologies", label: "Technologies" },
+];
+
+// The parallel FR / EN rows of the texts section: `name` is the French
+// control, `${name}_en` the English one.
+const texts = [
+    { name: "name", label: "Nom", hint: "", fr: values.name, en: values.nameEn, required: true, maxlength: 150 },
+    { name: "sub", label: "Sous-titre", hint: "cartes compactes", fr: values.sub, en: values.subEn, required: true, maxlength: 200 },
+    { name: "tagline", label: "Tagline", hint: "carrousel et showcase", fr: values.tagline, en: values.taglineEn },
+    { name: "caption", label: "Légende de la vignette", hint: "", fr: values.caption, en: values.captionEn },
+    { name: "description", label: "Description", hint: "cartes", fr: values.description, en: values.descriptionEn, required: true, area: 4 },
+    { name: "about", label: "À propos", hint: "page du projet", fr: values.about, en: values.aboutEn, area: 9 },
+];
 ---
 
-<AdminLayout {title} {notice}>
-    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
-        <div class="flex items-center gap-4">
-            <h1 class="text-[24px] font-bold text-heading">{isNew ? "Nouveau projet" : values.name || values.slug}</h1>
-            {!isNew && values.hidden && <span class="text-[10.5px] uppercase tracking-wider text-muted border border-edge rounded-sm px-1.5 py-0.5 align-middle">masqué</span>}
-            {!isNew && !values.hidden && <a href={`/projects/${values.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>}
-        </div>
-        <a href="/admin/projects" class="text-[13px] text-muted hover:text-accent transition-colors">← Retour à la liste</a>
-    </div>
+<AdminLayout {title} {notice} {error} {fields}>
+    <EditorHeader title={heading} crumbs={[{ label: "Projets", href: "/admin/projects" }]} {sections}>
+        <Fragment slot="badges">
+            {!isNew && values.featured && <span class="adm-badge adm-badge-featured"><AdminIcon name="star" />Vitrine</span>}
+            {!isNew && values.carousel && <span class="adm-badge adm-badge-carousel"><AdminIcon name="carousel" />Carrousel</span>}
+            {!isNew && values.hidden && <span class="adm-badge adm-badge-hidden"><AdminIcon name="eyeOff" />Masqué</span>}
+        </Fragment>
+        <Fragment slot="actions">
+            {!isNew && !values.hidden && (
+                <a href={`/projects/${values.slug}`} target="_blank" rel="noopener" class="adm-btn-ghost"><AdminIcon name="external" /><span class="adm-btn-label-long">Voir sur le site</span></a>
+            )}
+            <button type="submit" form="project-form" class="adm-btn"><AdminIcon name="save" />{isNew ? "Créer le projet" : "Enregistrer"}</button>
+        </Fragment>
+    </EditorHeader>
 
-    {error && <p class="adm-banner adm-banner-error">{error}</p>}
-
-    <form method="POST" enctype="multipart/form-data" autocomplete="off" class="flex flex-col gap-6">
+    <form id="project-form" method="POST" enctype="multipart/form-data" autocomplete="off" class="adm-doc" data-async data-primary>
         <input type="hidden" name="action" value="save">
 
-        <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-4">Identité</h2>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+        <section id="identite" class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Identité</h2>
+                <p>L'adresse publique du projet et où il apparaît sur le site.</p>
+            </div>
+            <div class="adm-section-body">
                 <div class="adm-field">
                     <label for="slug" class="adm-label">Slug</label>
-                    <input id="slug" name="slug" class="adm-input" value={values.slug} required minlength="2" maxlength="100">
+                    <div class="adm-affix">
+                        <span>/projects/</span>
+                        <input id="slug" name="slug" class="adm-input adm-input-mono" value={values.slug} required minlength="2" maxlength="100" spellcheck="false" aria-describedby="slug-help">
+                    </div>
+                    <p id="slug-help" class="adm-help">Pour un nouveau projet : minuscules et tirets (ex. <span class="adm-mono">mon-projet</span>).</p>
+                    {!isNew && (
+                        <p class="adm-note"><span aria-hidden="true">⚠</span><span>Le slug est l'URL publique du projet et porte son référencement : <strong>ne le change pas après publication.</strong></span></p>
+                    )}
                 </div>
-                <div class="adm-field">
-                    <label class="adm-check pb-2.5">
-                        <input type="checkbox" name="featured" checked={values.featured}>
-                        Projet vitrine (accueil + showcase)
-                    </label>
-                    <label class="adm-check pb-2.5">
-                        <input type="checkbox" name="carousel" checked={values.carousel}>
-                        Projet du carrousel d'accueil (décoche automatiquement les autres)
-                    </label>
-                </div>
-                <div class="adm-field">
-                    <label class="adm-check pb-2.5">
-                        <input type="checkbox" name="hidden" checked={values.hidden}>
-                        Masquer le projet (invisible sur tout le site)
-                    </label>
-                    <p class="text-[12px] text-muted">
-                        Un projet masqué disparaît de l'accueil, de /projects, du showcase, de /freelance et du sitemap, et sa page publique renvoie une 404. Il reste modifiable ici.
-                    </p>
+                <div class="adm-field" data-label="Visibilité">
+                    <span class="adm-label">Visibilité</span>
+                    <div class="adm-switches">
+                        <label class="adm-switch">
+                            <input type="checkbox" name="featured" checked={values.featured}>
+                            <strong>Projet vitrine</strong>
+                            <span>Mis en avant sur l'accueil et dans le showcase.</span>
+                        </label>
+                        <label class="adm-switch">
+                            <input type="checkbox" name="carousel" checked={values.carousel}>
+                            <strong>Carrousel d'accueil</strong>
+                            <span>Un seul projet à la fois : cocher celui-ci décoche les autres.</span>
+                        </label>
+                        <label class="adm-switch">
+                            <input type="checkbox" name="hidden" checked={values.hidden}>
+                            <strong>Masquer le projet</strong>
+                            <span>Invisible partout (accueil, /projects, showcase, /freelance, sitemap) ; sa page renvoie une 404. Il reste modifiable ici.</span>
+                        </label>
+                    </div>
                 </div>
             </div>
-            {!isNew && <p class="text-[12px] text-muted mt-3">⚠ Le slug est l'URL publique du projet (SEO) : ne le change pas après publication.</p>}
         </section>
 
-        <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-4">Classement</h2>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-                <div class="adm-field col-span-full">
+        <section id="classement" class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Classement</h2>
+                <p>Ce qui range le projet dans les filtres et le tri de /projects.</p>
+            </div>
+            <div class="adm-section-body">
+                <div class="adm-field" data-field="categories" data-label="Catégories" data-required-group="Coche au moins une catégorie.">
                     <span class="adm-label adm-label-req">Catégories</span>
-                    <div class="flex gap-4 items-center min-h-9.5 flex-wrap">
+                    <div class="adm-chips">
                         {Object.entries(CATEGORIES).map(([catId, meta]) => (
-                            <label class="adm-check">
+                            <label class="adm-chip">
                                 <input type="checkbox" name="categories" value={catId} checked={values.categories.includes(catId)}>
+                                <span class="adm-chip-dot" style={`background:${meta.dot}`} aria-hidden="true"></span>
                                 {meta.label.fr}
                             </label>
                         ))}
                     </div>
                 </div>
-                <div class="adm-field">
-                    <label for="context" class="adm-label">Contexte</label>
-                    <select id="context" name="context" class="adm-input" required>
-                        {Object.entries(CONTEXTS).map(([ctxId, label]) => (
-                            <option value={ctxId} selected={values.context === ctxId}>{label.fr}</option>
-                        ))}
-                    </select>
+                <div class="adm-grid">
+                    <div class="adm-field">
+                        <label for="context" class="adm-label">Contexte</label>
+                        <select id="context" name="context" class="adm-input" required>
+                            {Object.entries(CONTEXTS).map(([ctxId, label]) => (
+                                <option value={ctxId} selected={values.context === ctxId}>{label.fr}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div class="adm-field">
+                        <label for="year" class="adm-label">Année de tri</label>
+                        <input id="year" name="year" type="number" class="adm-input adm-input-mono" value={values.year} required>
+                    </div>
+                    <div class="adm-field">
+                        <label for="date" class="adm-label">Date affichée</label>
+                        <input id="date" name="date" class="adm-input adm-input-mono" value={values.date} placeholder="2023 ou 2018 → 2025">
+                    </div>
+                    <div class="adm-field">
+                        <label for="teamSize" class="adm-label">Taille d'équipe</label>
+                        <input id="teamSize" name="teamSize" type="number" min="1" class="adm-input adm-input-mono" value={values.teamSize} required>
+                    </div>
                 </div>
-                <div class="adm-field">
-                    <label for="year" class="adm-label">Année (tri)</label>
-                    <input id="year" name="year" type="number" class="adm-input" value={values.year} required>
-                </div>
-                <div class="adm-field">
-                    <label for="date" class="adm-label">Date affichée</label>
-                    <input id="date" name="date" class="adm-input" value={values.date} placeholder="2023 ou 2018 → 2025">
-                </div>
-                <div class="adm-field">
-                    <label for="teamSize" class="adm-label">Taille d'équipe</label>
-                    <input id="teamSize" name="teamSize" type="number" min="1" class="adm-input" value={values.teamSize} required>
-                </div>
-                <div class="adm-field">
+                <div class="adm-field" data-field="languages" data-label="Langues du projet" data-required-group="Coche au moins une langue.">
                     <span class="adm-label adm-label-req">Langues du projet</span>
-                    <div class="flex gap-4 items-center min-h-9.5">
+                    <div class="adm-chips">
                         {LOCALES.map(locale => (
-                            <label class="adm-check">
+                            <label class="adm-chip">
                                 <input type="checkbox" name="languages" value={locale} checked={values.languages.includes(locale)}>
+                                <span class={`fi fi-${locale === "en" ? "gb" : locale} rounded-[2px]`} aria-hidden="true"></span>
                                 {locale.toUpperCase()}
                             </label>
                         ))}
@@ -117,100 +162,104 @@ const techRoles = Object.entries(TECH_ROLES).map(([id, label]) => ({ id, label: 
             </div>
         </section>
 
-        <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-4">Liens</h2>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
-                <div class="adm-field">
-                    <label for="github" class="adm-label">GitHub (optionnel)</label>
-                    <input id="github" name="github" type="url" class="adm-input" value={values.github} placeholder="https://github.com/…">
-                </div>
-                <div class="adm-field">
-                    <label for="link" class="adm-label">Lien du projet (optionnel)</label>
-                    <input id="link" name="link" type="url" class="adm-input" value={values.link} placeholder="https://…">
+        <section id="liens" class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Liens</h2>
+                <p>Facultatifs. Affichés comme boutons sur la page du projet.</p>
+            </div>
+            <div class="adm-section-body">
+                <div class="adm-grid-2">
+                    <div class="adm-field">
+                        <label for="github" class="adm-label">Dépôt GitHub</label>
+                        <input id="github" name="github" type="url" class="adm-input adm-input-mono" value={values.github} placeholder="https://github.com/…" spellcheck="false">
+                    </div>
+                    <div class="adm-field">
+                        <label for="link" class="adm-label">Lien du projet</label>
+                        <input id="link" name="link" type="url" class="adm-input adm-input-mono" value={values.link} placeholder="https://…" spellcheck="false">
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-4">Médias</h2>
-            <MediaUploader {thumbUrl} {thumbVideoUrl} {pictures} {isNew} client:load />
+        <section id="medias" class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Médias</h2>
+                <p>La vignette des cartes, sa vidéo en boucle facultative, puis la galerie de la page du projet.</p>
+            </div>
+            <div class="adm-section-body">
+                <MediaUploader {thumbUrl} {thumbVideoUrl} {pictures} {isNew} client:load />
+            </div>
         </section>
 
-        <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-4 flex items-center gap-2"><span class="fi fi-fr rounded-[3px]" aria-hidden="true"></span>Textes (français)</h2>
-            <div class="flex flex-col gap-4">
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-                    <div class="adm-field">
-                        <label for="name" class="adm-label">Nom</label>
-                        <input id="name" name="name" class="adm-input" value={values.name} required maxlength="150">
-                    </div>
-                    <div class="adm-field">
-                        <label for="sub" class="adm-label">Sous-titre (cartes compactes)</label>
-                        <input id="sub" name="sub" class="adm-input" value={values.sub} required maxlength="200">
-                    </div>
-                    <div class="adm-field">
-                        <label for="tagline" class="adm-label">Tagline (carrousel / showcase)</label>
-                        <input id="tagline" name="tagline" class="adm-input" value={values.tagline}>
-                    </div>
-                    <div class="adm-field">
-                        <label for="caption" class="adm-label">Légende de la vignette</label>
-                        <input id="caption" name="caption" class="adm-input" value={values.caption}>
-                    </div>
-                </div>
-                <div>
-                    <label for="description" class="adm-label">Description (cartes)</label>
-                    <textarea id="description" name="description" class="adm-input" required>{values.description}</textarea>
-                </div>
-                <div>
-                    <label for="about" class="adm-label">À propos (page détail)</label>
-                    <textarea id="about" name="about" class="adm-input" rows="8">{values.about}</textarea>
+        <section id="textes" class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Textes</h2>
+                <p>Français et anglais côte à côte. L'anglais est facultatif : tant qu'un champ est vide, le site anglais affiche le texte français.</p>
+                <p>Dès qu'un champ anglais est rempli, Nom, Sous-titre et Description anglais deviennent obligatoires.</p>
+            </div>
+            <div class="adm-section-body">
+                <div class="adm-parallel" data-texts>
+                    <div class="adm-parallel-head"><span class="fi fi-fr" aria-hidden="true"></span>Français</div>
+                    <div class="adm-parallel-head"><span class="fi fi-gb" aria-hidden="true"></span>Anglais <em>vide = texte français</em></div>
+                    {texts.map(row => (
+                        <>
+                            <div class="adm-field">
+                                <label for={row.name} class="adm-label">
+                                    <span class="fi fi-fr rounded-[2px]" aria-hidden="true"></span>{row.label}
+                                    {row.hint && <span class="adm-label-hint">{row.hint}</span>}
+                                </label>
+                                {row.area ? (
+                                    <textarea id={row.name} name={row.name} class="adm-input" rows={row.area} required={row.required}>{row.fr}</textarea>
+                                ) : (
+                                    <input id={row.name} name={row.name} class="adm-input" value={row.fr} required={row.required} maxlength={row.maxlength}>
+                                )}
+                            </div>
+                            <div class="adm-field">
+                                <label for={`${row.name}_en`} class="adm-label">
+                                    <span class="fi fi-gb rounded-[2px]" aria-hidden="true"></span>{row.label}
+                                    <span class="adm-sr-only">(anglais)</span>
+                                    {row.hint && <span class="adm-label-hint">{row.hint}</span>}
+                                </label>
+                                {row.area ? (
+                                    <textarea id={`${row.name}_en`} name={`${row.name}_en`} class="adm-input" rows={row.area} data-en data-en-core={row.required ? "" : undefined} lang="en">{row.en}</textarea>
+                                ) : (
+                                    <input id={`${row.name}_en`} name={`${row.name}_en`} class="adm-input" value={row.en} maxlength={row.maxlength} data-en data-en-core={row.required ? "" : undefined} lang="en">
+                                )}
+                            </div>
+                        </>
+                    ))}
                 </div>
             </div>
         </section>
 
-        <section class="adm-card">
-            <h2 class="text-[16px] font-bold text-heading mb-1 flex items-center gap-2"><span class="fi fi-gb rounded-[3px]" aria-hidden="true"></span>Textes (anglais)</h2>
-            <p class="text-[12.5px] text-muted mb-4">Facultatif : tant qu'un champ est vide, le site anglais retombe sur le texte français correspondant.</p>
-            <div class="flex flex-col gap-4">
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-                    <div class="adm-field">
-                        <label for="name_en" class="adm-label">Nom</label>
-                        <input id="name_en" name="name_en" class="adm-input" value={values.nameEn} maxlength="150">
-                    </div>
-                    <div class="adm-field">
-                        <label for="sub_en" class="adm-label">Sous-titre (cartes compactes)</label>
-                        <input id="sub_en" name="sub_en" class="adm-input" value={values.subEn} maxlength="200">
-                    </div>
-                    <div class="adm-field">
-                        <label for="tagline_en" class="adm-label">Tagline (carrousel / showcase)</label>
-                        <input id="tagline_en" name="tagline_en" class="adm-input" value={values.taglineEn}>
-                    </div>
-                    <div class="adm-field">
-                        <label for="caption_en" class="adm-label">Légende de la vignette</label>
-                        <input id="caption_en" name="caption_en" class="adm-input" value={values.captionEn}>
-                    </div>
-                </div>
-                <div>
-                    <label for="description_en" class="adm-label">Description (cartes)</label>
-                    <textarea id="description_en" name="description_en" class="adm-input">{values.descriptionEn}</textarea>
-                </div>
-                <div>
-                    <label for="about_en" class="adm-label">À propos (page détail)</label>
-                    <textarea id="about_en" name="about_en" class="adm-input" rows="8">{values.aboutEn}</textarea>
-                </div>
+        <section id="technologies" class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Technologies</h2>
+                <p>L'ordre de la liste est l'ordre d'affichage sur la page du projet : glisse les lignes (ou utilise ↑ ↓ sur la poignée). Enregistrées avec le reste du projet.</p>
+            </div>
+            <div class="adm-section-body">
+                <TechsEditor {techs} {availableTechs} roles={techRoles} client:load />
             </div>
         </section>
 
-        <div>
-            <button type="submit" class="adm-btn">{isNew ? "Créer le projet" : "Enregistrer"}</button>
+        <div class="adm-form-foot">
+            <button type="submit" class="adm-btn"><AdminIcon name="save" />{isNew ? "Créer le projet" : "Enregistrer"}</button>
+            <span class="adm-help"><span class="adm-mono">⌘S</span> / <span class="adm-mono">Ctrl+S</span> enregistre depuis n'importe quel champ.</span>
         </div>
     </form>
-
-    {!isNew && (
-        <section class="mt-10">
-            <h2 class="text-[18px] font-bold text-heading mb-1">Technologies</h2>
-            <p class="text-[12.5px] text-muted mb-4">L'ordre de la liste définit l'ordre d'affichage sur la page du projet : glisse-dépose les lignes pour les réordonner, puis enregistre.</p>
-            <TechsEditor {techs} {availableTechs} roles={techRoles} client:load />
-        </section>
-    )}
 </AdminLayout>
+
+<script>
+    // The English row is all-or-nothing on its three required columns: as
+    // soon as one English field holds text, Nom, Sous-titre and Description
+    // (EN) become required, so the problem shows before anything is sent.
+    const texts = document.querySelector("[data-texts]");
+    const english = Array.from(texts?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-en]") ?? []);
+    const core = english.filter(el => el.hasAttribute("data-en-core"));
+    const sync = () => {
+        const any = english.some(el => el.value.trim() !== "");
+        for (const el of core) el.required = any;
+    };
+    texts?.addEventListener("input", sync);
+    sync();
+</script>

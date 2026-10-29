@@ -1,9 +1,11 @@
 ---
 import AdminReviewFormPage from "@components/pages/admin/AdminReviewFormPage.astro";
 import { handleReviewPost } from "@data/admin/reviews";
+import { type FieldErrors, formResponse, isAsyncRequest } from "@data/admin/forms";
 
 const pb = Astro.locals.admin!;
 let error: string | undefined;
+let fields: FieldErrors | undefined;
 let values = {
     quote: "", role: "", company: "", year: String(new Date().getFullYear()), rating: "5",
     quoteEn: "", roleEn: "", companyEn: "",
@@ -11,10 +13,12 @@ let values = {
 
 if (Astro.request.method === "POST") {
     const result = await handleReviewPost(pb, await Astro.request.formData());
+    if (isAsyncRequest(Astro.request)) return formResponse(result);
     if ("redirect" in result) return Astro.redirect(result.redirect);
     error = result.error;
-    values = result.values;
+    fields = result.fields;
+    if (result.values) values = result.values;
 }
 ---
 
-<AdminReviewFormPage {values} {error} />
+<AdminReviewFormPage {values} {error} {fields} />

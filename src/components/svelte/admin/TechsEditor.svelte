@@ -1,20 +1,24 @@
 <script lang="ts">
     // Back-office editor of a project's technologies. Server-rendered by
-    // Astro with the current list, then hydrated. The whole list is saved at
-    // once by a normal form POST (action "save-techs"): the DOM order of the
-    // rows gives each junction its 1-based position, so reordering is purely
-    // client-side. Rows are reordered by drag & drop (or the keyboard, for
-    // accessibility) with a flip animation.
+    // Astro with the current list, then hydrated. It lives inside the main
+    // project <form> and is saved with the rest of the project. It submits the
+    // wanted state only — one `tech_id` + `tech_role` per row, in display order
+    // — which the server reconciles with the stored junctions (see `saveTechs`),
+    // so reordering is purely client-side and a retried save is harmless. Rows are reordered by drag & drop (or the keyboard,
+    // for accessibility) with a flip animation. Changes that no control can
+    // express (reorder, removal, addition) are reported to the back-office
+    // runtime with a bubbling `adm:dirty` event.
     import { flip } from "svelte/animate";
-    import { tick } from "svelte";
+    import { onMount, tick } from "svelte";
+    import { adminIconSvg } from "@components/admin/icons";
+    import { markPristine } from "@lib/admin/pristine";
 
-    type Tech = { id: string; name: string };
+    type Tech = { id: string; name: string; color: string };
     type Role = { id: string; label: string };
-    type IncomingTech = { id: string; technologyId: string; name: string; role: string };
+    type IncomingTech = { id: string; technologyId: string; name: string; color: string; role: string };
 
-    // `ref` is the junction id, or `new:<technologyId>` for a tech added in
-    // this session (created server-side on save).
-    type Row = { ref: string; technologyId: string; name: string; role: string };
+    // A tech appears at most once per project, so its id keys the row.
+    type Row = { technologyId: string; name: string; color: string; role: string };
 
     interface Props {
         techs: IncomingTech[];
@@ -24,15 +28,16 @@
 
     const { techs, availableTechs, roles }: Props = $props();
 
-    // The four seeds below capture the props on purpose: they are the
+    // The three seeds below capture the props on purpose: they are the
     // server-rendered starting point of an editable list, not values to track.
     // A `$derived` would discard the admin's pending edits on any invalidation.
     // svelte-ignore state_referenced_locally
     let rows = $state<Row[]>(
-        techs.map(t => ({ ref: t.id, technologyId: t.technologyId, name: t.name, role: t.role })),
+        techs.map(t => ({ technologyId: t.technologyId, name: t.name, color: t.color, role: t.role })),
     );
-    // Junction ids to delete server-side (existing rows removed here).
-    let removed = $state<string[]>([]);
+    // Rows added in this session, flagged "nouvelle" until saved.
+    // svelte-ignore state_referenced_locally
+    const initialIds = new Set(techs.map(t => t.technologyId));
     // Techs not currently in the list, offered by the "add" select.
     // svelte-ignore state_referenced_locally
     let available = $state<Tech[]>([...availableTechs]);
@@ -42,15 +47,27 @@
     // svelte-ignore state_referenced_locally
     let addRole = $state(roles[0]?.id ?? "");
 
+    let root: HTMLElement;
     let dragIndex = $state<number | null>(null);
-    // Grip handles, keyed by row ref, so the keyboard reorder can restore
+    // Grip handles, keyed by technology id, so the keyboard reorder can restore
     // focus on the moved row (relocating a focused node drops its focus).
     const grips: Record<string, HTMLElement> = {};
+
+    // The roles as rendered are the starting point, not edits.
+    // After a tick: the hydrated bindings write their values after onMount.
+    onMount(() => {
+        tick().then(() => markPristine(root));
+    });
+
+    function changed(): void {
+        root?.dispatchEvent(new CustomEvent("adm:dirty", { bubbles: true }));
+    }
 
     function moveRow(from: number, to: number): void {
         if (to < 0 || to >= rows.length || from === to) return;
         const [moved] = rows.splice(from, 1);
         rows.splice(to, 0, moved);
+        changed();
     }
 
     function handleDragStart(event: DragEvent, i: number): void {
@@ -88,122 +105,143 @@
         if (to === i) return;
         event.preventDefault();
         if (to < 0 || to >= rows.length) return;
-        const ref = rows[i].ref;
+        const key = rows[i].technologyId;
         moveRow(i, to);
         // The moved row keeps the same node but changes position; restore its
         // focus once Svelte has applied the reorder so the arrows can be chained.
         await tick();
-        grips[ref]?.focus();
+        grips[key]?.focus();
     }
 
     function removeRow(i: number): void {
+        // A row missing from the submitted list is deleted server-side.
         const [row] = rows.splice(i, 1);
-        // Existing junctions are deleted server-side; rows added in this
-        // session just disappear.
-        if (!row.ref.startsWith("new:")) removed.push(row.ref);
-        available.push({ id: row.technologyId, name: row.name });
+        available.push({ id: row.technologyId, name: row.name, color: row.color });
         available.sort((a, b) => a.name.localeCompare(b.name));
         if (!available.some(t => t.id === addTechId)) addTechId = available[0]?.id ?? "";
+        changed();
     }
 
     function addRow(): void {
         const tech = available.find(t => t.id === addTechId);
         if (!tech) return;
-        rows.push({ ref: `new:${tech.id}`, technologyId: tech.id, name: tech.name, role: addRole });
+        rows.push({ technologyId: tech.id, name: tech.name, color: tech.color, role: addRole });
         available = available.filter(t => t.id !== tech.id);
         addTechId = available[0]?.id ?? "";
+        changed();
     }
 </script>
 
-<form method="POST" autocomplete="off" class="flex flex-col gap-4">
-    <input type="hidden" name="action" value="save-techs" />
-    {#each removed as ref (ref)}
-        <input type="hidden" name="tech_removed" value={ref} />
-    {/each}
+<div class="flex flex-col gap-3" data-field="techs" data-label="Technologies" bind:this={root}>
+    <!-- Tells the server the editor ran, even when the list is empty. -->
+    <input type="hidden" name="techs_present" value="1" />
 
-    <ul class="flex flex-col gap-2.5 list-none p-0 m-0">
-        {#each rows as row, i (row.ref)}
+    {#if rows.length === 0}
+        <p class="adm-help">Aucune technologie pour l'instant : ajoute la première ci-dessous.</p>
+    {/if}
+
+    <ul class="adm-list" hidden={rows.length === 0}>
+        {#each rows as row, i (row.technologyId)}
             <li
                 class="adm-row"
                 class:dragging={dragIndex === i}
-                animate:flip={{ duration: 200 }}
+                animate:flip={{ duration: 180 }}
                 ondragover={e => handleDragOver(e, i)}
             >
-                <input type="hidden" name="tech_ref" value={row.ref} />
+                <input type="hidden" name="tech_id" value={row.technologyId} />
                 <span
-                    bind:this={grips[row.ref]}
+                    bind:this={grips[row.technologyId]}
                     class="adm-grip"
                     role="button"
                     tabindex="0"
                     draggable="true"
-                    aria-label={`Déplacer ${row.name}`}
+                    aria-label={`Déplacer ${row.name} (position ${i + 1} sur ${rows.length}, flèches haut et bas)`}
                     title="Glisser pour réordonner (ou flèches ↑ ↓)"
                     ondragstart={e => handleDragStart(e, i)}
                     ondragend={() => (dragIndex = null)}
                     onkeydown={e => handleKey(e, i)}
-                >⠿</span>
-                <span class="adm-tech-name font-bold text-heading text-[14px] flex-1 min-w-30">{row.name}</span>
-                <select name="tech_role" bind:value={row.role} class="adm-input w-auto!" aria-label={`Rôle de ${row.name}`}>
+                >{@html adminIconSvg("grip")}</span>
+                <span class="tech-position adm-mono" aria-hidden="true">{i + 1}</span>
+                <span class="tech-dot" style:background={row.color || "var(--a-faint)"} aria-hidden="true"></span>
+                <span class="tech-name">{row.name}</span>
+                {#if !initialIds.has(row.technologyId)}
+                    <span class="adm-badge tech-new">nouvelle</span>
+                {/if}
+                <select name="tech_role" bind:value={row.role} class="adm-input tech-role" aria-label={`Rôle de ${row.name}`}>
                     {#each roles as role (role.id)}
                         <option value={role.id}>{role.label}</option>
                     {/each}
                 </select>
                 <button
                     type="button"
-                    class="adm-btn-danger px-2.5!"
+                    class="adm-btn-ghost adm-btn-sm adm-btn-icon"
+                    title="Retirer"
                     aria-label={`Retirer ${row.name}`}
                     onclick={() => removeRow(i)}
-                >✕</button>
+                >{@html adminIconSvg("x")}</button>
             </li>
         {/each}
     </ul>
 
-    <div class="adm-row">
-        <select bind:value={addTechId} class="adm-input w-auto!" aria-label="Technologie à ajouter" disabled={available.length === 0}>
+    <div class="adm-addbar">
+        <select bind:value={addTechId} class="adm-input tech-pick" aria-label="Technologie à ajouter" disabled={available.length === 0}>
             {#each available as tech (tech.id)}
                 <option value={tech.id}>{tech.name}</option>
             {/each}
         </select>
-        <select bind:value={addRole} class="adm-input w-auto!" aria-label="Rôle de la technologie à ajouter">
+        <select bind:value={addRole} class="adm-input tech-role" aria-label="Rôle de la technologie à ajouter">
             {#each roles as role (role.id)}
                 <option value={role.id}>{role.label}</option>
             {/each}
         </select>
-        <button type="button" class="adm-btn-outline" onclick={addRow} disabled={available.length === 0}>Ajouter</button>
-        <span class="flex-1"></span>
-        <button type="submit" class="adm-btn">Enregistrer les technologies</button>
+        <button type="button" class="adm-btn-outline" onclick={addRow} disabled={available.length === 0}>
+            {@html adminIconSvg("plus")}Ajouter
+        </button>
+        {#if available.length === 0}
+            <span class="adm-help">Toutes les technologies sont déjà dans la liste.</span>
+        {/if}
     </div>
-</form>
+</div>
 
 <style>
-    .adm-grip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.75rem;
-        height: 1.75rem;
-        font-size: 1.1rem;
-        line-height: 1;
-        color: var(--muted);
-        cursor: grab;
-        user-select: none;
-        border-radius: 0.5rem;
-        transition: color 0.2s, background-color 0.2s;
+    .tech-position {
+        width: 18px;
+        text-align: right;
+        color: var(--a-faint);
     }
 
-    .adm-grip:hover,
-    .adm-grip:focus-visible {
-        color: var(--accent);
-        background-color: color-mix(in srgb, var(--accent) 12%, transparent);
-        outline: none;
+    .tech-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex: none;
     }
 
-    .adm-grip:active {
-        cursor: grabbing;
+    .tech-name {
+        flex: 1;
+        min-width: 120px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--a-text);
     }
 
-    li.dragging {
-        opacity: 0.55;
-        border-color: var(--accent);
+    .tech-new {
+        color: var(--a-add);
+        border-color: color-mix(in srgb, var(--a-add) 45%, transparent);
+    }
+
+    .tech-role {
+        width: auto;
+        min-width: 130px;
+        min-height: 30px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        font-size: 13px;
+    }
+
+    .tech-pick {
+        width: auto;
+        min-width: 200px;
+        flex: 0 1 260px;
     }
 </style>

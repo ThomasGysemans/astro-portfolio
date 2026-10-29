@@ -1,7 +1,7 @@
 ---
 import AdminProjectsPage from "@components/pages/admin/AdminProjectsPage.astro";
 import { listAdminProjects } from "@data/admin/projects";
-import { pbErrorMessage } from "@data/admin/forms";
+import { type FormResult, failure, formResponse, isAsyncRequest } from "@data/admin/forms";
 import { invalidateCache } from "@data/pb";
 
 const pb = Astro.locals.admin!;
@@ -9,16 +9,20 @@ let error: string | undefined;
 
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
+    let result: FormResult = { error: "Action invalide." };
     if (data.get("action") === "delete") {
         try {
             // Translations and tech junctions follow through the cascade.
             await pb.collection("projects").delete(String(data.get("id")));
             invalidateCache();
-            return Astro.redirect("/admin/projects?deleted=1");
+            result = { redirect: "/admin/projects?deleted=1" };
         } catch (err) {
-            error = pbErrorMessage(err);
+            result = failure(err);
         }
     }
+    if (isAsyncRequest(Astro.request)) return formResponse(result);
+    if ("redirect" in result) return Astro.redirect(result.redirect);
+    error = result.error;
 }
 
 const projects = await listAdminProjects(pb);

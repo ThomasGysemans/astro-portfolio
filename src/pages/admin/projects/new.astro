@@ -1,16 +1,19 @@
 ---
 import AdminProjectFormPage from "@components/pages/admin/AdminProjectFormPage.astro";
 import { handleProjectPost, projectFormState } from "@data/admin/projects";
+import type { FieldErrors } from "@data/admin/forms";
+import { formResponse, isAsyncRequest } from "@data/admin/forms";
 
 const pb = Astro.locals.admin!;
 let error: string | undefined;
+let fields: FieldErrors | undefined;
 let submitted;
 
 if (Astro.request.method === "POST") {
     const result = await handleProjectPost(pb, Astro.request);
+    if (isAsyncRequest(Astro.request)) return formResponse(result);
     if ("redirect" in result) return Astro.redirect(result.redirect);
-    error = result.error;
-    submitted = result.values;
+    ({ error, fields, values: submitted } = result);
 }
 
 const state = (await projectFormState(pb))!;
@@ -18,4 +21,4 @@ const state = (await projectFormState(pb))!;
 if (submitted) state.values = submitted;
 ---
 
-<AdminProjectFormPage {state} {error} />
+<AdminProjectFormPage {state} {error} {fields} />

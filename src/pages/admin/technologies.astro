@@ -1,6 +1,6 @@
 ---
 import AdminTechnologiesPage from "@components/pages/admin/AdminTechnologiesPage.astro";
-import { pbErrorMessage, text } from "@data/admin/forms";
+import { type FormResult, failure, formResponse, isAsyncRequest, text } from "@data/admin/forms";
 import { invalidateCache } from "@data/pb";
 
 const pb = Astro.locals.admin!;
@@ -8,6 +8,8 @@ let error: string | undefined;
 
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
+    // Carried by the submit buttons themselves (no hidden input): a hidden
+    // `action` placed before them would always be the first value read.
     const action = String(data.get("action") ?? "");
     // The collection's pattern only accepts lowercase hex colors.
     const fields = {
@@ -16,6 +18,7 @@ if (Astro.request.method === "POST") {
         group: text(data, "group"),
     };
 
+    let result: FormResult;
     try {
         if (action === "create") {
             await pb.collection("technologies").create(fields);
@@ -24,17 +27,33 @@ if (Astro.request.method === "POST") {
         } else if (action === "delete") {
             // The project_techs junctions follow through the cascade.
             await pb.collection("technologies").delete(String(data.get("id")));
+        } else {
+            throw new Error("Action invalide.");
         }
         invalidateCache();
-        return Astro.redirect("/admin/technologies?saved=1");
+        const status = action === "create" ? "created" : action === "delete" ? "deleted" : "saved";
+        result = { redirect: `/admin/technologies?${status}=1` };
     } catch (err) {
-        error = pbErrorMessage(err);
+        result = failure(err);
     }
+    if (isAsyncRequest(Astro.request)) return formResponse(result);
+    if ("redirect" in result) return Astro.redirect(result.redirect);
+    error = result.error;
 }
 
-const records = await pb.collection("technologies").getFullList({ sort: "name" });
-const technologies = records.map(r => ({ id: r.id, name: r.name, color: r.color, group: r.group }));
-const notice = Astro.url.searchParams.has("saved") ? "Enregistré." : undefined;
+const [records, junctions] = await Promise.all([
+    pb.collection("technologies").getFullList({ sort: "name" }),
+    // Only to count the projects using each tech (shown before a deletion).
+    pb.collection("project_techs").getFullList({ fields: "technology" }),
+]);
+const usage = new Map<string, number>();
+for (const j of junctions) usage.set(j.technology, (usage.get(j.technology) ?? 0) + 1);
+const technologies = records.map(r => ({ id: r.id, name: r.name, color: r.color, group: r.group, usage: usage.get(r.id) ?? 0 }));
+
+const params = Astro.url.searchParams;
+const notice = params.has("created") ? "Technologie créée."
+    : params.has("deleted") ? "Technologie supprimée."
+    : params.has("saved") ? "Technologie enregistrée." : undefined;
 ---
 
 <AdminTechnologiesPage {technologies} {notice} {error} />

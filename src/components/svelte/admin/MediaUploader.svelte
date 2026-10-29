@@ -10,10 +10,14 @@
     // the server can rebuild the full display order and the captions map.
     // A DataTransfer keeps the pictures input's FileList in sync with the
     // staged rows, so the admin can add files in several batches and drop
-    // one before saving.
+    // one before saving. Changes no control can express (reorder, removal,
+    // a staged link) are reported to the back-office runtime with a bubbling
+    // `adm:dirty` event.
     import { flip } from "svelte/animate";
-    import { tick } from "svelte";
+    import { onMount, tick } from "svelte";
     import { isVideo, youtubeId, youtubeThumbnail } from "@data/media";
+    import { adminIconSvg } from "@components/admin/icons";
+    import { markPristine } from "@lib/admin/pristine";
 
     type Picture = { name: string; url: string; youtube: boolean; captionFr: string; captionEn: string };
 
@@ -83,10 +87,23 @@
     // form submits exactly what the rows show.
     let transfer: DataTransfer | null = null;
 
+    let root: HTMLElement;
     let dragIndex = $state<number | null>(null);
     // Grip handles, keyed by row key, so the keyboard reorder can restore
     // focus on the moved row (relocating a focused node drops its focus).
     const grips: Record<string, HTMLElement> = {};
+
+    // The captions as rendered are the starting point, not edits.
+    // After a tick: the hydrated bindings write their values after onMount.
+    onMount(() => {
+        tick().then(() => markPristine(root));
+    });
+
+    function changed(): void {
+        root?.dispatchEvent(new CustomEvent("adm:dirty", { bubbles: true }));
+    }
+
+    const megabytes = (bytes: number) => `${(bytes / 1024 / 1024).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} Mo`;
 
     function onThumbChange(event: Event): void {
         const file = (event.currentTarget as HTMLInputElement).files?.[0];
@@ -99,6 +116,7 @@
         thumbPreview = null;
         // Clear the file input so the form no longer submits the picked file.
         thumbInput.value = "";
+        thumbInput.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
     function onVideoChange(event: Event): void {
@@ -113,6 +131,7 @@
         if (videoPreview) URL.revokeObjectURL(videoPreview);
         videoPreview = null;
         videoInput.value = "";
+        videoInput.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
     function syncPicturesInput(): void {
@@ -171,6 +190,7 @@
         });
         youtubeUrl = "";
         youtubeError = "";
+        changed();
     }
 
     // Inside the project <form>, Enter would submit the whole thing: in this
@@ -196,6 +216,7 @@
             // `picture_order` entry is missing from the submitted list.
             item.removed = !item.removed;
         }
+        changed();
     }
 
     function moveItem(from: number, to: number): void {
@@ -203,6 +224,7 @@
         const [moved] = items.splice(from, 1);
         items.splice(to, 0, moved);
         syncPicturesInput();
+        changed();
     }
 
     function handleDragStart(event: DragEvent, i: number): void {
@@ -251,14 +273,17 @@
     const rowLabel = (item: Item) => item.name ?? item.file?.name ?? "";
 </script>
 
-<div class="flex flex-col gap-6">
-    <div>
-        <span class="adm-label" class:adm-label-req={isNew}>Vignette{isNew ? "" : " (remplacée seulement si un fichier est choisi)"}</span>
-        <div class={["flex items-start gap-3 flex-wrap mb-3", { hidden: !thumbUrl && !thumbPreview }]}>
+<div class="flex flex-col gap-7" bind:this={root}>
+    <div class="adm-field" data-label="Vignette">
+        <label for="thumb" class="adm-label" class:adm-label-req={isNew}>Vignette</label>
+        <p class="adm-help">
+            L'image des cartes et de partage (Open Graph).{isNew ? "" : " Remplacée seulement si tu choisis un nouveau fichier."}
+        </p>
+        <div class={["flex items-start gap-3 flex-wrap", { hidden: !thumbUrl && !thumbPreview }]}>
             {#if thumbUrl}
-                <figure class="adm-media-card w-50" class:adm-media-removed={thumbPreview}>
+                <figure class="adm-media-card" class:adm-media-removed={thumbPreview}>
                     <img src={thumbUrl} alt="Vignette actuelle" loading="lazy" />
-                    <figcaption class="text-[11.5px] text-muted">{thumbPreview ? "Remplacée à l'enregistrement" : "Vignette actuelle"}</figcaption>
+                    <figcaption>{thumbPreview ? "Remplacée à l'enregistrement" : "Vignette actuelle"}</figcaption>
                 </figure>
             {/if}
             {#if thumbPreview}
@@ -266,47 +291,47 @@
                      its content: it stays outside so the caption remains the
                      last child. `contents` drops the figure from the layout,
                      leaving the card's flex column exactly as it was. -->
-                <div class="adm-media-card w-50">
+                <div class="adm-media-card is-new">
                     <figure class="contents">
                         <img src={thumbPreview} alt="Nouvelle vignette" />
-                        <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vignette</figcaption>
+                        <figcaption class="media-new-label">Nouvelle vignette</figcaption>
                     </figure>
-                    <button type="button" class="adm-btn-danger px-2! py-1! text-[11px]!" onclick={clearThumb}>✕ Retirer</button>
+                    <button type="button" class="adm-btn-ghost adm-btn-sm" onclick={clearThumb}>{@html adminIconSvg("x")}Annuler le remplacement</button>
                 </div>
             {/if}
         </div>
         <input id="thumb" name="thumb" type="file" accept="image/*" class="adm-file" required={isNew} bind:this={thumbInput} onchange={onThumbChange} />
     </div>
 
-    <div>
-        <span class="adm-label">Vidéo de vignette (optionnelle)</span>
-        <p class="text-[12.5px] text-muted mb-2.5">
-            Jouée en boucle, sans son, à la place de la vignette sur les cartes du site (accueil, /projects, /freelance, showcase).
+    <div class="adm-field" data-label="Vidéo de vignette">
+        <label for="thumb_video" class="adm-label">Vidéo de vignette <span class="adm-label-hint">facultative</span></label>
+        <p class="adm-help">
+            Jouée en boucle, sans son, à la place de la vignette sur les cartes (accueil, /projects, /freelance, showcase).
             La vignette reste affichée pendant le chargement, pour les visiteurs qui ont désactivé les animations, et comme image de partage.
         </p>
-        <div class={["flex items-start gap-3 flex-wrap mb-3", { hidden: !thumbVideoUrl && !videoPreview }]}>
+        <div class={["flex items-start gap-3 flex-wrap", { hidden: !thumbVideoUrl && !videoPreview }]}>
             {#if thumbVideoUrl}
-                <figure class="adm-media-card w-50" class:adm-media-removed={videoPreview || removeVideo}>
+                <figure class="adm-media-card" class:adm-media-removed={videoPreview || removeVideo}>
                     <!-- svelte-ignore a11y_media_has_caption -->
                     <video src={thumbVideoUrl} muted loop playsinline controls preload="metadata"></video>
-                    <figcaption class="text-[11.5px] text-muted">
+                    <figcaption>
                         {videoPreview ? "Remplacée à l'enregistrement" : removeVideo ? "Supprimée à l'enregistrement" : "Vidéo actuelle"}
                     </figcaption>
                 </figure>
             {/if}
             {#if videoPreview}
-                <div class="adm-media-card w-50">
+                <div class="adm-media-card is-new">
                     <figure class="contents">
                         <!-- svelte-ignore a11y_media_has_caption -->
                         <video src={videoPreview} muted loop playsinline controls preload="metadata"></video>
-                        <figcaption class="text-[11.5px] font-bold text-accent">Nouvelle vidéo</figcaption>
+                        <figcaption class="media-new-label">Nouvelle vidéo</figcaption>
                     </figure>
-                    <button type="button" class="adm-btn-danger px-2! py-1! text-[11px]!" onclick={clearVideo}>✕ Retirer</button>
+                    <button type="button" class="adm-btn-ghost adm-btn-sm" onclick={clearVideo}>{@html adminIconSvg("x")}Annuler</button>
                 </div>
             {/if}
         </div>
         {#if thumbVideoUrl}
-            <label class="adm-check mb-2.5">
+            <label class="adm-check">
                 <input type="checkbox" name="thumb_video_remove" bind:checked={removeVideo} disabled={!!videoPreview} />
                 Supprimer la vidéo (revenir à la vignette fixe)
             </label>
@@ -322,167 +347,181 @@
         />
     </div>
 
-    <div>
-        <span class="adm-label">Images & vidéos ({items.filter(i => !i.removed).length})</span>
+    <div class="adm-field" data-field="pictures" data-label="Galerie">
+        <span class="adm-label">Galerie <span class="adm-count adm-mono">{items.filter(i => !i.removed).length}</span></span>
         <!-- Tells the server the media editor ran, even when the list is empty. -->
         <input type="hidden" name="picture_order_present" value="1" />
-        {#if items.length > 0}
-            <p class="text-[12.5px] text-muted mb-2.5">L'ordre des lignes définit l'ordre d'affichage sur la page du projet : glisse-dépose pour réordonner. La légende sert de texte alternatif et s'affiche sous le média.</p>
-            <ul class="flex flex-col gap-2.5 mb-4 list-none p-0">
-                {#each items as item, i (item.key)}
-                    <li
-                        class="adm-row items-stretch!"
-                        class:dragging={dragIndex === i}
-                        class:media-removed={item.removed}
-                        animate:flip={{ duration: 200 }}
-                        ondragover={e => handleDragOver(e, i)}
-                    >
-                        {#if !item.removed}
-                            <input type="hidden" name="picture_order" value={tokens[i]} />
-                        {/if}
-                        <span
-                            bind:this={grips[item.key]}
-                            class="adm-grip self-center"
-                            role="button"
-                            tabindex="0"
-                            draggable="true"
-                            aria-label={`Déplacer ${rowLabel(item)}`}
-                            title="Glisser pour réordonner (ou flèches ↑ ↓)"
-                            ondragstart={e => handleDragStart(e, i)}
-                            ondragend={() => (dragIndex = null)}
-                            onkeydown={e => handleKey(e, i)}
-                        >⠿</span>
-                        <div class="media-preview self-center shrink-0 relative">
-                            {#if item.youtube}
-                                <img src={youtubeThumbnail(youtubeId(item.url) ?? "", true)} alt={rowLabel(item)} loading="lazy" />
-                                <span class="yt-badge" aria-hidden="true">&#9654;</span>
-                            {:else if item.file ? item.file.type.startsWith("video/") : isVideo(item.name ?? "")}
-                                <video src={item.url} muted playsinline preload="metadata"></video>
-                            {:else}
-                                <img src={item.url} alt={rowLabel(item)} loading="lazy" />
-                            {/if}
-                        </div>
-                        <div class="flex flex-col gap-1.5 flex-1 min-w-50">
-                            {#if item.youtube}
-                                <a href={item.url} target="_blank" rel="noopener" class="text-[11.5px] text-accent hover:underline truncate">YouTube : {item.name}</a>
-                            {:else if item.name}
-                                <a href={item.url} target="_blank" rel="noopener" class="text-[11.5px] text-accent hover:underline truncate">{item.name}</a>
-                            {:else}
-                                <span class="text-[11.5px] font-bold text-accent truncate">Nouveau : {item.file?.name}</span>
-                            {/if}
-                            <div class="flex gap-2 flex-wrap">
-                                <label class="flex items-center gap-1.5 flex-1 min-w-40">
-                                    <span class="fi fi-fr rounded-[2px] shrink-0" title="Légende française" aria-hidden="true"></span>
-                                    <input
-                                        type="text"
-                                        name="picture_alt_fr"
-                                        class="adm-input text-[12px]!"
-                                        placeholder="Légende / texte alternatif (FR)"
-                                        aria-label={`Légende française de ${rowLabel(item)}`}
-                                        disabled={item.removed}
-                                        bind:value={item.captionFr}
-                                    />
-                                </label>
-                                <label class="flex items-center gap-1.5 flex-1 min-w-40">
-                                    <span class="fi fi-gb rounded-[2px] shrink-0" title="Légende anglaise" aria-hidden="true"></span>
-                                    <input
-                                        type="text"
-                                        name="picture_alt_en"
-                                        class="adm-input text-[12px]!"
-                                        placeholder="Caption / alt text (EN)"
-                                        aria-label={`Légende anglaise de ${rowLabel(item)}`}
-                                        disabled={item.removed}
-                                        bind:value={item.captionEn}
-                                    />
-                                </label>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            class="adm-btn-danger px-2.5! self-center"
-                            aria-label={`${item.removed ? "Restaurer" : "Retirer"} ${rowLabel(item)}`}
-                            onclick={() => removeItem(i)}
-                        >{item.removed ? "↺" : "✕"}</button>
-                    </li>
-                {/each}
-            </ul>
-        {/if}
-        <label for="pictures" class="text-[12.5px] text-muted block mb-1.5">Ajouter des fichiers (10 max au total ; si vide à la création, la vignette est utilisée) :</label>
-        <input
-            id="pictures"
-            name="pictures"
-            type="file"
-            multiple
-            accept="image/png,image/jpeg,image/webp,image/gif,image/avif,video/mp4,video/quicktime"
-            class="adm-file"
-            bind:this={picturesInput}
-            onchange={onPicturesChange}
-        />
-
-        <label for="youtube_url" class="text-[12.5px] text-muted block mt-4 mb-1.5">
-            Ou ajouter une vid&eacute;o YouTube (elle s'ins&egrave;re dans la liste ci-dessus et se r&eacute;ordonne comme les autres m&eacute;dias) :
-        </label>
-        <div class="flex gap-2 flex-wrap">
-            <input
-                id="youtube_url"
-                type="url"
-                inputmode="url"
-                class="adm-input flex-1 min-w-60"
-                placeholder="https://youtu.be/0IFQUaUi2pw"
-                aria-describedby="youtube_help"
-                bind:value={youtubeUrl}
-                oninput={() => (youtubeError = "")}
-                onkeydown={onYouTubeKey}
-            />
-            <button type="button" class="adm-btn-outline" onclick={addYouTube}>+ Ajouter la vid&eacute;o</button>
-        </div>
-        <p id="youtube_help" class="text-[12px] mt-1.5 {youtubeError ? 'text-[#f27b81]' : 'text-muted'}">
-            {youtubeError || "Le lien n'est pas un fichier : il ne compte pas dans la limite de 10 fichiers. Le projet doit toutefois garder au moins une image ou vidéo importée."}
+        <p class="adm-help">
+            Images, vidéos et liens YouTube de la page du projet, dans l'ordre d'affichage : glisse les lignes pour réordonner.
+            La légende sert de texte alternatif et s'affiche sous le média.
         </p>
+        <ul class="adm-list" hidden={items.length === 0}>
+            {#each items as item, i (item.key)}
+                <li
+                    class="adm-row media-row"
+                    class:dragging={dragIndex === i}
+                    class:media-removed={item.removed}
+                    animate:flip={{ duration: 180 }}
+                    ondragover={e => handleDragOver(e, i)}
+                >
+                    {#if !item.removed}
+                        <input type="hidden" name="picture_order" value={tokens[i]} />
+                    {/if}
+                    <span
+                        bind:this={grips[item.key]}
+                        class="adm-grip"
+                        role="button"
+                        tabindex="0"
+                        draggable="true"
+                        aria-label={`Déplacer ${rowLabel(item)} (position ${i + 1} sur ${items.length}, flèches haut et bas)`}
+                        title="Glisser pour réordonner (ou flèches ↑ ↓)"
+                        ondragstart={e => handleDragStart(e, i)}
+                        ondragend={() => (dragIndex = null)}
+                        onkeydown={e => handleKey(e, i)}
+                    >{@html adminIconSvg("grip")}</span>
+                    <div class="media-preview">
+                        {#if item.youtube}
+                            <img src={youtubeThumbnail(youtubeId(item.url) ?? "", true)} alt={rowLabel(item)} loading="lazy" />
+                            <span class="yt-badge" aria-hidden="true">{@html adminIconSvg("play")}</span>
+                        {:else if item.file ? item.file.type.startsWith("video/") : isVideo(item.name ?? "")}
+                            <video src={item.url} muted playsinline preload="metadata"></video>
+                        {:else}
+                            <img src={item.url} alt={rowLabel(item)} loading="lazy" />
+                        {/if}
+                    </div>
+                    <div class="media-body">
+                        <div class="media-meta">
+                            {#if item.youtube}
+                                <span class="adm-badge media-kind">YouTube</span>
+                                <a href={item.url} target="_blank" rel="noopener" class="media-name adm-mono">{item.name}</a>
+                            {:else if item.name}
+                                <a href={item.url} target="_blank" rel="noopener" class="media-name adm-mono">{item.name}</a>
+                            {:else}
+                                <span class="adm-badge media-kind is-new">nouveau</span>
+                                <span class="media-name adm-mono">{item.file?.name}</span>
+                                <span class="adm-mono media-size">{megabytes(item.file?.size ?? 0)}</span>
+                            {/if}
+                            {#if item.removed}
+                                <span class="adm-badge media-kind is-removed">supprimé à l'enregistrement</span>
+                            {/if}
+                        </div>
+                        <div class="media-captions">
+                            <label>
+                                <span class="fi fi-fr rounded-[2px] shrink-0" title="Légende française" aria-hidden="true"></span>
+                                <input
+                                    type="text"
+                                    name="picture_alt_fr"
+                                    class="adm-input"
+                                    placeholder="Légende / texte alternatif"
+                                    aria-label={`Légende française de ${rowLabel(item)}`}
+                                    disabled={item.removed}
+                                    bind:value={item.captionFr}
+                                />
+                            </label>
+                            <label>
+                                <span class="fi fi-gb rounded-[2px] shrink-0" title="Légende anglaise" aria-hidden="true"></span>
+                                <input
+                                    type="text"
+                                    name="picture_alt_en"
+                                    class="adm-input"
+                                    placeholder="Caption / alt text"
+                                    lang="en"
+                                    aria-label={`Légende anglaise de ${rowLabel(item)}`}
+                                    disabled={item.removed}
+                                    bind:value={item.captionEn}
+                                />
+                            </label>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        class="adm-btn-ghost adm-btn-sm adm-btn-icon"
+                        title={item.removed ? "Restaurer" : "Retirer"}
+                        aria-label={`${item.removed ? "Restaurer" : "Retirer"} ${rowLabel(item)}`}
+                        onclick={() => removeItem(i)}
+                    >{@html adminIconSvg(item.removed ? "undo" : "x")}</button>
+                </li>
+            {/each}
+        </ul>
+
+        <div class="media-add">
+            <div class="adm-field">
+                <label for="pictures" class="adm-label">Ajouter des fichiers</label>
+                <input
+                    id="pictures"
+                    name="pictures"
+                    type="file"
+                    multiple
+                    accept="image/png,image/jpeg,image/webp,image/gif,image/avif,video/mp4,video/quicktime"
+                    class="adm-file"
+                    aria-describedby="pictures_help"
+                    bind:this={picturesInput}
+                    onchange={onPicturesChange}
+                />
+                <p id="pictures_help" class="adm-help">10 fichiers maximum au total. À la création, sans fichier, la vignette est utilisée.</p>
+            </div>
+            <div class="adm-field">
+                <label for="youtube_url" class="adm-label">Ou une vidéo YouTube</label>
+                <div class="flex gap-2">
+                    <input
+                        id="youtube_url"
+                        type="url"
+                        inputmode="url"
+                        class="adm-input adm-input-mono flex-1 min-w-0"
+                        placeholder="https://youtu.be/0IFQUaUi2pw"
+                        aria-describedby="youtube_help"
+                        aria-invalid={youtubeError ? "true" : undefined}
+                        data-pending="Lien YouTube saisi mais pas ajouté : clique sur « Ajouter » ou vide le champ."
+                        bind:value={youtubeUrl}
+                        oninput={() => (youtubeError = "")}
+                        onkeydown={onYouTubeKey}
+                    />
+                    <button type="button" class="adm-btn-outline" onclick={addYouTube}>{@html adminIconSvg("plus")}Ajouter</button>
+                </div>
+                {#if youtubeError}
+                    <p id="youtube_help" class="adm-error" role="alert">{youtubeError}</p>
+                {:else}
+                    <p id="youtube_help" class="adm-help">Un lien ne compte pas dans les 10 fichiers, mais le projet doit garder au moins une image ou vidéo importée.</p>
+                {/if}
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
-    .adm-grip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.75rem;
-        height: 1.75rem;
-        font-size: 1.1rem;
-        line-height: 1;
-        color: var(--muted);
-        cursor: grab;
-        user-select: none;
-        border-radius: 0.5rem;
-        transition: color 0.2s, background-color 0.2s;
-    }
-
-    .adm-grip:hover,
-    .adm-grip:focus-visible {
-        color: var(--accent);
-        background-color: color-mix(in srgb, var(--accent) 12%, transparent);
-        outline: none;
-    }
-
-    .adm-grip:active {
-        cursor: grabbing;
-    }
-
-    li.dragging {
-        opacity: 0.55;
-        border-color: var(--accent);
-    }
-
     /* Marked for removal: grayed out until saved (or restored). */
-    li.media-removed {
+    li.media-removed .media-preview,
+    li.media-removed .media-captions {
         opacity: 0.45;
-        border-color: rgba(236, 50, 59, 0.6);
     }
 
-    li.media-removed .media-preview img,
-    li.media-removed .media-preview video {
+    li.media-removed .media-preview :is(img, video) {
         filter: grayscale(1);
+    }
+
+    .media-row {
+        align-items: flex-start;
+        flex-wrap: nowrap;
+    }
+
+    .media-row > :global(.adm-grip) {
+        margin-top: 18px;
+    }
+
+    .media-preview {
+        position: relative;
+        flex: none;
+    }
+
+    .media-preview img,
+    .media-preview video {
+        display: block;
+        width: 112px;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        border-radius: 4px;
+        background: var(--a-side);
+        border: 1px solid var(--a-line);
     }
 
     /* Marks a row as a YouTube link rather than an uploaded still. */
@@ -492,19 +531,106 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.85rem;
         color: #fff;
         background: rgba(3, 15, 32, 0.45);
-        border-radius: 0.5rem;
+        border-radius: 4px;
         pointer-events: none;
     }
 
-    .media-preview img,
-    .media-preview video {
-        width: 6.5rem;
-        height: 4.25rem;
-        object-fit: cover;
-        border-radius: 0.5rem;
-        background: var(--night);
+    .yt-badge :global(svg) {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+    }
+
+    .media-body {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .media-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .media-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--a-dim);
+        text-decoration: none;
+    }
+
+    a.media-name:hover {
+        color: var(--a-accent);
+        text-decoration: underline;
+    }
+
+    .media-size {
+        flex: none;
+        color: var(--a-faint);
+    }
+
+    .media-kind {
+        flex: none;
+        height: 20px;
+        font-size: 11.5px;
+    }
+
+    .media-kind.is-new,
+    .media-new-label {
+        color: var(--a-add);
+        border-color: color-mix(in srgb, var(--a-add) 45%, transparent);
+    }
+
+    .media-kind.is-removed {
+        color: var(--a-err);
+        border-color: var(--a-err-line);
+    }
+
+    .media-captions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 6px;
+    }
+
+    .media-captions label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .media-captions :global(.adm-input) {
+        min-height: 30px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        font-size: 13px;
+    }
+
+    .media-add {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px 18px;
+        margin-top: 6px;
+    }
+
+    :global(.adm-media-card.is-new) {
+        border-color: color-mix(in srgb, var(--a-add) 45%, transparent);
+    }
+
+    @media (max-width: 600px) {
+        .media-row {
+            flex-wrap: wrap;
+        }
+
+        .media-body {
+            flex-basis: 100%;
+        }
     }
 </style>

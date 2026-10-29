@@ -1,5 +1,7 @@
 ---
 import AdminLayout from "@layouts/AdminLayout.astro";
+import AdminIcon from "@components/admin/AdminIcon.astro";
+import EditorHeader from "@components/admin/EditorHeader.astro";
 import type { AdminProjectRow } from "@data/admin/projects";
 import { CATEGORIES, CONTEXTS } from "@data/categories";
 import type { ProjectCategory, ProjectContext } from "@data/models";
@@ -12,44 +14,105 @@ interface Props {
 
 const { projects, notice, error } = Astro.props;
 
-const categoriesLabel = (ids: string[]) => ids.map(id => CATEGORIES[id as ProjectCategory]?.label.fr ?? id).join(", ");
+const categoryLabel = (id: string) => CATEGORIES[id as ProjectCategory]?.label.fr ?? id;
+const categoryDot = (id: string) => CATEGORIES[id as ProjectCategory]?.dot ?? "currentColor";
 const contextLabel = (id: string) => CONTEXTS[id as ProjectContext]?.fr ?? id;
+
+const flagsOf = (p: AdminProjectRow) => [p.featured && "featured", p.carousel && "carousel", p.hidden && "hidden", !p.hidden && "visible"].filter(Boolean).join(" ");
+const filters = [
+    { flag: "", label: "Tous", count: projects.length },
+    { flag: "visible", label: "En ligne", count: projects.filter(p => !p.hidden).length },
+    { flag: "featured", label: "Vitrine", count: projects.filter(p => p.featured).length },
+    { flag: "hidden", label: "Masqués", count: projects.filter(p => p.hidden).length },
+];
 ---
 
-<AdminLayout title="Projets" {notice}>
-    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
-        <h1 class="text-[24px] font-bold text-heading">Projets <span class="text-muted text-[15px] font-normal">({projects.length})</span></h1>
-        <a href="/admin/projects/new" class="adm-btn">+ Nouveau projet</a>
+<AdminLayout title="Projets" {notice} {error}>
+    <EditorHeader title="Projets" count={projects.length}>
+        <a slot="actions" href="/admin/projects/new" class="adm-btn"><AdminIcon name="plus" />Nouveau projet</a>
+    </EditorHeader>
+
+    <div class="adm-toolbar">
+        <label class="adm-search">
+            <AdminIcon name="search" />
+            <input type="search" class="adm-input" placeholder="Rechercher un nom, un slug, une année…" data-filter="#adm-projects" aria-label="Rechercher un projet" autocomplete="off">
+        </label>
+        <div class="adm-segment" role="group" aria-label="Filtrer par état">
+            {filters.map(f => (
+                <button type="button" data-filter-flag={f.flag} data-filter-for="#adm-projects" aria-pressed={f.flag === "" ? "true" : "false"}>
+                    {f.label} <span class="adm-mono">{f.count}</span>
+                </button>
+            ))}
+        </div>
     </div>
 
-    {error && <p class="adm-banner adm-banner-error">{error}</p>}
-
-    <div class="flex flex-col gap-2.5">
-        {projects.map(project => (
-            <div class="adm-row">
-                <img src={project.thumbUrl} alt="" class="w-16 h-16 rounded-sm object-cover flex-none" loading="lazy">
-                <div class="flex-1 min-w-55">
-                    <div class="text-[15px] font-bold text-heading">
-                        {project.name}
-                        {project.featured && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-accent border border-accent rounded-sm px-1.5 py-0.5 align-middle">vitrine</span>}
-                        {project.carousel && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-heading border border-edge rounded-sm px-1.5 py-0.5 align-middle">carousel</span>}
-                        {project.hidden && <span class="ml-2 text-[10.5px] uppercase tracking-wider text-muted border border-edge rounded-sm px-1.5 py-0.5 align-middle">masqué</span>}
-                    </div>
-                    <div class="text-[12.5px] text-muted mt-0.5">
-                        /{project.slug} · {project.year} · {categoriesLabel(project.categories)} · {contextLabel(project.context)}
-                    </div>
-                </div>
-                {!project.hidden && <a href={`/projects/${project.slug}`} target="_blank" rel="noopener" class="text-[13px] text-muted hover:text-accent transition-colors">Voir ↗</a>}
-                <a href={`/admin/projects/${project.id}`} class="adm-btn-outline">Modifier</a>
-                <form method="POST" data-confirm={`Supprimer le projet « ${project.name} » ? Ses traductions et technologies seront supprimées avec lui.`}>
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value={project.id}>
-                    <button type="submit" class="adm-btn-danger">Supprimer</button>
-                </form>
+    <div id="adm-projects">
+        {projects.length > 0 ? (
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th scope="col"><span class="adm-sr-only">Vignette</span></th>
+                        <th scope="col">Projet</th>
+                        <th scope="col">Année</th>
+                        <th scope="col">Catégories</th>
+                        <th scope="col">Contexte</th>
+                        <th scope="col">État</th>
+                        <th scope="col"><span class="adm-sr-only">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {projects.map(project => (
+                        <tr
+                            class:list={{ "is-hidden": project.hidden }}
+                            data-filter-text={[project.name, project.slug, project.year, ...project.categories.map(categoryLabel), contextLabel(project.context)].join(" ").toLocaleLowerCase("fr")}
+                            data-flags={flagsOf(project)}
+                        >
+                            <td class="adm-cell-thumb"><img src={project.thumbUrl} alt="" class="adm-thumb" loading="lazy"></td>
+                            <td class="adm-cell-wide">
+                                <a href={`/admin/projects/${project.id}`} class="adm-row-title">{project.name}</a>
+                                <span class="adm-mono">/{project.slug}</span>
+                            </td>
+                            <td class="adm-cell-wide"><span class="adm-mono">{project.year}</span></td>
+                            <td class="adm-cell-wide">
+                                <span class="adm-tags">
+                                    {project.categories.map(id => (
+                                        <span class="adm-badge"><span class="w-2 h-2 rounded-full" style={`background:${categoryDot(id)}`} aria-hidden="true"></span>{categoryLabel(id)}</span>
+                                    ))}
+                                </span>
+                            </td>
+                            <td class="adm-cell-wide">{contextLabel(project.context)}</td>
+                            <td class="adm-cell-wide">
+                                <span class="adm-tags">
+                                    {project.featured && <span class="adm-badge adm-badge-featured"><AdminIcon name="star" />Vitrine</span>}
+                                    {project.carousel && <span class="adm-badge adm-badge-carousel"><AdminIcon name="carousel" />Carrousel</span>}
+                                    {project.hidden && <span class="adm-badge adm-badge-hidden"><AdminIcon name="eyeOff" />Masqué</span>}
+                                </span>
+                            </td>
+                            <td class="adm-cell-actions">
+                                <div>
+                                    {!project.hidden && (
+                                        <a href={`/projects/${project.slug}`} target="_blank" rel="noopener" class="adm-btn-ghost adm-btn-sm adm-btn-icon" title="Voir sur le site" aria-label={`Voir ${project.name} sur le site`}><AdminIcon name="external" /></a>
+                                    )}
+                                    <form method="POST" data-async data-confirm={`Supprimer le projet « ${project.name} » ? Ses traductions, ses médias et ses technologies seront supprimés avec lui. Cette action est irréversible.`}>
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value={project.id}>
+                                        <button type="submit" class="adm-btn-danger adm-btn-sm adm-btn-icon" title="Supprimer" aria-label={`Supprimer ${project.name}`}><AdminIcon name="trash" /></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        ) : (
+            <div class="adm-empty">
+                <strong>Aucun projet pour le moment.</strong>
+                Crée le premier avec « Nouveau projet » : il apparaîtra sur le site dès l'enregistrement.
             </div>
-        ))}
-        {projects.length === 0 && (
-            <p class="text-[14px] text-body">Aucun projet pour le moment.</p>
         )}
+        <div class="adm-empty" data-filter-empty hidden>
+            <strong>Aucun projet ne correspond.</strong>
+            Change la recherche ou le filtre (Échap vide la recherche).
+        </div>
     </div>
 </AdminLayout>

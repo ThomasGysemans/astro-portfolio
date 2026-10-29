@@ -1,5 +1,9 @@
 ---
+import "flag-icons/css/flag-icons.min.css";
 import AdminLayout from "@layouts/AdminLayout.astro";
+import AdminIcon from "@components/admin/AdminIcon.astro";
+import EditorHeader from "@components/admin/EditorHeader.astro";
+import type { FieldErrors } from "@data/admin/forms";
 
 export type ReviewFormValues = {
     quote: string,
@@ -16,76 +20,92 @@ interface Props {
     id?: string;
     values: ReviewFormValues;
     error?: string;
+    fields?: FieldErrors;
 }
 
-const { id, values, error } = Astro.props;
+const { id, values, error, fields } = Astro.props;
 const isNew = !id;
+const heading = isNew ? "Nouvel avis" : values.company || "Avis";
 const title = isNew ? "Nouvel avis" : `Avis : ${values.company}`;
+
+const texts = [
+    { name: "quote", label: "Citation", fr: values.quote, en: values.quoteEn, required: true, area: 5 },
+    { name: "role", label: "Rôle", hint: "Gérant, Fondateur…", fr: values.role, en: values.roleEn },
+    { name: "company", label: "Entreprise", fr: values.company, en: values.companyEn, required: true },
+];
 ---
 
-<AdminLayout {title}>
-    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
-        <h1 class="text-[24px] font-bold text-heading">{isNew ? "Nouvel avis" : `Avis : ${values.company}`}</h1>
-        <a href="/admin/reviews" class="text-[13px] text-muted hover:text-accent transition-colors">← Retour à la liste</a>
-    </div>
+<AdminLayout {title} {error} {fields}>
+    <EditorHeader title={heading} crumbs={[{ label: "Avis clients", href: "/admin/reviews" }]}>
+        <button slot="actions" type="submit" form="review-form" class="adm-btn"><AdminIcon name="save" />{isNew ? "Créer l'avis" : "Enregistrer"}</button>
+    </EditorHeader>
 
-    {error && <p class="adm-banner adm-banner-error">{error}</p>}
-
-    <form method="POST" autocomplete="off" class="flex flex-col gap-6 max-w-160">
-        <section class="adm-card flex flex-col gap-4">
-            <h2 class="text-[16px] font-bold text-heading">Avis (français)</h2>
-            <div>
-                <label for="quote" class="adm-label">Citation</label>
-                <textarea id="quote" name="quote" class="adm-input" required>{values.quote}</textarea>
-                <p class="text-[12px] text-muted mt-1.5">Sans guillemets : ils sont ajoutés automatiquement à l'affichage.</p>
+    <form id="review-form" method="POST" autocomplete="off" class="adm-doc" data-async data-primary>
+        <section class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Avis</h2>
+                <p>Affiché sur /freelance. C'est ta reformulation des retours du client : reste fidèle à ce qu'il a dit.</p>
+                <p>Sans guillemets : ils sont ajoutés à l'affichage. L'anglais est facultatif et retombe sur le français.</p>
             </div>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-                <div class="adm-field">
-                    <label for="role" class="adm-label">Rôle (Gérant, Fondateur…)</label>
-                    <input id="role" name="role" class="adm-input" value={values.role}>
-                </div>
-                <div class="adm-field">
-                    <label for="company" class="adm-label">Entreprise</label>
-                    <input id="company" name="company" class="adm-input" value={values.company} required>
-                </div>
-                <div class="adm-field">
-                    <label for="year" class="adm-label">Année</label>
-                    <input id="year" name="year" type="number" class="adm-input" value={values.year} required>
-                </div>
-                <div class="adm-field">
-                    <label for="rating" class="adm-label">Note (étoiles)</label>
-                    <select id="rating" name="rating" class="adm-input" required>
-                        {[5, 4, 3, 2, 1].map(n => (
-                            <option value={String(n)} selected={values.rating === String(n)}>{"★".repeat(n)}{"☆".repeat(5 - n)} ({n}/5)</option>
-                        ))}
-                    </select>
+            <div class="adm-section-body">
+                <div class="adm-parallel">
+                    <div class="adm-parallel-head"><span class="fi fi-fr" aria-hidden="true"></span>Français</div>
+                    <div class="adm-parallel-head"><span class="fi fi-gb" aria-hidden="true"></span>Anglais <em>vide = texte français</em></div>
+                    {texts.map(row => (
+                        <>
+                            <div class="adm-field">
+                                <label for={row.name} class="adm-label">
+                                    <span class="fi fi-fr rounded-[2px]" aria-hidden="true"></span>{row.label}
+                                    {row.hint && <span class="adm-label-hint">{row.hint}</span>}
+                                </label>
+                                {row.area
+                                    ? <textarea id={row.name} name={row.name} class="adm-input" rows={row.area} required={row.required}>{row.fr}</textarea>
+                                    : <input id={row.name} name={row.name} class="adm-input" value={row.fr} required={row.required}>}
+                            </div>
+                            <div class="adm-field">
+                                <label for={`${row.name}_en`} class="adm-label">
+                                    <span class="fi fi-gb rounded-[2px]" aria-hidden="true"></span>{row.label}
+                                    <span class="adm-sr-only">(anglais)</span>
+                                </label>
+                                {row.area
+                                    ? <textarea id={`${row.name}_en`} name={`${row.name}_en`} class="adm-input" rows={row.area} lang="en">{row.en}</textarea>
+                                    : <input id={`${row.name}_en`} name={`${row.name}_en`} class="adm-input" value={row.en} lang="en">}
+                            </div>
+                        </>
+                    ))}
                 </div>
             </div>
         </section>
 
-        <section class="adm-card flex flex-col gap-4">
-            <div>
-                <h2 class="text-[16px] font-bold text-heading">Avis (anglais)</h2>
-                <p class="text-[12.5px] text-muted mt-1">Facultatif : tant qu'un champ est vide, le site anglais retombe sur le texte français correspondant.</p>
+        <section class="adm-section">
+            <div class="adm-section-intro">
+                <h2>Détails</h2>
+                <p>Les avis sont triés du plus récent au plus ancien.</p>
             </div>
-            <div>
-                <label for="quote_en" class="adm-label">Citation</label>
-                <textarea id="quote_en" name="quote_en" class="adm-input">{values.quoteEn}</textarea>
-            </div>
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-                <div class="adm-field">
-                    <label for="role_en" class="adm-label">Rôle</label>
-                    <input id="role_en" name="role_en" class="adm-input" value={values.roleEn}>
-                </div>
-                <div class="adm-field">
-                    <label for="company_en" class="adm-label">Entreprise</label>
-                    <input id="company_en" name="company_en" class="adm-input" value={values.companyEn}>
+            <div class="adm-section-body">
+                <div class="adm-grid">
+                    <div class="adm-field">
+                        <label for="year" class="adm-label">Année</label>
+                        <input id="year" name="year" type="number" class="adm-input adm-input-mono" value={values.year} required>
+                    </div>
+                    <div class="adm-field" data-field="rating" data-label="Note">
+                        <span class="adm-label" id="rating-label">Note</span>
+                        <div class="adm-rating" role="radiogroup" aria-labelledby="rating-label">
+                            {[1, 2, 3, 4, 5].map(n => (
+                                <label title={`${n}/5`}>
+                                    <input type="radio" name="rating" value={String(n)} checked={values.rating === String(n)} required aria-label={`${n} sur 5`}>
+                                    <span aria-hidden="true">★</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <div>
-            <button type="submit" class="adm-btn">{isNew ? "Créer l'avis" : "Enregistrer"}</button>
+        <div class="adm-form-foot">
+            <button type="submit" class="adm-btn"><AdminIcon name="save" />{isNew ? "Créer l'avis" : "Enregistrer"}</button>
+            <span class="adm-help"><span class="adm-mono">⌘S</span> / <span class="adm-mono">Ctrl+S</span> enregistre depuis n'importe quel champ.</span>
         </div>
     </form>
 </AdminLayout>

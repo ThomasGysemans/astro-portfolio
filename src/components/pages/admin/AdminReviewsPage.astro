@@ -1,5 +1,8 @@
 ---
+import "flag-icons/css/flag-icons.min.css";
 import AdminLayout from "@layouts/AdminLayout.astro";
+import AdminIcon from "@components/admin/AdminIcon.astro";
+import EditorHeader from "@components/admin/EditorHeader.astro";
 
 export type AdminReviewRow = {
     id: string,
@@ -8,6 +11,7 @@ export type AdminReviewRow = {
     company: string,
     year: number,
     rating: number,
+    translated: boolean,
 };
 
 interface Props {
@@ -17,36 +21,63 @@ interface Props {
 }
 
 const { reviews, notice, error } = Astro.props;
-
-const excerpt = (quote: string) => quote.length > 120 ? quote.slice(0, 120) + "…" : quote;
 ---
 
-<AdminLayout title="Avis" {notice}>
-    <div class="flex items-center justify-between gap-4 mb-7 flex-wrap">
-        <h1 class="text-[24px] font-bold text-heading">Avis clients <span class="text-muted text-[15px] font-normal">({reviews.length})</span></h1>
-        <a href="/admin/reviews/new" class="adm-btn">+ Nouvel avis</a>
-    </div>
+<AdminLayout title="Avis" {notice} {error}>
+    <EditorHeader title="Avis clients" count={reviews.length}>
+        <a slot="actions" href="/admin/reviews/new" class="adm-btn"><AdminIcon name="plus" />Nouvel avis</a>
+    </EditorHeader>
 
-    {error && <p class="adm-banner adm-banner-error">{error}</p>}
-
-    <div class="flex flex-col gap-2.5">
-        {reviews.map(review => (
-            <div class="adm-row">
-                <div class="flex-1 min-w-60">
-                    <div class="text-[14px] font-bold text-heading">
-                        {review.company} <span class="text-muted font-normal">· {review.role} · {review.year}</span>
-                        <span class="text-accent ml-1 tracking-[1px]" title={`${review.rating}/5`} aria-label={`Note : ${review.rating} sur 5`}>{"★".repeat(review.rating)}<span class="text-muted">{"☆".repeat(5 - review.rating)}</span></span>
-                    </div>
-                    <p class="text-[13px] text-body mt-1 italic">« {excerpt(review.quote)} »</p>
-                </div>
-                <a href={`/admin/reviews/${review.id}`} class="adm-btn-outline">Modifier</a>
-                <form method="POST" data-confirm={`Supprimer l'avis de ${review.company} ?`}>
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value={review.id}>
-                    <button type="submit" class="adm-btn-danger">Supprimer</button>
-                </form>
-            </div>
-        ))}
-        {reviews.length === 0 && <p class="text-[14px] text-body">Aucun avis pour le moment.</p>}
-    </div>
+    {reviews.length > 0 ? (
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th scope="col">Client</th>
+                    <th scope="col">Année</th>
+                    <th scope="col">Note</th>
+                    <th scope="col">Avis</th>
+                    <th scope="col">Anglais</th>
+                    <th scope="col"><span class="adm-sr-only">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {reviews.map(review => (
+                    <tr>
+                        <td class="adm-cell-wide">
+                            <a href={`/admin/reviews/${review.id}`} class="adm-row-title">{review.company}</a>
+                            {review.role}
+                        </td>
+                        <td class="adm-cell-wide"><span class="adm-mono">{review.year}</span></td>
+                        <td class="adm-cell-wide">
+                            <span class="adm-stars" title={`${review.rating}/5`}>
+                                <span class="adm-sr-only">Note : {review.rating} sur 5</span>
+                                <span aria-hidden="true">{"★".repeat(review.rating)}</span><span class="adm-stars-off" aria-hidden="true">{"★".repeat(5 - review.rating)}</span>
+                            </span>
+                        </td>
+                        <td class="adm-cell-wide"><p class="adm-quote">« {review.quote} »</p></td>
+                        <td class="adm-cell-wide">
+                            {review.translated
+                                ? <span class="adm-badge"><span class="fi fi-gb rounded-[2px]" aria-hidden="true"></span>Traduit</span>
+                                : <span class="adm-badge adm-badge-hidden">Repli français</span>}
+                        </td>
+                        <td class="adm-cell-actions">
+                            <div>
+                                <form method="POST" data-async data-confirm={`Supprimer l'avis de ${review.company} ? Il disparaîtra de la page /freelance. Cette action est irréversible.`}>
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" value={review.id}>
+                                    <button type="submit" class="adm-btn-danger adm-btn-sm adm-btn-icon" title="Supprimer" aria-label={`Supprimer l'avis de ${review.company}`}><AdminIcon name="trash" /></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    ) : (
+        <div class="adm-empty">
+            <strong>Aucun avis pour le moment.</strong>
+            Ajoute le premier avec « Nouvel avis » : il s'affichera sur la page /freelance.
+        </div>
+    )}
 </AdminLayout>
+

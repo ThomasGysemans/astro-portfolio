@@ -1,5 +1,7 @@
 ---
 import AdminLayout from "@layouts/AdminLayout.astro";
+import AdminIcon from "@components/admin/AdminIcon.astro";
+import EditorHeader from "@components/admin/EditorHeader.astro";
 import { GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
 
 export type AdminTechnologyRow = {
@@ -7,6 +9,7 @@ export type AdminTechnologyRow = {
     name: string,
     color: string,
     group: string,
+    usage: number, // number of projects using it
 };
 
 interface Props {
@@ -16,51 +19,101 @@ interface Props {
 }
 
 const { technologies, notice, error } = Astro.props;
+
+// Grouped like on the public site; a group identifier unknown to
+// GROUP_TITLES (added from the PocketBase dashboard) still gets its rows.
+const known = new Set<string>(GROUP_ORDER);
+const groups = [
+    ...GROUP_ORDER.map(id => ({ id, title: GROUP_TITLES[id].fr })),
+    ...[...new Set(technologies.map(t => t.group))].filter(id => !known.has(id)).map(id => ({ id, title: id })),
+].map(group => ({ ...group, rows: technologies.filter(t => t.group === group.id) }))
+    .filter(group => group.rows.length > 0);
+
+const groupOptions = [...GROUP_ORDER.map(id => ({ id, title: GROUP_TITLES[id].fr }))];
+// `<input type=color>` only understands `#rrggbb`: a 3-digit colour (allowed by
+// the collection's pattern) would show as black, look modified forever and be
+// overwritten on save. Rendering the expanded form keeps value = defaultValue.
+const hex6 = (color: string) => {
+    const c = color.trim().toLowerCase();
+    if (/^#[0-9a-f]{6}$/.test(c)) return c;
+    if (/^#[0-9a-f]{3}$/.test(c)) return "#" + [...c.slice(1)].map(d => d + d).join("");
+    return "#000000";
+};
+const usageLabel = (n: number) => n === 0 ? "inutilisée" : n === 1 ? "1 projet" : `${n} projets`;
+const deleteMessage = (t: AdminTechnologyRow) => t.usage > 0
+    ? `Supprimer ${t.name} ? Elle est utilisée par ${usageLabel(t.usage)} et en sera retirée. Cette action est irréversible.`
+    : `Supprimer ${t.name} ? Elle n'est utilisée par aucun projet.`;
 ---
 
-<AdminLayout title="Technologies" {notice}>
-    <h1 class="text-[24px] font-bold text-heading mb-7">Technologies <span class="text-muted text-[15px] font-normal">({technologies.length})</span></h1>
+<AdminLayout title="Technologies" {notice} {error}>
+    <EditorHeader title="Technologies" count={technologies.length} />
 
-    {error && <p class="adm-banner adm-banner-error">{error}</p>}
+    <div class="adm-toolbar">
+        <label class="adm-search">
+            <AdminIcon name="search" />
+            <input type="search" class="adm-input" placeholder="Rechercher une technologie…" data-filter="#adm-techs" aria-label="Rechercher une technologie" autocomplete="off">
+        </label>
+        <span class="adm-help">Chaque ligne s'enregistre seule : son bouton s'allume dès qu'elle est modifiée.</span>
+    </div>
 
-    <form method="POST" autocomplete="off" class="adm-card flex flex-wrap items-end gap-4 mb-8">
-        <input type="hidden" name="action" value="create">
-        <div class="flex-1 min-w-40">
-            <label for="new-name" class="adm-label">Nom</label>
-            <input id="new-name" name="name" class="adm-input" required placeholder="Svelte, Rust…">
+    <form method="POST" autocomplete="off" class="adm-tech-row adm-tech-new" data-async data-shortcut aria-label="Nouvelle technologie">
+        <div class="adm-field" data-label="Couleur">
+            <input name="color" type="color" value="#619cf3" class="adm-color" aria-label="Couleur de la nouvelle technologie">
         </div>
-        <div>
-            <label for="new-color" class="adm-label">Couleur</label>
-            <input id="new-color" name="color" type="color" value="#619cf3" class="adm-input w-16! p-1! h-9.5 cursor-pointer">
+        <div class="adm-field" data-label="Nom">
+            <input name="name" class="adm-input" required placeholder="Nouvelle technologie (Svelte, Rust…)" aria-label="Nom de la nouvelle technologie">
         </div>
-        <div>
-            <label for="new-group" class="adm-label">Groupe</label>
-            <select id="new-group" name="group" class="adm-input w-auto!" required>
-                {GROUP_ORDER.map(groupId => (
-                    <option value={groupId}>{GROUP_TITLES[groupId].fr}</option>
-                ))}
+        <div class="adm-field" data-label="Groupe">
+            <select name="group" class="adm-input" required aria-label="Groupe de la nouvelle technologie">
+                {groupOptions.map(group => <option value={group.id}>{group.title}</option>)}
             </select>
         </div>
-        <button type="submit" class="adm-btn">Créer</button>
+        <span class="adm-usage"></span>
+        <div class="adm-tech-actions">
+            <button type="submit" name="action" value="create" class="adm-btn adm-btn-sm"><AdminIcon name="plus" />Ajouter</button>
+        </div>
     </form>
 
-    <div class="flex flex-col gap-2.5">
-        {technologies.map(tech => (
-            <form method="POST" autocomplete="off" class="adm-row">
-                <input type="hidden" name="action" value="update">
-                <input type="hidden" name="id" value={tech.id}>
-                <input name="name" value={tech.name} class="adm-input w-45! font-bold" required aria-label={`Nom de ${tech.name}`}>
-                <input name="color" type="color" value={tech.color} class="adm-input w-13! p-1! h-9.5 cursor-pointer" aria-label={`Couleur de ${tech.name}`}>
-                <select name="group" class="adm-input w-auto!" required aria-label={`Groupe de ${tech.name}`}>
-                    {GROUP_ORDER.map(groupId => (
-                        <option value={groupId} selected={tech.group === groupId}>{GROUP_TITLES[groupId].fr}</option>
-                    ))}
-                </select>
-                <span class="flex-1" />
-                <button type="submit" class="adm-btn-outline">Enregistrer</button>
-                <button type="submit" name="action" value="delete" class="adm-btn-danger" data-confirm={`Supprimer ${tech.name} ? Elle sera retirée de tous les projets qui l'utilisent.`}>Supprimer</button>
-            </form>
+    <div id="adm-techs">
+        {groups.map(group => (
+            <section data-filter-group>
+                <h2 class="adm-tech-group-title">{group.title} <span class="adm-count">{group.rows.length}</span></h2>
+                {group.rows.map(tech => (
+                    <form method="POST" autocomplete="off" class="adm-tech-row" data-async data-shortcut data-filter-text={tech.name.toLocaleLowerCase("fr")} aria-label={tech.name}>
+                        <input type="hidden" name="id" value={tech.id}>
+                        <div class="adm-field" data-label="Couleur">
+                            <input name="color" type="color" value={hex6(tech.color)} class="adm-color" aria-label={`Couleur de ${tech.name}`}>
+                        </div>
+                        <div class="adm-field" data-label="Nom">
+                            <input name="name" value={tech.name} class="adm-input" required aria-label={`Nom de ${tech.name}`}>
+                        </div>
+                        <div class="adm-field" data-label="Groupe">
+                            <select name="group" class="adm-input" required aria-label={`Groupe de ${tech.name}`}>
+                                {groupOptions.map(option => (
+                                    <option value={option.id} selected={tech.group === option.id}>{option.title}</option>
+                                ))}
+                                {!known.has(tech.group) && <option value={tech.group} selected>{tech.group}</option>}
+                            </select>
+                        </div>
+                        <span class="adm-usage">{usageLabel(tech.usage)}</span>
+                        <div class="adm-tech-actions">
+                            {/* First submit button = what Enter and ⌘S trigger. */}
+                            <button type="submit" name="action" value="update" class="adm-btn-outline adm-btn-sm adm-tech-save">Enregistrer</button>
+                            <button type="submit" name="action" value="delete" formnovalidate class="adm-btn-danger adm-btn-sm adm-btn-icon" data-confirm={deleteMessage(tech)} title="Supprimer" aria-label={`Supprimer ${tech.name}`}><AdminIcon name="trash" /></button>
+                        </div>
+                    </form>
+                ))}
+            </section>
         ))}
-        {technologies.length === 0 && <p class="text-[14px] text-body">Aucune technologie pour le moment.</p>}
+        {technologies.length === 0 && (
+            <div class="adm-empty">
+                <strong>Aucune technologie pour le moment.</strong>
+                Ajoute-la avec la ligne ci-dessus, puis associe-la aux projets depuis leur fiche.
+            </div>
+        )}
+        <div class="adm-empty" data-filter-empty hidden>
+            <strong>Aucune technologie ne correspond.</strong>
+            Échap vide la recherche.
+        </div>
     </div>
 </AdminLayout>

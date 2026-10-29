@@ -1,0 +1,13 @@
+---
+// One back-office interface icon (decorative: the control carries the label).
+import { ADMIN_ICONS, type AdminIconName } from "./icons";
+
+interface Props {
+    name: AdminIconName;
+    class?: string;
+}
+
+const { name, class: className } = Astro.props;
+---
+
+<svg class={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ADMIN_ICONS[name]} />

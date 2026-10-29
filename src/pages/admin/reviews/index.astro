@@ -1,36 +1,33 @@
 ---
 import AdminReviewsPage from "@components/pages/admin/AdminReviewsPage.astro";
-import { pbErrorMessage } from "@data/admin/forms";
+import { type FormResult, failure, formResponse, isAsyncRequest } from "@data/admin/forms";
 import { invalidateCache } from "@data/pb";
+import { listAdminReviews } from "@data/admin/reviews";
 
 const pb = Astro.locals.admin!;
 let error: string | undefined;
 
 if (Astro.request.method === "POST") {
     const data = await Astro.request.formData();
+    let result: FormResult = { error: "Action invalide." };
     if (data.get("action") === "delete") {
         try {
             await pb.collection("reviews").delete(String(data.get("id")));
             invalidateCache();
-            return Astro.redirect("/admin/reviews?deleted=1");
+            result = { redirect: "/admin/reviews?deleted=1" };
         } catch (err) {
-            error = pbErrorMessage(err);
+            result = failure(err);
         }
     }
+    if (isAsyncRequest(Astro.request)) return formResponse(result);
+    if ("redirect" in result) return Astro.redirect(result.redirect);
+    error = result.error;
 }
 
-const records = await pb.collection("reviews").getFullList({ sort: "-year" });
-const reviews = records.map(r => ({
-    id: r.id,
-    quote: r.quote_fr,
-    role: r.role_fr,
-    company: r.company_fr,
-    year: r.year,
-    rating: Math.min(5, Math.max(1, r.rating || 5)),
-}));
+const reviews = await listAdminReviews(pb);
 
 const notice = Astro.url.searchParams.has("deleted") ? "Avis supprimé."
-    : Astro.url.searchParams.has("saved") ? "Enregistré." : undefined;
+    : Astro.url.searchParams.has("saved") ? "Avis enregistré." : undefined;
 ---
 
 <AdminReviewsPage {reviews} {notice} {error} />

@@ -4,7 +4,7 @@ import type PocketBase from "pocketbase";
 import type { RecordModel } from "pocketbase";
 import { invalidateCache } from "@data/pb";
 import { type MediaEmbed, mergeMedia, parseEmbeds, youtubeId } from "@data/media";
-import { file, files, pbErrorMessage, text } from "./forms";
+import { type FormResult, FormError, ScopedError, failure, file, files, pbErrorMessage, text } from "./forms";
 
 // Everything is kept as strings (except the checkboxes) so the values can
 // round-trip between the form inputs and the POST handler as-is.
@@ -41,6 +41,7 @@ export type AdminTechRow = {
     id: string, // id of the `project_techs` junction row
     technologyId: string,
     name: string,
+    color: string,
     role: string,
 };
 
@@ -61,8 +62,10 @@ export type ProjectFormState = {
     thumbVideoUrl?: string,
     pictures: AdminPicture[],
     techs: AdminTechRow[],
-    availableTechs: { id: string, name: string }[],
+    availableTechs: TechOption[],
 };
+
+export type TechOption = { id: string, name: string, color: string };
 
 export type AdminProjectRow = {
     id: string,
@@ -77,7 +80,15 @@ export type AdminProjectRow = {
     thumbUrl: string,
 };
 
-type PostResult = { redirect: string } | { error: string, values: ProjectFormValues };
+type PostResult = FormResult<ProjectFormValues>;
+
+// The `projects` columns whose form control has another name.
+const PROJECT_CONTROLS: Record<string, string> = { team_size: "teamSize" };
+
+// Errors of a `projects` write, renamed after the form controls.
+function projectError(err: unknown): unknown {
+    return err instanceof ScopedError ? err : new ScopedError(err, column => PROJECT_CONTROLS[column] ?? column);
+}
 
 function emptyValues(): ProjectFormValues {
     return {
@@ -249,6 +260,19 @@ async function claimCarousel(pb: PocketBase, projectId: string): Promise<void> {
 
 // Writes the row of a locale, or removes it when `fields` is undefined.
 async function writeTranslation(pb: PocketBase, projectId: string, locale: "fr" | "en", fields?: Record<string, string>): Promise<void> {
+    try {
+        await writeTranslationRow(pb, projectId, locale, fields);
+    } catch (err) {
+        // The row's columns are the form's French controls, or `<column>_en`.
+        throw new ScopedError(
+            err,
+            column => locale === "en" ? `${column}_en` : column,
+            locale === "en" ? "Traduction anglaise" : "Textes français",
+        );
+    }
+}
+
+async function writeTranslationRow(pb: PocketBase, projectId: string, locale: "fr" | "en", fields?: Record<string, string>): Promise<void> {
     const rows = await pb.collection("project_translations").getFullList({
         filter: pb.filter("project = {:id} && locale = {:locale}", { id: projectId, locale }),
     });
@@ -290,9 +314,56 @@ async function upsertTranslations(pb: PocketBase, projectId: string, v: ProjectF
     } : undefined);
 }
 
-async function loadTechOptions(pb: PocketBase): Promise<{ id: string, name: string }[]> {
-    const records = await pb.collection("technologies").getFullList({ sort: "name", fields: "id,name" });
-    return records.map(r => ({ id: r.id, name: r.name }));
+// The whole techs list is saved with the project. The form submits the wanted
+// state — one `tech_id` (technology) and `tech_role` per row, in display order —
+// and it is reconciled against the junctions actually stored, keyed by
+// technology: the order gives the 1-based `position` (PocketBase treats 0 as
+// blank on required numbers). Since the async form is not re-rendered after a
+// failure, a retry replays the same request: reconciling makes that converge
+// instead of failing on an already-deleted junction or duplicating a new one.
+// Absent marker = the techs editor did not run (no JS): leave them untouched.
+// Exported for the unit tests only.
+export async function saveTechs(pb: PocketBase, projectId: string, data: FormData): Promise<void> {
+    if (!data.has("techs_present")) return;
+    const ids = data.getAll("tech_id").map(String);
+    const roles = data.getAll("tech_role").map(String);
+
+    const stored = await pb.collection("project_techs").getFullList({
+        filter: pb.filter("project = {:id}", { id: projectId }),
+        fields: "id,technology",
+    });
+    const byTech = new Map(stored.map(j => [j.technology as string, j.id]));
+    const wanted = new Set(ids);
+
+    // Each write is wrapped so the problem names the row it belongs to.
+    const step = async (where: string, write: () => Promise<unknown>) => {
+        try {
+            await write();
+        } catch (err) {
+            throw new FormError(`Technologies (${where}) : ${pbErrorMessage(err)}`, { techs: `${where} : ${pbErrorMessage(err)}` });
+        }
+    };
+
+    for (const [technology, junctionId] of byTech) {
+        if (!wanted.has(technology)) {
+            await step("retrait d'une technologie", () => pb.collection("project_techs").delete(junctionId));
+        }
+    }
+    const seen = new Set<string>();
+    for (let i = 0; i < ids.length; i++) {
+        if (seen.has(ids[i])) continue;
+        seen.add(ids[i]);
+        const fields = { role: roles[i] ?? "", position: seen.size };
+        const junctionId = byTech.get(ids[i]);
+        await step(`ligne ${seen.size}`, () => junctionId
+            ? pb.collection("project_techs").update(junctionId, fields)
+            : pb.collection("project_techs").create({ project: projectId, technology: ids[i], ...fields }));
+    }
+}
+
+async function loadTechOptions(pb: PocketBase): Promise<TechOption[]> {
+    const records = await pb.collection("technologies").getFullList({ sort: "name", fields: "id,name,color" });
+    return records.map(r => ({ id: r.id, name: r.name, color: r.color ?? "" }));
 }
 
 // The state of the form page; `undefined` when the project does not exist.
@@ -322,6 +393,7 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
         id: j.id,
         technologyId: j.technology,
         name: j.expand?.technology?.name ?? "?",
+        color: j.expand?.technology?.color ?? "",
         role: j.role,
     }));
     const usedTechIds = new Set(junctions.map(j => j.technology));
@@ -373,128 +445,135 @@ export async function handleProjectPost(pb: PocketBase, request: Request, id?: s
     // Read inside the handler, not in the page: parsing the multipart body
     // throws on a truncated or oversized upload (the serverless platform caps
     // the request size), and an uncaught throw there answers a bare 500.
+    // No `values` then: the page keeps the record (or the blank form) rather
+    // than overwriting it with empty strings.
     let data: FormData;
     try {
         data = await request.formData();
     } catch {
         return {
             error: "Impossible de lire le formulaire : l'envoi a été interrompu, probablement parce que les fichiers sont trop lourds. Allège les médias et réessaie.",
-            values: emptyValues(),
         };
     }
 
     const action = String(data.get("action") ?? "save");
     const values = parseForm(data);
+    if (action !== "save") {
+        return { error: "Action invalide.", values };
+    }
+
+    if (values.categories.length === 0) {
+        return { error: "Sélectionne au moins une catégorie.", fields: { categories: "Coche au moins une catégorie." }, values };
+    }
+    if (values.languages.length === 0) {
+        return { error: "Sélectionne au moins une langue du projet.", fields: { languages: "Coche au moins une langue." }, values };
+    }
+    // All-empty English is fine (the site falls back to French), but a
+    // partial one cannot be stored: those three columns are required.
+    if (hasEnglish(values) && !(values.nameEn && values.subEn && values.descriptionEn)) {
+        const missing = "Obligatoire dès qu'un champ anglais est rempli (ou vide tous les champs anglais pour afficher le français).";
+        const fields: Record<string, string> = {};
+        if (!values.nameEn) fields.name_en = missing;
+        if (!values.subEn) fields.sub_en = missing;
+        if (!values.descriptionEn) fields.description_en = missing;
+        return {
+            error: "Traduction anglaise incomplète : dès qu'un champ anglais est rempli, Nom, Sous-titre et Description (EN) le sont aussi. Laisse tous les champs anglais vides pour afficher le français.",
+            fields,
+            values,
+        };
+    }
+
+    const payload = projectPayload(values);
+    const thumb = file(data, "thumb");
+    const thumbVideo = file(data, "thumb_video");
+    const newPictures = files(data, "pictures");
+    const order = parsePictureOrder(data);
 
     try {
-        if (action === "save") {
-            if (values.categories.length === 0) {
-                return { error: "Sélectionne au moins une catégorie.", values };
+        if (!id) {
+            if (!thumb) {
+                return { error: "La vignette (thumb) est requise pour créer un projet.", fields: { thumb: "Choisis une image de vignette." }, values };
             }
-            if (values.languages.length === 0) {
-                return { error: "Sélectionne au moins une langue du projet.", values };
-            }
-            // All-empty English is fine (the site falls back to French), but a
-            // partial one cannot be stored: those three columns are required.
-            if (hasEnglish(values) && !(values.nameEn && values.subEn && values.descriptionEn)) {
-                return {
-                    error: "Traduction anglaise incomplète : dès qu'un champ anglais est rempli, Nom, Sous-titre et Description (EN) le sont aussi. Laisse tous les champs anglais vides pour afficher le français.",
-                    values,
-                };
-            }
-
-            const payload = projectPayload(values);
-            const thumb = file(data, "thumb");
-            const thumbVideo = file(data, "thumb_video");
-            const newPictures = files(data, "pictures");
-            const order = parsePictureOrder(data);
-
-            if (!id) {
-                if (!thumb) {
-                    return { error: "La vignette (thumb) est requise pour créer un projet.", values };
-                }
-                payload.thumb = thumb;
-                if (thumbVideo) payload.thumb_video = thumbVideo;
-                // `pictures` is required by the collection: default to the thumb.
-                payload.pictures = newPictures.length > 0 ? newPictures : [thumb];
-                const record = await pb.collection("projects").create(payload);
-                try {
-                    if (order && order.tokens.length > 0) {
-                        await applyPictureOrder(pb, record.id, record.pictures as string[], newPictures.length, order);
-                    }
-                    await upsertTranslations(pb, record.id, values);
-                    if (values.carousel) await claimCarousel(pb, record.id);
-                } catch (err) {
-                    // A project stored without its translations has no name at
-                    // all on the public site, and its slug then blocks any
-                    // retry (unique index): undo the creation entirely. The
-                    // translation rows cascade with it.
-                    await pb.collection("projects").delete(record.id).catch(() => {});
-                    throw err;
-                }
-                invalidateCache();
-                return { redirect: `/admin/projects/${record.id}?created=1` };
-            }
-
-            // An emptied media list would leave the project without any
-            // picture, which the collection forbids: reject before writing.
-            // YouTube links do not count — they live in another column.
-            if (order && !keepsAFile(order) && newPictures.length === 0) {
-                return { error: "Le projet doit garder au moins une image ou vidéo importée : un lien YouTube ne peut pas être son seul média.", values };
-            }
-
-            if (thumb) payload.thumb = thumb;
-            // An upload replaces the video; the checkbox alone clears it (the
-            // PocketBase SDK sends `null` as an empty value, which deletes the
-            // stored file and puts the project back on its still thumbnail).
+            payload.thumb = thumb;
             if (thumbVideo) payload.thumb_video = thumbVideo;
-            else if (data.has("thumb_video_remove")) payload.thumb_video = null;
-            if (newPictures.length > 0) payload["pictures+"] = newPictures;
-
-            const record = await pb.collection("projects").update(id, payload);
-            if (order) {
-                await applyPictureOrder(pb, id, record.pictures as string[], newPictures.length, order);
+            // `pictures` is required by the collection: default to the thumb.
+            payload.pictures = newPictures.length > 0 ? newPictures : [thumb];
+            const record = await pb.collection("projects").create(payload).catch(err => {
+                throw projectError(err);
+            });
+            try {
+                if (order && order.tokens.length > 0) {
+                    await applyPictureOrder(pb, record.id, record.pictures as string[], newPictures.length, order);
+                }
+                await upsertTranslations(pb, record.id, values);
+                await saveTechs(pb, record.id, data);
+                if (values.carousel) await claimCarousel(pb, record.id);
+            } catch (err) {
+                // A project stored without its translations has no name at
+                // all on the public site, and its slug then blocks any
+                // retry (unique index): undo the creation entirely. The
+                // translation rows and tech junctions cascade with it.
+                await pb.collection("projects").delete(record.id).catch(() => {});
+                throw err;
             }
-            await upsertTranslations(pb, id, values);
-            if (values.carousel) await claimCarousel(pb, id);
             invalidateCache();
-            return { redirect: `/admin/projects/${id}?saved=1` };
+            return { redirect: `/admin/projects/${record.id}?created=1` };
         }
 
-        // The whole techs list is saved at once: the order of the rows in
-        // the submitted form gives the 1-based `position` of each junction
-        // (PocketBase treats 0 as blank on required numbers).
-        if (action !== "save-techs" || !id) {
-            return { error: "Action invalide.", values };
+        // An emptied media list would leave the project without any
+        // picture, which the collection forbids: reject before writing.
+        // YouTube links do not count — they live in another column.
+        if (order && !keepsAFile(order) && newPictures.length === 0) {
+            return {
+                error: "Le projet doit garder au moins une image ou vidéo importée : un lien YouTube ne peut pas être son seul média.",
+                fields: { pictures: "Garde ou ajoute au moins une image ou vidéo importée." },
+                values,
+            };
         }
 
-        for (const removedId of data.getAll("tech_removed").map(String)) {
-            await pb.collection("project_techs").delete(removedId);
-        }
+        if (thumb) payload.thumb = thumb;
+        // An upload replaces the video; the checkbox alone clears it (the
+        // PocketBase SDK sends `null` as an empty value, which deletes the
+        // stored file and puts the project back on its still thumbnail).
+        if (thumbVideo) payload.thumb_video = thumbVideo;
+        else if (data.has("thumb_video_remove")) payload.thumb_video = null;
+        if (newPictures.length > 0) payload["pictures+"] = newPictures;
 
-        const refs = data.getAll("tech_ref").map(String);
-        const roles = data.getAll("tech_role").map(String);
-        for (let i = 0; i < refs.length; i++) {
-            const fields = { role: roles[i] ?? "", position: i + 1 };
-            if (refs[i].startsWith("new:")) {
-                await pb.collection("project_techs").create({
-                    project: id,
-                    technology: refs[i].slice("new:".length),
-                    ...fields,
-                });
-            } else {
-                await pb.collection("project_techs").update(refs[i], fields);
-            }
+        const record = await pb.collection("projects").update(id, payload).catch(err => {
+            throw projectError(err);
+        });
+        if (order) {
+            await applyPictureOrder(pb, id, record.pictures as string[], newPictures.length, order);
         }
-
+        await upsertTranslations(pb, id, values);
+        await saveTechs(pb, id, data);
+        if (values.carousel) await claimCarousel(pb, id);
         invalidateCache();
         return { redirect: `/admin/projects/${id}?saved=1` };
     } catch (err) {
-        return { error: pbErrorMessage(err), values };
+        // Some writes may have gone through before the failing one (project,
+        // pictures, translations…): the public cache must not keep serving
+        // the previous version of what is now stored.
+        invalidateCache();
+        return failure(err, values);
     }
 }
 
-export async function listAdminProjects(pb: PocketBase): Promise<AdminProjectRow[]> {
+// Memoised per client, i.e. per request (each admin request builds its own):
+// the projects list page and the layout's explorer share one query. Every
+// caller lists after the request's own writes, so the memo is never stale.
+const projectLists = new WeakMap<PocketBase, Promise<AdminProjectRow[]>>();
+
+export function listAdminProjects(pb: PocketBase): Promise<AdminProjectRow[]> {
+    let list = projectLists.get(pb);
+    if (!list) {
+        list = fetchAdminProjects(pb);
+        projectLists.set(pb, list);
+    }
+    return list;
+}
+
+async function fetchAdminProjects(pb: PocketBase): Promise<AdminProjectRow[]> {
     const records = await pb.collection("projects").getFullList({
         sort: "-year,created",
         expand: "project_translations_via_project",
