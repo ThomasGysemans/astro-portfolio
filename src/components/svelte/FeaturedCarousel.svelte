@@ -48,6 +48,12 @@
     // one at a time, and only after an explicit click — an iframe per slide
     // would download a full player for every picture of the project.
     let playingEmbed = $state<number | null>(null);
+    // Slides whose media may be fetched. `loading="lazy"` is no help here: the
+    // stacked slides all sit at the same spot, so the browser would download
+    // every picture of the project upfront. Only the visible slide and its
+    // neighbours are requested — the first two in the server-rendered HTML, the
+    // previous one once hydrated — and a slide stays loaded once requested.
+    let wanted = $state<boolean[]>(media.map((_, i) => i <= 1));
 
     // A portrait media (e.g. a mobile screenshot) cannot fill the wide frame
     // without being cropped beyond recognition, so it is displayed whole
@@ -97,6 +103,12 @@
         index = (i + media.length) % media.length;
         startTimer();
     }
+
+    $effect(() => {
+        for (const i of [index - 1, index, index + 1]) {
+            wanted[(i + media.length) % media.length] = true;
+        }
+    });
 
     // Leaving a YouTube slide unmounts its player: an iframe kept alive
     // off-screen goes on playing its sound behind the next picture.
@@ -171,7 +183,7 @@
                             class="group absolute inset-0 w-full h-full"
                         >
                             <img
-                                src={item.poster}
+                                src={wanted[i] ? item.poster : undefined}
                                 alt={i === index ? project.caption : ""}
                                 loading={i === 0 ? "eager" : "lazy"}
                                 decoding="async"
@@ -191,7 +203,7 @@
                     <video
                         bind:this={videos[i]}
                         use:detectOrientation={i}
-                        src={item.src}
+                        src={wanted[i] ? item.src : undefined}
                         muted
                         loop
                         playsinline
@@ -201,7 +213,7 @@
                 {:else}
                     <img
                         use:detectOrientation={i}
-                        src={item.src}
+                        src={wanted[i] ? item.src : undefined}
                         alt={i === index ? project.caption : ""}
                         loading={i === 0 ? "eager" : "lazy"}
                         decoding="async"
