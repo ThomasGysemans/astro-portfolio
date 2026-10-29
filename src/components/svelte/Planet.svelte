@@ -19,6 +19,7 @@
         atmosphereColor?: number;
         atmosphereScale?: number;
         texturesPaths: PlanetTextures;
+        onready?: (ready: boolean) => void;
     }
 
     let {
@@ -30,6 +31,7 @@
         atmosphereColor = undefined,
         atmosphereScale = undefined,
         texturesPaths,
+        onready = undefined,
     }: Props = $props();
 
     const textures = useLoader(TextureLoader).load({
@@ -41,13 +43,9 @@
     let planetMesh = $state<Mesh>();
     let cloudsMesh = $state<Mesh>();
 
-    // Toggle the loading placeholder based on whether the textures are ready.
-    // `$effect` only runs in the browser, so no explicit `browser` guard is needed.
+    // Lets the parent show a placeholder while the textures are loading.
     $effect(() => {
-        const loadingReplacement = document.querySelector("#earth-loading-replacement") as HTMLElement | null;
-        if (loadingReplacement) {
-            loadingReplacement.style.display = $textures ? "none" : "block";
-        }
+        onready?.(!!$textures);
     });
 
     function createPlanetMat(map: Texture, normalMap?: Texture, specularMap?: Texture) {

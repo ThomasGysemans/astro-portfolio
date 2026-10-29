@@ -1,0 +1,86 @@
+<script lang="ts">
+    // The interactive 3D Earth. Never imported statically: `Earth.svelte` loads
+    // it on demand, so three.js and the textures stay out of the initial page load.
+    import { T, Canvas } from "@threlte/core";
+    import { OrbitControls } from "@threlte/extras";
+    import Grabbable from "@components/svelte/Grabbable.svelte";
+    import Planet from "./Planet.svelte";
+
+    let { dragLabel, onready }: {
+        dragLabel: string,
+        // Called with `true` once the planet is textured, `false` while it is
+        // (re)loading — e.g. after switching resolution.
+        onready?: (ready: boolean) => void,
+    } = $props();
+
+    const radius = 6;
+    const rotationSpeed = 0.1;
+    const cloudsRotationSpeed = -0.07;
+    const tiltRadians = 0.409;
+    const resolutions = ["2k", "8k"] as const;
+
+    let res = $state<(typeof resolutions)[number]>("2k");
+    let textures = $derived({
+        map: `/earth/${res}_earth_daymap.jpg`,
+        clouds: `/earth/${res}_earth_clouds.jpg`,
+        normalMap: `/earth/${res}_earth_normal_map.jpg`,
+        specularMap: `/earth/${res}_earth_specular_map.jpg`,
+    });
+</script>
+
+<div class="relative w-full h-full">
+    <Grabbable>
+        <Canvas>
+            <T.PerspectiveCamera
+                makeDefault
+                position={[10, 10, 10]}
+                oncreate={(ref) => {
+                    ref.lookAt(0, 0, 0);
+                }}
+            >
+                <OrbitControls
+                    enableDamping
+                    enableZoom={false}
+                    autoRotate={false}
+                    rotateSpeed={0.5}
+                />
+            </T.PerspectiveCamera>
+
+            <T.DirectionalLight position={[0, 10, 10]} />
+            <T.AmbientLight args={[0xffffff]} intensity={0.1} />
+
+            {#key res}
+                <Planet
+                    atmosphere
+                    {radius}
+                    {rotationSpeed}
+                    {cloudsRotationSpeed}
+                    {tiltRadians}
+                    texturesPaths={textures}
+                    {onready}
+                />
+            {/key}
+        </Canvas>
+    </Grabbable>
+
+    <!-- Control pill: fixed dark colors on purpose, it floats over the dark canvas in both themes. -->
+    <div class="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-2.5 items-center bg-[rgba(3,15,32,.75)] border border-white/12 rounded-full py-1.25 pr-1.5 pl-4 text-xs text-[#a9b8d8] whitespace-nowrap">
+        <span class="inline-flex items-center gap-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#87b3f6" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+            {dragLabel}
+        </span>
+        <span class="w-px h-4 bg-white/15"></span>
+        <span class="inline-flex gap-0.5 bg-white/[.07] rounded-full p-0.5">
+            {#each resolutions as r (r)}
+                <button
+                    type="button"
+                    aria-pressed={res === r}
+                    onclick={() => res = r}
+                    class="font-bold text-xs rounded-full py-1.5 px-3.5 transition-colors {res === r ? 'bg-accent-strong text-night' : 'text-[#a9b8d8] hover:text-white'}"
+                >
+                    {r.toUpperCase()}
+                </button>
+            {/each}
+        </span>
+    </div>
+</div>
