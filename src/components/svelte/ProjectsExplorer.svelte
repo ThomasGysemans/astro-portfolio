@@ -145,7 +145,7 @@
 <header class="wrap head" id="projects-head">
     <p class="eyebrow caption-3">{labels.eyebrow}</p>
     <div class="head-text">
-        <h1 class="heading-2 grad">{title}</h1>
+        <h1 class="heading-2">{title}</h1>
         <p class="body-7 text-muted">{subtitle}</p>
         <a class="text-link button-sm" href={showcaseHref}>
             {labels.showcase}<span class="sr-only">, {labels.showcaseHint}</span>
@@ -246,7 +246,7 @@
         <div class="split-head">
             <div>
                 <p class="eyebrow caption-3">{labels.skillsEyebrow}</p>
-                <h2 id="skills-title" class="heading-2 grad">{labels.techSkillsTitle}</h2>
+                <h2 id="skills-title" class="heading-2">{labels.techSkillsTitle}</h2>
             </div>
             <p class="body-7 text-muted">{labels.techSkillsIntro}</p>
         </div>
