@@ -20,7 +20,7 @@ const types = [
 // result comes back with it: the page then opens on the outcome
 const result = Astro.getActionResult(actions.sendQuote);
 const sent = result && !result.error ? result.data : undefined;
-const failed = result?.error ? (result.error.code === "TOO_MANY_REQUESTS" ? c.errtoomany : c.errsend) : undefined;
+const failed = result?.error ? c.errsend : undefined;
 // The messages that name an address get it as a link
 const split = (message: string) => message.split("{email}") as [string, string];
 const [doneBefore, doneAfter] = split(c.donetext[lang]);
@@ -644,7 +644,7 @@ const [doneBefore, doneAfter] = split(c.donetext[lang]);
         }
         setSending(false);
         if (!result?.data) {
-            showSendError(result?.error?.code === "TOO_MANY_REQUESTS" ? contact.errtoomany[lang] : contact.errsend[lang]);
+            showSendError(contact.errsend[lang]);
             return;
         }
 

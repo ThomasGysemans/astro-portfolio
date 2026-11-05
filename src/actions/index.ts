@@ -11,21 +11,6 @@ import nodemailer from "nodemailer";
 import { LOCALES } from "@i18n/config";
 import { composeQuoteMail, EMAIL_MAX, EMAIL_PATTERN, IDEA_MAX, IDEA_MIN, QUOTE_TYPES, SHORT_MAX } from "@lib/quote";
 
-// A public form that sends mail is a target: at most this many requests per
-// visitor (IP) and per hour. Kept in memory, so per server instance: a speed
-// bump against a script flooding the inbox, not a wall.
-const MAX_PER_HOUR = 5;
-const recent = new Map<string, number[]>();
-
-function tooMany(ip: string | undefined): boolean {
-    if (!ip) return false;
-    const now = Date.now();
-    const times = (recent.get(ip) ?? []).filter(at => now - at < 3_600_000);
-    if (times.length >= MAX_PER_HOUR) return true;
-    recent.set(ip, [...times, now]);
-    return false;
-}
-
 export const server = {
     // The quote form of the homepage (Launch.astro). The browser checks the
     // same rules first; these are the ones that count.
@@ -42,19 +27,9 @@ export const server = {
             // in every field they find
             website: z.string().optional(),
         }),
-        handler: async (input, context) => {
+        handler: async input => {
             // A bot: it is told the request went through, and nothing is sent
             if (input.website) return { email: input.email };
-
-            let ip: string | undefined;
-            try {
-                ip = context.clientAddress;
-            } catch {
-                // Not every context provides it
-            }
-            if (tooMany(ip)) {
-                throw new ActionError({ code: "TOO_MANY_REQUESTS" });
-            }
 
             if (!QUOTE_EMAIL_SENDER || !QUOTE_EMAIL_SENDER_PASSWORD || !QUOTE_EMAIL_SENDER_HOST || !QUOTE_EMAIL_RECEIVER) {
                 console.error("[quote] The QUOTE_EMAIL_* environment variables are not all set: the request cannot be sent.");
