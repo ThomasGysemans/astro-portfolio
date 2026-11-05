@@ -422,8 +422,12 @@
         text-underline-offset: 4px;
     }
 
+    /* Each arrow nudges the way it points (`data-icon` is set by astro-icon and
+       by PhIcon.svelte); any other icon stays put */
     .text-link svg { transition: transform 500ms var(--ease-space); }
-    .text-link:hover svg { transform: translate(2px, -2px); }
+    .text-link:hover svg[data-icon="arrow-up-right"] { transform: translate(2px, -2px); }
+    .text-link:hover svg:is([data-icon="arrow-right"], [data-icon="caret-right"]) { transform: translateX(3px); }
+    .text-link:hover svg:is([data-icon="arrow-left"], [data-icon="caret-left"]) { transform: translateX(-3px); }
 
     .icon-btn {
         width: 36px;

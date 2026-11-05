@@ -18,4 +18,5 @@
     let { name, class: className = "" }: { name: keyof typeof PATHS, class?: string } = $props();
 </script>
 
-<svg class={className} viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d={PATHS[name]} /></svg>
+<!-- data-icon, like astro-icon's: the stylesheet tells the arrows apart by it -->
+<svg class={className} data-icon={name} viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d={PATHS[name]} /></svg>
