@@ -198,6 +198,13 @@ export function webgl(canvas: HTMLCanvasElement, lowPower = false): WebGLRenderi
             alpha: true,
             premultipliedAlpha: true,
             powerPreference: lowPower ? "low-power" : "default",
+            // No GPU (hardware acceleration off, a blocklisted driver, a
+            // virtual machine, the servers of PageSpeed Insights): the browser
+            // would draw in software, every frame on the CPU, and hand each one
+            // to the compositor through a copy that blocks the main thread
+            // (over 100 ms per frame measured at mobile speed). For decorations,
+            // no context is the better answer: the page goes without them.
+            failIfMajorPerformanceCaveat: true,
         });
     } catch {
         return null;
@@ -236,13 +243,34 @@ export const PRECISION = [
 // Two triangles covering a [-1, 1] square
 export const CORNERS = [-1, -1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1];
 
-// Runs `fn` once the page has loaded and the browser is idle, so nothing 3D
-// competes with the first paint.
+// Resolves once the page has loaded.
+function loaded(): Promise<void> {
+    if (document.readyState === "complete") return Promise.resolve();
+    return new Promise(resolve => window.addEventListener("load", () => resolve(), { once: true }));
+}
+
+// Resolves once the first content has been painted. The load event does not
+// wait for it: on a slow device it can fire first, and a WebGL context created
+// then keeps the GPU busy while the page's first frame waits (measured: the
+// first paint pushed 2 s after load).
+function painted(): Promise<void> {
+    if (!PerformanceObserver.supportedEntryTypes?.includes("paint")) return Promise.resolve();
+    return new Promise(resolve => {
+        const observer = new PerformanceObserver(list => {
+            if (!list.getEntriesByName("first-contentful-paint").length) return;
+            observer.disconnect();
+            resolve();
+        });
+        // Buffered: the paint may well be over before this runs
+        observer.observe({ type: "paint", buffered: true });
+    });
+}
+
+// Runs `fn` once the page has loaded, its first content is on screen and the
+// browser is idle, so nothing 3D competes with the first paint.
 export function afterLoad(fn: () => void): void {
-    const idle = () => {
+    Promise.all([loaded(), painted()]).then(() => {
         if ("requestIdleCallback" in window) requestIdleCallback(fn, { timeout: 2000 });
         else setTimeout(fn, 200);
-    };
-    if (document.readyState === "complete") idle();
-    else window.addEventListener("load", idle, { once: true });
+    });
 }
