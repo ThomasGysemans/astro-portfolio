@@ -2,6 +2,7 @@
     // Interactive explorer of the projects page: category pills, search, year
     // sorting, technology filter and the tech skills section. It is
     // server-rendered by Astro with the state of the URL, then hydrated.
+    import { untrack } from "svelte";
     import ProjectThumb from "./ProjectThumb.svelte";
     import PhIcon from "./PhIcon.svelte";
 
@@ -89,10 +90,12 @@
         initialQuery = "",
     }: Props = $props();
 
-    let filter = $state(initialFilter);
+    // The URL's state seeds the explorer once; from then on the visitor drives
+    // it, so the props are read on purpose without tracking them
+    let filter = $state(untrack(() => initialFilter));
     let title = $derived(titles[filter] ?? titles.all);
-    let tech = $state<string | null>(initialTech);
-    let query = $state(initialQuery);
+    let tech = $state<string | null>(untrack(() => initialTech));
+    let query = $state(untrack(() => initialQuery));
     let sort = $state<"recent" | "oldest">("recent");
 
     let q = $derived(query.trim().toLowerCase());

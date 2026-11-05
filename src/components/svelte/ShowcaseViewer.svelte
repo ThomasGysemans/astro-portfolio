@@ -96,7 +96,7 @@
 </script>
 
 <div class="showcase relative min-h-dvh overflow-hidden bg-[#04141c] text-white">
-    <div class="absolute inset-0 bg-cover bg-center showcase-stars" style="background-image:url('/stars.jpg')" aria-hidden="true" />
+    <div class="absolute inset-0 bg-cover bg-center showcase-stars" style="background-image:url('/stars.jpg')" aria-hidden="true"></div>
     {#if showNebula}
         <div class="absolute inset-0 showcase-nebula" aria-hidden="true">
             <!-- The soft, blurry nebula doesn't need Retina crispness: cap the
@@ -116,7 +116,7 @@
             </Canvas>
         </div>
     {/if}
-    <div class="absolute inset-0 showcase-overlay" aria-hidden="true" />
+    <div class="absolute inset-0 showcase-overlay" aria-hidden="true"></div>
 
     <a
         href={exitHref}

@@ -555,9 +555,9 @@ problemsToggle?.addEventListener("click", () => {
 
 window.addEventListener("beforeunload", event => {
     if (leaving || !asyncForms.some(isDirty)) return;
+    // Enough for every current browser to show the "leave page?" prompt
+    // (the legacy `returnValue = ""` is deprecated).
     event.preventDefault();
-    // Still required by some browsers to show the prompt.
-    event.returnValue = "";
 });
 
 // ⌘S / Ctrl+S saves the form being edited (the primary one by default). Only
