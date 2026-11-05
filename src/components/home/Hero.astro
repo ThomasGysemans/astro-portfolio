@@ -1,0 +1,271 @@
+---
+import { Icon } from "astro-icon/components";
+import trans from "@i18n";
+
+const lang = Astro.locals.lang;
+const checks = [trans.home.check1[lang], trans.home.check2[lang], trans.home.check3[lang]];
+---
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+    <!-- Two real constellations, drawn like a star chart (wide screens only) -->
+    <div class="const const-left" aria-hidden="true">
+        <svg viewBox="0 0 100 130">
+            <path class="cl" pathLength="1" d="M48 6 L22 22 M48 6 L70 28 M22 22 L40 64 M70 28 L60 58 M40 64 L50 61 L60 58 M40 64 L32 112 M60 58 L80 106"></path>
+            <circle class="st" cx="48" cy="6" r="1.4"></circle>
+            <circle class="st warm tw2" cx="22" cy="22" r="3"></circle>
+            <circle class="st" cx="70" cy="28" r="2.1"></circle>
+            <circle class="st" cx="40" cy="64" r="1.9"></circle>
+            <circle class="st" cx="50" cy="61" r="2"></circle>
+            <circle class="st" cx="60" cy="58" r="1.8"></circle>
+            <circle class="st" cx="32" cy="112" r="1.9"></circle>
+            <circle class="st cool tw2" cx="80" cy="106" r="2.8"></circle>
+        </svg>
+        <span class="caption-4 font-mono">{trans.home.orion[lang]}</span>
+    </div>
+    <div class="const const-right" aria-hidden="true">
+        <svg viewBox="0 0 130 80">
+            <path class="cl" pathLength="1" d="M6 36 L30 22 L54 24 L76 30 L114 26 L110 60 L80 56 L76 30"></path>
+            <circle class="st" cx="6" cy="36" r="2"></circle>
+            <circle class="st" cx="30" cy="22" r="2"></circle>
+            <circle class="st" cx="33.5" cy="17.5" r="0.9"></circle>
+            <circle class="st" cx="54" cy="24" r="2.2"></circle>
+            <circle class="st" cx="76" cy="30" r="1.5"></circle>
+            <circle class="st warm tw2" cx="114" cy="26" r="2.4"></circle>
+            <circle class="st" cx="110" cy="60" r="2.1"></circle>
+            <circle class="st" cx="80" cy="56" r="2"></circle>
+        </svg>
+        <span class="caption-4 font-mono">{trans.home.ursamajor[lang]}</span>
+    </div>
+
+    <div class="wrap hero-inner">
+        <h1 id="hero-title" class="heading-1 hero-title grad">
+            {trans.home.herotitle1[lang]} <br class="br-md" />{trans.home.herotitle2[lang]} <br class="br-md" /><span class="hl" id="hl">{trans.home.herotitlehl[lang]}<svg class="orbit-ring back-ring" viewBox="0 0 400 140" preserveAspectRatio="none" aria-hidden="true"><path class="back" pathLength="1" transform="rotate(-6 200 70)" d="M 10 70 A 190 50 0 0 1 390 70"></path></svg><svg class="orbit-ring" viewBox="0 0 400 140" preserveAspectRatio="none" aria-hidden="true"><path class="front" pathLength="1" transform="rotate(-6 200 70)" d="M 390 70 A 190 50 0 0 1 10 70"></path></svg><span class="hl-moon" id="hl-moon" aria-hidden="true"></span></span>
+        </h1>
+        <p class="hero-sub body-7">{trans.home.herosub[lang]}</p>
+        <div class="hero-ctas">
+            <a class="btn btn-primary button-md" href="#devis">{trans.nav.quotelong[lang]} <Icon name="arrow-right" class="size-5" /></a>
+            <a class="btn btn-ghost button-md" href="#tarifs">{trans.home.seepricing[lang]}</a>
+        </div>
+        <ul class="hero-checks caption-1">
+            {checks.map(check => (
+                <li><Icon name="check-circle" class="size-4" />{check}</li>
+            ))}
+        </ul>
+    </div>
+</section>
+
+<style>
+    .hero {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        text-align: center;
+        padding-top: 144px;
+        padding-bottom: 64px;
+    }
+
+    @media (min-width: 1024px) {
+        .hero { padding-top: 192px; }
+    }
+
+    .const {
+        position: absolute;
+        z-index: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        pointer-events: none;
+    }
+
+    @media (min-width: 1200px) {
+        .const { display: flex; }
+    }
+
+    .const svg {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .const .cl {
+        fill: none;
+        stroke: rgb(150 180 255 / 0.4);
+        stroke-width: 0.6;
+        stroke-linecap: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        animation: draw 2200ms var(--ease-space) 900ms forwards;
+    }
+
+    .const .st { fill: #EAF1FF; filter: drop-shadow(0 0 2px rgb(200 220 255 / 0.9)); }
+    .const .st.warm { fill: #FFC08A; filter: drop-shadow(0 0 3px rgb(255 179 122 / 0.95)); }
+    .const .st.cool { fill: #D6E6FF; filter: drop-shadow(0 0 3px rgb(160 200 255 / 1)); }
+
+    .const .tw2 {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: twinkle-star 3200ms var(--ease-space) infinite alternate;
+    }
+
+    .const-left { left: max(32px, 5vw); top: 26%; width: clamp(130px, 12vw, 180px); }
+    .const-right { right: max(32px, 5vw); top: 20%; width: clamp(170px, 15vw, 230px); }
+
+    .hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .hero-title {
+        max-width: 800px;
+        padding-bottom: 8px;
+    }
+
+    .br-md { display: none; }
+
+    @media (min-width: 640px) {
+        .br-md { display: inline; }
+    }
+
+    /* The orbit ring around "en orbite.": a back half behind the words, a front
+       half over them, and a small moon travelling along it (see the script) */
+    .orbit-ring {
+        position: absolute;
+        left: -14%;
+        top: -34%;
+        width: 128%;
+        height: 168%;
+        overflow: visible;
+        pointer-events: none;
+    }
+
+    .orbit-ring.back-ring { z-index: -1; }
+
+    .orbit-ring path {
+        fill: none;
+        stroke: var(--chart-light);
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        animation: draw 1400ms var(--ease-space) 400ms forwards;
+    }
+
+    .orbit-ring .back { opacity: 0.35; }
+    .orbit-ring .front { opacity: 0.9; animation-delay: 800ms; }
+
+    .hl-moon {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 10px;
+        height: 10px;
+        margin: -5px 0 0 -5px;
+        border-radius: 9999px;
+        background: var(--heading);
+        box-shadow: 0 0 12px 2px rgb(141 180 255 / 0.9);
+        will-change: transform;
+        transition: opacity 300ms var(--ease-space);
+    }
+
+    .hl-moon:global(.behind) {
+        z-index: -1;
+        opacity: 0.45;
+    }
+
+    .hero-sub { max-width: 680px; }
+
+    .hero-ctas {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        padding-top: 8px;
+    }
+
+    .hero-checks {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 24px;
+        color: var(--text);
+    }
+
+    .hero-checks li {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .hero-checks :global(svg) { color: var(--accent-text); }
+
+    @keyframes draw {
+        to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes twinkle-star {
+        from { opacity: 0.12; transform: scale(0.6); }
+        to { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Without motion, the drawings are simply there */
+    :global(:root[data-motion="reduce"]) .orbit-ring path,
+    :global(:root[data-motion="reduce"]) .const .cl {
+        stroke-dashoffset: 0;
+    }
+</style>
+
+<script>
+    // The small moon orbiting the words "en orbite.", passing behind them on
+    // the far half of the ring.
+    import { motionOK } from "@lib/motion";
+    import { wake } from "@lib/space/loop";
+
+    const hl = document.getElementById("hl");
+    const moon = document.getElementById("hl-moon");
+    let angle = 0.9, last = 0, visible = true;
+
+    function place(): void {
+        if (!hl || !moon) return;
+        const W = hl.offsetWidth, H = hl.offsetHeight, rot = -6 * Math.PI / 180;
+        // The ellipse of the SVG ring (viewBox 400 x 140, radii 190 x 50, rotated -6°),
+        // mapped onto the ring box (128% x 168% of the words, offset -14% / -34%)
+        const ex = 190 * Math.cos(angle), ey = 50 * Math.sin(angle);
+        const ux = 200 + ex * Math.cos(rot) - ey * Math.sin(rot), uy = 70 + ex * Math.sin(rot) + ey * Math.cos(rot);
+        const px = -0.14 * W + ux / 400 * 1.28 * W, py = -0.34 * H + uy / 140 * 1.68 * H;
+        moon.style.transform = `translate(${(px - W / 2).toFixed(1)}px,${(py - H / 2).toFixed(1)}px)`;
+        moon.classList.toggle("behind", Math.sin(angle) < 0);
+    }
+
+    function tick(now: number): boolean {
+        if (!visible) return false;
+        if (now - last >= 33) {
+            angle += Math.min(0.1, last ? (now - last) / 1000 : 0.033) * 0.9;
+            last = now;
+            place();
+        }
+        return true;
+    }
+
+    function start(): void {
+        last = 0;
+        if (motionOK()) wake(tick);
+    }
+
+    place();
+    const hero = document.getElementById("top");
+    if (hero && "IntersectionObserver" in window) {
+        new IntersectionObserver(entries => {
+            visible = entries[0].isIntersecting;
+            if (visible) start();
+        }).observe(hero);
+    }
+    document.fonts?.ready.then(place);
+    window.addEventListener("resize", place);
+    document.addEventListener("motionchange", start);
+</script>

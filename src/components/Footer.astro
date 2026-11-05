@@ -1,29 +1,141 @@
 ---
-import { isFreelancePath, mailtoHref, MALT_URL } from "@lib/contact";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import trans, { stripLocale } from "@i18n";
+import trans, { LOCALES, pathInLocale } from "@i18n";
+import { GITHUB_URL, LINKEDIN_URL, MALT_URL } from "@lib/contact";
 
-interface Props {
-    cta?: boolean; // the "get in touch" button is hidden on the 404 page
-}
-
-const { cta = true } = Astro.props;
 const lang = Astro.locals.lang;
-// On the freelance page this button is the last thing a convinced visitor sees,
-// so it has to be the ask rather than a reload of the page they just read.
-const contactHref = isFreelancePath(stripLocale(Astro.url.pathname))
-    ? mailtoHref(lang)
-    : getRelativeLocaleUrl(lang, "/freelance");
+const home = getRelativeLocaleUrl(lang, "/");
+const other = LOCALES.find(locale => locale !== lang)!;
+// Named in its own language, which is the point of the link
+const OTHER_VERSION: Record<App.LangCode, string> = { fr: "Version française", en: "English version" };
+const newWindow = ` (${trans.common.newwindow[lang]})`;
+
+const siteLinks = [
+    { href: getRelativeLocaleUrl(lang, "/projects"), label: trans.footer.allprojects[lang] },
+    { href: getRelativeLocaleUrl(lang, "/showcase"), label: trans.nav.showcase[lang] },
+];
+const elsewhere = [
+    { href: GITHUB_URL, label: "GitHub" },
+    { href: LINKEDIN_URL, label: "LinkedIn" },
+    { href: MALT_URL, label: "Malt" },
+];
 ---
 
-<footer class="bg-page py-6 px-page flex justify-between items-center gap-4 flex-wrap border-t border-edge">
-    <div class="flex gap-6 text-sm font-semibold">
-        <a href={MALT_URL} target="_blank" rel="noopener" aria-label={`Malt (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">Malt</a>
-        <a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" rel="noopener" aria-label={`LinkedIn (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">LinkedIn</a>
-        <a href="https://github.com/ThomasGysemans" target="_blank" rel="noopener" aria-label={`GitHub (${trans.common.newwindow[lang]})`} class="text-muted hover:text-heading transition-colors">GitHub</a>
+<footer class="footer">
+    <div class="wrap">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a class="brand title-4" href={home}>
+                    <img class="brand-logo" src="/logo-96.png" width="36" height="36" alt="" loading="lazy" />
+                    Thomas Gysemans<span class="sr-only">, {trans.nav.home[lang]}</span>
+                </a>
+                <p class="body-6">{trans.footer.status[lang]}</p>
+            </div>
+            <div class="footer-col">
+                <h2 class="title-4">{trans.footer.site[lang]}</h2>
+                <ul class="body-6">
+                    {siteLinks.map(link => <li><a href={link.href}>{link.label}</a></li>)}
+                    <li>
+                        <a href={pathInLocale(other, Astro.url.pathname)} lang={other} hreflang={other} data-set-lang={other}>{OTHER_VERSION[other]}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h2 class="title-4">{trans.footer.elsewhere[lang]}</h2>
+                <ul class="body-6">
+                    {elsewhere.map(link => (
+                        <li><a href={link.href} target="_blank" rel="noopener">{link.label}<span class="sr-only">{newWindow}</span></a></li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+        <div class="footer-rule" aria-hidden="true"></div>
+        <div class="footer-bottom caption-5">
+            <p>© {new Date().getFullYear()} Thomas Gysemans</p>
+            <p>{trans.footer.credit[lang]}</p>
+        </div>
     </div>
-    <p class="text-xs text-faint">{trans.footer.status[lang]}</p>
-    {cta && (
-        <a href={contactHref} class="bg-btn text-btn-text text-sm font-bold py-2.5 px-5 rounded-lg hover:brightness-110 transition-[filter]">{trans.footer.getintouch[lang]}</a>
-    )}
 </footer>
+
+<style>
+    .footer {
+        position: relative;
+        z-index: 1;
+        padding-block: 64px 32px;
+    }
+
+    .footer-grid {
+        display: grid;
+        gap: 40px;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 768px) {
+        .footer-grid {
+            grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    .footer-brand {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 360px;
+        align-items: flex-start;
+    }
+
+    .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--heading);
+        border-radius: 9999px;
+    }
+
+    .brand-logo {
+        width: 36px;
+        height: 36px;
+        padding: 2px;
+    }
+
+    .footer-col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .footer-col h2 {
+        color: var(--heading);
+    }
+
+    .footer-col ul {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .footer-col a {
+        color: var(--text);
+        border-radius: 6px;
+        transition: color 300ms var(--ease-space);
+    }
+
+    .footer-col a:hover {
+        color: var(--heading);
+    }
+
+    .footer-rule {
+        height: 1px;
+        background: var(--line);
+        margin-top: 48px;
+    }
+
+    .footer-bottom {
+        padding-top: 24px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px 24px;
+        color: var(--muted);
+    }
+</style>

@@ -7,6 +7,7 @@
     // island only intercepts those clicks and opens a native <dialog> instead,
     // so the page still works if the island never hydrates.
     import { onMount } from "svelte";
+    import PhIcon from "./PhIcon.svelte";
 
     type Picture = {
         src: string,
@@ -165,13 +166,10 @@
     class="lightbox"
 >
     {#if current}
-        <div class="flex items-center justify-between gap-4 px-4 py-3 text-white">
-            <span class="text-xs font-bold tracking-widest">{(index ?? 0) + 1} / {pictures.length}</span>
+        <div class="flex items-center justify-between gap-4 px-4 py-3">
+            <span class="counter">{(index ?? 0) + 1} / {pictures.length}</span>
             <button type="button" aria-label={labels.close} title={labels.close} onclick={close} class="lightbox-btn">
-                <!-- Lucide icons, inlined: Astro's <Icon> can't render inside an island. -->
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                    <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
+                <PhIcon name="x" class="size-5" />
             </button>
         </div>
 
@@ -183,7 +181,7 @@
                 onclick={toggleZoom}
                 onpointermove={pan}
                 onpointerleave={endPan}
-                class="max-w-full max-h-full overflow-hidden rounded-lg {zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}"
+                class="max-w-full max-h-full overflow-hidden rounded-2xl {zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}"
             >
                 <img
                     src={current.src}
@@ -195,20 +193,16 @@
             </button>
         </div>
 
-        <div class="flex items-center justify-between gap-4 px-4 py-3 text-white">
+        <div class="flex items-center justify-between gap-4 px-4 py-3">
             {#if pictures.length > 1}
                 <button type="button" aria-label={labels.previous} title={labels.previous} onclick={() => go(-1)} class="lightbox-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="m15 18-6-6 6-6" />
-                    </svg>
+                    <PhIcon name="caret-left" class="size-5" />
                 </button>
             {/if}
-            <p class="flex-1 text-center text-xs sm:text-sm text-[#c9d6ef]">{current.caption}</p>
+            <p class="caption">{current.caption}</p>
             {#if pictures.length > 1}
                 <button type="button" aria-label={labels.next} title={labels.next} onclick={() => go(1)} class="lightbox-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="m9 18 6-6-6-6" />
-                    </svg>
+                    <PhIcon name="caret-right" class="size-5" />
                 </button>
             {/if}
         </div>
@@ -216,7 +210,6 @@
 </dialog>
 
 <style>
-    /* The viewer is deliberately dark whatever the theme, like the showcase. */
     .lightbox {
         width: 100vw;
         max-width: 100vw;
@@ -226,7 +219,7 @@
         padding: 0;
         border: none;
         background: transparent;
-        color: #fff;
+        color: var(--heading);
         overflow: hidden;
     }
 
@@ -236,32 +229,46 @@
     }
 
     .lightbox::backdrop {
-        background: rgba(3, 8, 18, .88);
-        backdrop-filter: blur(6px);
+        background: rgb(3 7 19 / 0.9);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+    }
+
+    .counter {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        line-height: 1rem;
+        font-weight: 600;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .caption {
+        flex: 1;
+        text-align: center;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: var(--text);
     }
 
     .lightbox-btn {
-        width: 38px;
-        height: 38px;
+        width: 44px;
+        height: 44px;
         flex-shrink: 0;
-        border-radius: 50%;
-        background: rgba(3, 15, 32, .72);
-        border: 1px solid rgba(255, 255, 255, .25);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: border-color .2s, background .2s;
+        border-radius: 9999px;
+        background: var(--panel-solid);
+        border: 1px solid var(--line-strong);
+        color: var(--heading);
+        display: grid;
+        place-items: center;
+        transition: border-color 300ms var(--ease-space), background-color 300ms var(--ease-space);
     }
 
     .lightbox-btn:hover {
-        background: rgba(3, 15, 32, .9);
-        border-color: #619cf3;
+        border-color: var(--line-hover);
     }
 
-    @media (prefers-reduced-motion: reduce) {
-        .lightbox img {
-            transition: none;
-        }
+    :global(:root[data-motion="reduce"]) .lightbox img {
+        transition: none;
     }
 </style>

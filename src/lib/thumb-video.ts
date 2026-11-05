@@ -12,31 +12,44 @@
 // islands come and go with the filters and the showcase slides, so they
 // register themselves through the `thumbVideo` action.
 
-// Reduced motion is not a "nice to have" here: these videos loop forever with
-// no way to pause them, which is exactly what the setting exists to prevent.
-// The poster image then stays in place — the card looks the same, just still.
-const reducedMotion = typeof matchMedia === "function"
-    ? matchMedia("(prefers-reduced-motion: reduce)")
-    : null;
+// Reduced motion is not a "nice to have" here: these videos loop forever, which
+// is exactly what the setting exists to prevent. They follow the site's motion
+// state (the pause button, or the system setting): when it is off, the poster
+// image stays in place — the card looks the same, just still.
+import { motionOK, onMotionChange } from "@lib/motion";
 
 let observer: IntersectionObserver | null = null;
+const inView = new Set<HTMLVideoElement>();
+
+function play(video: HTMLVideoElement): void {
+    if (!motionOK()) return;
+    // First time in view: this is where the download starts.
+    if (!video.src && video.dataset.src) video.src = video.dataset.src;
+    // Rejects when the autoplay policy refuses, or when the element is
+    // paused/removed before the promise settles: nothing to recover.
+    video.play().catch(() => {});
+}
 
 function sharedObserver(): IntersectionObserver {
-    observer ??= new IntersectionObserver(entries => {
+    if (observer) return observer;
+    observer = new IntersectionObserver(entries => {
         for (const entry of entries) {
             const video = entry.target as HTMLVideoElement;
-            if (!entry.isIntersecting) {
+            if (entry.isIntersecting) {
+                inView.add(video);
+                play(video);
+            } else {
+                inView.delete(video);
                 video.pause();
-                continue;
             }
-            if (reducedMotion?.matches) continue;
-            // First time in view: this is where the download starts.
-            if (!video.src && video.dataset.src) video.src = video.dataset.src;
-            // Rejects when the autoplay policy refuses, or when the element is
-            // paused/removed before the promise settles: nothing to recover.
-            video.play().catch(() => {});
         }
     }, { rootMargin: "150px" });
+    onMotionChange(on => {
+        for (const video of inView) {
+            if (on) play(video);
+            else video.pause();
+        }
+    });
     return observer;
 }
 
@@ -45,6 +58,7 @@ export function watchThumbVideo(video: HTMLVideoElement): () => void {
     sharedObserver().observe(video);
     return () => {
         observer?.unobserve(video);
+        inView.delete(video);
         video.pause();
     };
 }

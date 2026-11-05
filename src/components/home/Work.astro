@@ -1,0 +1,110 @@
+---
+import type { Project, Review } from "@data/models";
+import { Icon } from "astro-icon/components";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import WorkCard from "./WorkCard.astro";
+import trans from "@i18n";
+
+interface Props {
+    feature?: Project; // the wide card
+    others: Project[]; // the two cards below it
+    reviews: Review[];
+    total: number; // number of public projects
+}
+
+const { feature, others, reviews, total } = Astro.props;
+const lang = Astro.locals.lang;
+const t = trans.home;
+// The quotation marks come from the page, not the data (localized style)
+const quote = (text: string) => (lang === "fr" ? `« ${text} »` : `“${text}”`);
+---
+
+<section class="section" id="realisations" aria-labelledby="work-title">
+    <div class="wrap stack">
+        <div class="split-head reveal">
+            <div>
+                <p class="eyebrow caption-3">{t.workeyebrow[lang]}</p>
+                <h2 id="work-title" class="heading-2 grad">{t.worktitle[lang]}</h2>
+            </div>
+            <div>
+                <p class="body-7 text-muted">{t.workintro[lang]}</p>
+                <a class="text-link button-md" href={getRelativeLocaleUrl(lang, "/projects")}>{t.seeallprojects[lang].replace("{count}", `${total}`)} <Icon name="arrow-right" class="size-5" /></a>
+            </div>
+        </div>
+
+        <div class="works">
+            {feature && <WorkCard project={feature} feature />}
+            {others.map((project, i) => <WorkCard {project} delay={i * 80} />)}
+        </div>
+
+        {reviews.length > 0 && (
+            <div class="reviews reveal">
+                <h3 class="eyebrow caption-3">{t.reviewseyebrow[lang]}</h3>
+                <div class="reviews-row">
+                    {reviews.map(review => (
+                        <figure class="quote">
+                            <div class="stars" role="img" aria-label={t.rating[lang].replace("{n}", `${review.rating}`)}>
+                                {Array.from({ length: review.rating }, () => <Icon name="star" class="size-4" />)}
+                            </div>
+                            <blockquote class="title-2"><p>{quote(review.quote[lang])}</p></blockquote>
+                            <figcaption class="caption-2 text-muted">
+                                {review.role[lang]}, {review.company[lang]}
+                                {lang === "en" && review.translated && <span class="block caption-5">Translated from French</span>}
+                            </figcaption>
+                        </figure>
+                    ))}
+                </div>
+            </div>
+        )}
+    </div>
+</section>
+
+<style>
+    .works {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+        .works { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .reviews {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .reviews-row {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 768px) {
+        .reviews-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    .quote {
+        padding: 16px;
+        border-radius: 12px;
+        /* Nearly opaque, like the cards: a planet drifting behind never
+           costs the quote its contrast */
+        background: var(--panel);
+        border: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .quote blockquote {
+        color: var(--heading);
+    }
+
+    .stars {
+        display: inline-flex;
+        gap: 2px;
+        color: var(--color-star);
+    }
+</style>

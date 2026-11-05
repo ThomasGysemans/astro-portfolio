@@ -3,10 +3,11 @@ import type { Project } from "@data/models";
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAdjacentProjects } from "@data/projects";
-import { categoryMeta, contextLabel, techRoleLabel } from "@data/categories";
+import { categoryIcon, categoryMeta, contextLabel, techRoleLabel } from "@data/categories";
 import MainLayout from "@layouts/MainLayout.astro";
 import ImageLightbox from "@components/svelte/ImageLightbox.svelte";
 import { youtubeEmbedUrl } from "@data/media";
+import type { PlanetPlacement } from "@lib/space/planets";
 import trans from "@i18n";
 
 interface Props {
@@ -15,27 +16,21 @@ interface Props {
 
 const { project } = Astro.props;
 const lang = Astro.locals.lang;
+const t = trans.detail;
 const name = project.name[lang];
 const { prev, next } = await getAdjacentProjects(project.slug);
 const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
+const newWindow = ` (${trans.common.newwindow[lang]})`;
 const teamLabel = project.teamSize === 1 ? trans.common.solo[lang] : `${trans.common.teamof[lang]} ${project.teamSize}`;
 const languagesLabel = project.languages.map(l => l.toUpperCase()).join(" · ");
-const categoryNames = project.categories.map(c => categoryMeta(c).single[lang]);
-const categoriesLabel = categoryNames.join(" · ");
+const categoriesLabel = project.categories.map(c => categoryMeta(c).single[lang]).join(" · ");
 const context = contextLabel(project.context, lang);
-const chips = [
-    ...categoryNames,
-    context,
-    project.date,
-    teamLabel,
-    languagesLabel,
-];
-// The gallery shows every media of the project, each with its own
-// caption (also used as the alt text); media without one fall back
-// to the project's legacy thumbnail caption.
-// Only the images are clickable and open the fullscreen viewer — the uploaded
-// videos and the YouTube embeds have their own controls; `lightboxIndex` is
-// their position in the images-only list handed to the island — that is the
+const chips = [context, project.date, teamLabel, languagesLabel].filter(Boolean);
+// The gallery shows every media of the project, each with its own caption
+// (also used as the alt text); media without one fall back to the project's
+// caption. Only the images open the fullscreen viewer — the uploaded videos
+// and the YouTube embeds have their own controls; `lightboxIndex` is their
+// position in the images-only list handed to the island — that is the
 // contract between the two.
 let lightboxIndex = 0;
 const gallery = project.pictures.map(picture => ({
@@ -51,134 +46,391 @@ const zoomablePictures = gallery
     .filter(media => media.kind === "image")
     .map(media => ({ src: media.url, caption: media.caption }));
 const detailRows = [
-    { label: trans.detail.year[lang], value: project.date },
-    { label: trans.detail.categories[lang], value: categoriesLabel },
-    { label: trans.detail.team[lang], value: teamLabel },
-    { label: trans.detail.context[lang], value: context },
-    { label: trans.detail.languages[lang], value: languagesLabel },
+    { label: t.year[lang], value: project.date },
+    { label: t.categories[lang], value: categoriesLabel },
+    { label: t.team[lang], value: teamLabel },
+    { label: t.context[lang], value: context },
+    { label: t.languages[lang], value: languagesLabel },
+];
+const MEDIA_ICON = { youtube: "play-circle", video: "film-strip", image: "camera" } as const;
+
+const planets: PlanetPlacement[] = [
+    { name: "uranus", anchor: "#project-head", at: 0.45, x: 0.9, mAt: 0.1, mx: 0.9 },
 ];
 ---
 
-<MainLayout title={`${trans.common.title[lang]} - ${name}`} description={project.description[lang]} image={project.thumbLarge} imageAlt={project.caption[lang] || name}>
-    <main id="main-content" class="pt-6.5 px-page pb-11 w-full max-w-415 mx-auto">
-        <nav class="text-sm text-muted mb-4" aria-label={trans.detail.allprojects[lang]}>
-            <a href={projectsUrl} class="text-accent font-bold">‹ {trans.detail.allprojects[lang]}</a>
-            <span class="mx-2">/</span>
-            <span>{name}</span>
-        </nav>
+<MainLayout title={`${name} · Thomas Gysemans`} description={project.description[lang]} image={project.thumbLarge} imageAlt={project.caption[lang] || name} {planets}>
+    <main id="main-content" tabindex="-1">
+        <article>
+            <header class="wrap head" id="project-head">
+                <nav class="breadcrumb caption-1" aria-label={t.breadcrumb[lang]}>
+                    <a class="text-link" href={projectsUrl}><Icon name="arrow-left" class="size-4" />{t.allprojects[lang]}</a>
+                    <span class="text-muted" aria-hidden="true">/</span>
+                    <span class="text-muted" aria-current="page">{name}</span>
+                </nav>
+                <p class="eyebrow caption-3 inline-flex items-center gap-2"><Icon name={categoryIcon(project.categories[0])} class="size-4" />{categoriesLabel}</p>
+                <div class="head-text">
+                    <h1 class="heading-2 grad">{name}</h1>
+                    <p class="body-7 text-muted">{project.sub[lang]}</p>
+                </div>
+                {(project.link || project.github) && (
+                    <div class="actions">
+                        {project.link && (
+                            <a class="btn btn-primary button-sm" href={project.link} target="_blank" rel="noopener">{t.visit[lang]}<span class="sr-only">{newWindow}</span> <Icon name="arrow-up-right" class="size-4" /></a>
+                        )}
+                        {project.github && (
+                            <a class="btn btn-ghost button-sm" href={project.github} target="_blank" rel="noopener"><Icon name="github" class="size-4" />{t.githubrepo[lang]}<span class="sr-only">{newWindow}</span></a>
+                        )}
+                    </div>
+                )}
+                <ul class="chips caption-4">
+                    {chips.map(chip => <li>{chip}</li>)}
+                </ul>
+            </header>
 
-        <div class="flex justify-between items-start mb-5.5 gap-5 flex-wrap">
-            <div>
-                <h1 class="text-3xl font-bold mb-3 text-heading">{name}</h1>
-                <div class="flex gap-2 flex-wrap">
-                    {chips.map(chip => (
-                        <span class="text-xs font-bold text-chip-text bg-chip border border-edge-strong rounded-full py-1.5 px-3">{chip}</span>
+            <div class="wrap layout">
+                <div class="main-col">
+                    <section class="card about" aria-labelledby="about-project">
+                        <h2 id="about-project" class="title-1 text-heading">{t.aboutproject[lang]}</h2>
+                        <p class="body-3">{project.about[lang]}</p>
+                    </section>
+
+                    {gallery.map(media => (
+                        <figure class="card media">
+                            {media.kind === "youtube" ? (
+                                <iframe
+                                    src={media.embedUrl}
+                                    title={media.caption}
+                                    loading="lazy"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen
+                                    class="frame-media"
+                                />
+                            ) : media.kind === "video" ? (
+                                <video src={media.url} controls muted playsinline preload="metadata" aria-label={media.caption} class="frame-media"></video>
+                            ) : (
+                                <a
+                                    href={media.url}
+                                    data-lightbox-index={media.lightboxIndex}
+                                    aria-label={`${t.enlarge[lang]} : ${media.caption}`}
+                                    class="zoomable frame-media"
+                                >
+                                    <img src={media.url} alt="" aria-hidden="true" loading="lazy" decoding="async" class="backdrop" />
+                                    <img src={media.url} alt={media.caption} loading="lazy" decoding="async" class="picture" />
+                                    <span class="zoom-hint" aria-hidden="true"><Icon name="magnifying-glass-plus" class="size-4" /></span>
+                                </a>
+                            )}
+                            <figcaption class="caption-2">
+                                <Icon name={MEDIA_ICON[media.kind]} class="size-4 shrink-0" />
+                                {media.caption}
+                            </figcaption>
+                        </figure>
                     ))}
                 </div>
-            </div>
-            <div class="flex gap-2.5 flex-wrap">
-                {project.link && (
-                    <a href={project.link} target="_blank" rel="noopener" aria-label={`${trans.detail.visit[lang]} (${trans.common.newwindow[lang]})`} class="btn-primary text-sm py-3 px-5.5 shadow-btn-glow">{trans.detail.visit[lang]}</a>
-                )}
-                {project.github && (
-                    <a href={project.github} target="_blank" rel="noopener" aria-label={`${trans.detail.githubrepo[lang]} (${trans.common.newwindow[lang]})`} class="btn-outline text-sm py-2.75 px-5">{trans.detail.githubrepo[lang]}</a>
-                )}
-            </div>
-        </div>
 
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5.5 items-start">
-            <div class="flex flex-col gap-4.5">
-                <section class="surface-card py-5.5 px-6">
-                    <h2 class="text-lg font-bold text-accent-heading mb-3">{trans.detail.aboutproject[lang]}</h2>
-                    <p class="text-base text-body">{project.about[lang]}</p>
-                </section>
-                {gallery.map(media => (
-                    <figure class="surface-card overflow-hidden">
-                        {media.kind === "youtube" ? (
-                            <iframe
-                                src={media.embedUrl}
-                                title={media.caption}
-                                loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                referrerpolicy="strict-origin-when-cross-origin"
-                                allowfullscreen
-                                class="w-full aspect-video border-0 bg-[#04101f]"
-                            />
-                        ) : media.kind === "video" ? (
-                            <video src={media.url} controls muted playsinline preload="metadata" aria-label={media.caption} class="w-full aspect-video object-contain bg-[#04101f]" />
-                        ) : (
-                            <a
-                                href={media.url}
-                                data-lightbox-index={media.lightboxIndex}
-                                aria-label={`${trans.detail.enlarge[lang]} : ${media.caption}`}
-                                class="group relative block aspect-video overflow-hidden cursor-zoom-in"
-                            >
-                                <img src={media.url} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
-                                <img src={media.url} alt={media.caption} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
-                                <span class="absolute top-3 right-3 w-8 h-8 rounded-full bg-[rgba(3,15,32,.72)] border border-white/25 text-white flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true">
-                                    <Icon name="search" class="text-sm" />
-                                </span>
-                            </a>
-                        )}
-                        <figcaption class="flex items-center gap-2 py-2.75 px-4 text-xs text-muted border-t border-edge">
-                            <Icon name={media.kind === "youtube" ? "play" : media.kind === "video" ? "film" : "camera"} class="text-sm shrink-0" aria-hidden="true" />
-                            {media.caption}
-                        </figcaption>
-                    </figure>
-                ))}
-            </div>
+                <aside class="side-col">
+                    {project.techs.length > 0 && (
+                        <section class="card side" aria-labelledby="stack-title">
+                            <h2 id="stack-title" class="title-2 text-heading">{t.techstack[lang]}</h2>
+                            <ul class="techs body-5">
+                                {project.techs.map(tech => (
+                                    <li>
+                                        <span class="dot" style={`background:${tech.color}`}></span>
+                                        {tech.name}
+                                        <span class="role caption-5 font-mono">{techRoleLabel(tech.role, lang)}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
 
-            <div class="flex flex-col gap-3.5">
-                <section class="surface-card py-4.5 px-5">
-                    <h2 class="text-lg font-bold text-accent-heading mb-3.5">{trans.detail.techstack[lang]}</h2>
-                    <ul class="flex flex-col gap-2">
-                        {project.techs.map(tech => (
-                            <li class="flex items-center gap-2.25 text-sm leading-tight font-semibold text-heading">
-                                <span class="w-2 h-2 rounded-full shrink-0" style={`background:${tech.color}`} />
-                                {tech.name}
-                                <span class="ml-auto text-xs text-muted font-normal">{techRoleLabel(tech.role, lang)}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </section>
+                    <section class="card side" aria-labelledby="details-title">
+                        <h2 id="details-title" class="title-2 text-heading">{trans.common.details[lang]}</h2>
+                        <dl class="rows body-6">
+                            {detailRows.map(row => (
+                                <div>
+                                    <dt class="text-muted">{row.label}</dt>
+                                    <dd class="text-heading">{row.value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </section>
 
-                <section class="surface-card py-4.5 px-5">
-                    <h2 class="text-lg font-bold text-accent-heading mb-3.5">{trans.common.details[lang]}</h2>
-                    <dl class="flex flex-col gap-2.5 text-sm leading-tight">
-                        {detailRows.map(row => (
-                            <div class="flex justify-between gap-4">
-                                <dt class="text-muted">{row.label}</dt>
-                                <dd class="font-bold text-heading text-right">{row.value}</dd>
+                    {prev && next && (
+                        <nav class="card side" aria-labelledby="more-title">
+                            <h2 id="more-title" class="title-2 text-heading">{t.moreprojects[lang]}</h2>
+                            <div class="neighbours body-5">
+                                <a class="text-link" href={getRelativeLocaleUrl(lang, `/projects/${prev.slug}`)}><Icon name="caret-left" class="size-4" />{prev.name[lang]}</a>
+                                <a class="text-link next" href={getRelativeLocaleUrl(lang, `/projects/${next.slug}`)}>{next.name[lang]}<Icon name="caret-right" class="size-4" /></a>
                             </div>
-                        ))}
-                    </dl>
-                </section>
+                        </nav>
+                    )}
 
-                {prev && next && (
-                    <nav class="bg-[rgba(97,156,243,.12)] border border-[rgba(97,156,243,.35)] rounded-[13px] py-4.5 px-5" aria-label={trans.detail.moreprojects[lang]}>
-                        <h2 class="text-lg font-bold mb-3 text-heading">{trans.detail.moreprojects[lang]}</h2>
-                        <div class="flex justify-between gap-4 text-sm font-bold">
-                            <a href={getRelativeLocaleUrl(lang, `/projects/${prev.slug}`)} class="text-accent hover:underline">‹ {prev.name[lang]}</a>
-                            <a href={getRelativeLocaleUrl(lang, `/projects/${next.slug}`)} class="text-accent hover:underline text-right">{next.name[lang]} ›</a>
-                        </div>
-                    </nav>
-                )}
+                    <div class="card side cta">
+                        <h2 class="title-2 text-heading">{t.ctatitle[lang]}</h2>
+                        <p class="body-6">{t.ctatext[lang]}</p>
+                        <a class="btn btn-primary button-sm" href={`${getRelativeLocaleUrl(lang, "/")}#devis`}>{trans.nav.quotelong[lang]} <Icon name="arrow-right" class="size-4" /></a>
+                    </div>
+                </aside>
             </div>
-        </div>
+        </article>
 
         {zoomablePictures.length > 0 && (
             <ImageLightbox
                 client:idle
                 pictures={zoomablePictures}
                 labels={{
-                    gallery: trans.detail.gallery[lang],
-                    close: trans.detail.closepicture[lang],
-                    previous: trans.carousel.previouspicture[lang],
-                    next: trans.carousel.nextpicture[lang],
-                    zoomIn: trans.detail.zoomin[lang],
-                    zoomOut: trans.detail.zoomout[lang],
+                    gallery: t.gallery[lang],
+                    close: t.closepicture[lang],
+                    previous: t.previouspicture[lang],
+                    next: t.nextpicture[lang],
+                    zoomIn: t.zoomin[lang],
+                    zoomOut: t.zoomout[lang],
                 }}
             />
         )}
     </main>
 </MainLayout>
+
+<style>
+    .head {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-top: 144px;
+        padding-bottom: 48px;
+    }
+
+    @media (min-width: 1024px) {
+        .head { padding-top: 176px; }
+    }
+
+    .breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 16px;
+    }
+
+    .head-text {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 760px;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 8px;
+    }
+
+    .chips li {
+        padding: 4px 12px;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        background: var(--fill);
+        color: var(--text);
+        font-family: var(--font-mono);
+    }
+
+    .layout {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 24px;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+        padding-bottom: 64px;
+    }
+
+    @media (min-width: 1024px) {
+        .layout {
+            grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+            gap: 32px;
+            padding-bottom: 96px;
+        }
+
+        .side-col {
+            position: sticky;
+            top: 112px;
+        }
+    }
+
+    .main-col,
+    .side-col {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        min-width: 0;
+    }
+
+    .about {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    @media (min-width: 1024px) {
+        .about { padding: 32px; }
+    }
+
+    .about p {
+        max-width: 680px;
+        white-space: pre-line;
+    }
+
+    .media {
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .frame-media {
+        display: block;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #060E22;
+    }
+
+    video.frame-media {
+        object-fit: contain;
+    }
+
+    .zoomable {
+        cursor: zoom-in;
+    }
+
+    .backdrop {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scale(1.1);
+        filter: blur(16px);
+        opacity: 0.6;
+    }
+
+    .picture {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .zoom-hint {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+        border-radius: 9999px;
+        display: grid;
+        place-items: center;
+        background: var(--panel-solid);
+        border: 1px solid var(--line-strong);
+        color: var(--heading);
+        opacity: 0;
+        transition: opacity 300ms var(--ease-space);
+    }
+
+    .zoomable:hover .zoom-hint,
+    .zoomable:focus-visible .zoom-hint {
+        opacity: 1;
+    }
+
+    figcaption {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 12px 8px;
+        color: var(--muted);
+    }
+
+    .side {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .techs {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        color: var(--heading);
+    }
+
+    .techs li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+    }
+
+    .role {
+        margin-left: auto;
+        color: var(--muted);
+        white-space: nowrap;
+    }
+
+    .rows {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .rows div {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .rows dd {
+        text-align: right;
+        font-weight: 500;
+    }
+
+    .neighbours {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .neighbours .next {
+        text-align: right;
+    }
+
+    .cta {
+        background: linear-gradient(165deg, var(--accent-soft), var(--panel) 70%);
+        border-color: var(--accent-line);
+    }
+
+    .cta .btn {
+        align-self: flex-start;
+    }
+</style>

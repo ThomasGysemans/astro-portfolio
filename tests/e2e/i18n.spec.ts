@@ -11,7 +11,7 @@ test.describe("first visit with an English browser", () => {
         // Auto-redirected to the English URL...
         await expect(page).toHaveURL(/\/en\/?$/);
         await expect(page.locator("html")).toHaveAttribute("lang", "en");
-        await expect(page.getByRole("link", { name: "Projects", exact: true })).toBeVisible();
+        await expect(page.getByRole("link", { name: "Work", exact: true }).first()).toBeVisible();
         // ...and the choice is persisted in the `lang` cookie.
         const cookies = await context.cookies();
         expect(cookies.find(c => c.name === "lang")?.value).toBe("en");

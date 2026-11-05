@@ -1,0 +1,80 @@
+---
+// RGAA 13.8: everything that moves on its own (twinkles, planets, videos, the
+// rocket) can be paused. The choice is remembered for the next visits.
+import { Icon } from "astro-icon/components";
+import trans from "@i18n";
+
+const lang = Astro.locals.lang;
+---
+
+<button
+    type="button"
+    class="motion-btn"
+    data-motion-toggle
+    data-pause-label={trans.common.pausemotion[lang]}
+    data-resume-label={trans.common.resumemotion[lang]}
+    aria-label={trans.common.pausemotion[lang]}
+    title={trans.common.pausemotion[lang]}
+>
+    <Icon name="pause" class="i-pause size-5" />
+    <Icon name="play" class="i-play size-5" />
+</button>
+
+<style>
+    .motion-btn {
+        position: fixed;
+        z-index: 45;
+        right: max(16px, env(safe-area-inset-right, 0px));
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        width: 48px;
+        height: 48px;
+        border-radius: 9999px;
+        display: grid;
+        place-items: center;
+        background: var(--panel-solid);
+        color: var(--heading);
+        border: 1px solid var(--line-strong);
+        box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.6);
+        transition: background-color 300ms var(--ease-space), border-color 300ms var(--ease-space), transform 300ms var(--ease-space);
+    }
+
+    .motion-btn:hover {
+        background: var(--panel-solid);
+        border-color: var(--line-hover);
+    }
+
+    .motion-btn:active {
+        transform: scale(0.98);
+    }
+
+    .motion-btn :global(.i-play) {
+        display: none;
+    }
+
+    :global(:root[data-motion="reduce"]) .motion-btn :global(.i-play) {
+        display: block;
+    }
+
+    :global(:root[data-motion="reduce"]) .motion-btn :global(.i-pause) {
+        display: none;
+    }
+</style>
+
+<script>
+    import { motionOK, setMotion } from "@lib/motion";
+
+    const button = document.querySelector<HTMLButtonElement>("[data-motion-toggle]");
+
+    function sync(): void {
+        if (!button) return;
+        const label = (motionOK() ? button.dataset.pauseLabel : button.dataset.resumeLabel) ?? "";
+        button.setAttribute("aria-label", label);
+        button.title = label;
+    }
+
+    button?.addEventListener("click", () => {
+        setMotion(!motionOK());
+        sync();
+    });
+    sync();
+</script>

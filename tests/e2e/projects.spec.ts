@@ -3,11 +3,12 @@ import { expect, test, type Page } from "@playwright/test";
 // The projects page is driven by the `ProjectsExplorer` Svelte island.
 test.use({ locale: "fr-FR" });
 
-// The layout wrapper. Scoping text queries here excludes Astro's dev-toolbar
-// (a body-level sibling whose island inspector embeds the same label strings
-// in hidden <code> elements, which would otherwise pollute getByText).
+// The page's main content. Scoping text queries here excludes Astro's
+// dev-toolbar (a body-level sibling whose island inspector embeds the same
+// label strings in hidden <code> elements, which would otherwise pollute
+// getByText).
 function content(page: Page) {
-    return page.locator("body > div").first();
+    return page.locator("#main-content");
 }
 
 // The island hydrates on `client:idle`; wait until it actually reacts to a

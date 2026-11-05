@@ -2,6 +2,9 @@
 import PageLayout from "./PageLayout.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
+import SpaceBackdrop from "@components/SpaceBackdrop.astro";
+import MotionToggle from "@components/MotionToggle.astro";
+import type { PlanetPlacement } from "@lib/space/planets";
 import trans from "@i18n";
 
 interface Props {
@@ -10,21 +13,25 @@ interface Props {
     image?: string; // social-share image (defaults to the locale's OG card)
     imageAlt?: string; // description of `image`
     noindex?: boolean; // keep the page out of search engines
-    footerCta?: boolean; // hide the "get in touch" button (404 page)
+    planets?: PlanetPlacement[]; // the bodies drifting behind this page
 }
 
-const { title, description, image, imageAlt, noindex, footerCta = true } = Astro.props;
+const { title, description, image, imageAlt, noindex, planets } = Astro.props;
 const lang = Astro.locals.lang;
 ---
 
 <PageLayout {title} {description} {image} {imageAlt} {noindex}>
-    <!-- Full-height column so the footer reaches the bottom on short pages (404). -->
-    <div class="min-h-dvh flex flex-col">
-        <a href="#main-content" class="skip-link">{trans.common.skiptocontent[lang]}</a>
-        <Header />
-        <div class="flex-1 flex flex-col">
-            <slot />
-        </div>
-        <Footer cta={footerCta} />
-    </div>
+    <slot name="head" slot="head" />
+    <SpaceBackdrop {planets} />
+    <a href="#main-content" class="skip-link button-sm">{trans.common.skiptocontent[lang]}</a>
+    <Header />
+    <slot />
+    <Footer />
+    <MotionToggle />
 </PageLayout>
+
+<script>
+    import { mountReveals } from "@lib/reveal";
+
+    mountReveals();
+</script>

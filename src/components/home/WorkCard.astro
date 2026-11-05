@@ -1,0 +1,169 @@
+---
+// A project in a browser frame, as on the homepage. The title links to the
+// project page and stretches over the whole card; the live site, when there is
+// one, is a second link above it.
+import type { Project } from "@data/models";
+import { Icon } from "astro-icon/components";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { categoryIcon, categoryMeta, contextLabel } from "@data/categories";
+import ProjectThumb from "@components/ProjectThumb.astro";
+import trans from "@i18n";
+
+interface Props {
+    project: Project;
+    feature?: boolean; // the wide card at the top, picture on the left
+    delay?: number; // ms, for the staggered reveal
+}
+
+const { project, feature = false, delay = 0 } = Astro.props;
+const lang = Astro.locals.lang;
+const name = project.name[lang];
+const href = getRelativeLocaleUrl(lang, `/projects/${project.slug}`);
+const categories = project.categories.map(c => categoryMeta(c).single[lang]).join(" · ");
+// The address bar shows the live site's host, or the project's name
+const host = project.link ? new URL(project.link).host.replace(/^www\./, "") : name;
+const newWindow = ` (${trans.common.newwindow[lang]})`;
+---
+
+<article class:list={["card work reveal", { "work-feature": feature }]} style={delay ? `--d:${delay}ms` : undefined}>
+    <div class="shot">
+        <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span class="shot-url caption-5">{host}</span></div>
+        <ProjectThumb thumb={feature ? project.thumbLarge : project.thumb} video={project.thumbVideo} alt={project.caption[lang] || name} class="shot-img" />
+    </div>
+    <div class="work-body">
+        <p class="work-meta caption-3">
+            <span><Icon name={categoryIcon(project.categories[0])} class="size-4" />{categories}</span>
+            <span class="font-mono text-muted caption-5">{project.date} · {contextLabel(project.context, lang)}</span>
+        </p>
+        <h3 class={feature ? "heading-4" : "heading-5"}><a class="stretched" {href}>{name}</a></h3>
+        <p class={feature ? "body-3" : "body-6"}>{project.description[lang]}</p>
+        {project.link && (
+            <p class="work-links caption-1">
+                <a class="text-link" href={project.link} target="_blank" rel="noopener">{trans.home.livesite[lang]}<span class="sr-only"> {name}{newWindow}</span> <Icon name="arrow-up-right" class="size-4" /></a>
+            </p>
+        )}
+    </div>
+</article>
+
+<style>
+    .work {
+        position: relative;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        transition: border-color 300ms var(--ease-space), transform 500ms var(--ease-space), opacity 700ms var(--ease-space);
+    }
+
+    .work:hover {
+        border-color: var(--line-strong);
+        transform: translateY(-4px);
+    }
+
+    .work:has(.stretched:focus-visible) {
+        outline: 2px solid var(--accent-text);
+        outline-offset: 2px;
+    }
+
+    @media (min-width: 1024px) {
+        .work-feature {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+            align-items: stretch;
+        }
+
+        .work-feature .work-body {
+            justify-content: center;
+            gap: 16px;
+            padding: 32px;
+        }
+    }
+
+    .shot {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #060E22;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .shot-bar {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 12px;
+        background: var(--fill);
+    }
+
+    .shot-bar i {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+        background: var(--line-strong);
+    }
+
+    .shot-url {
+        margin-left: 8px;
+        padding: 0 8px;
+        border-radius: 9999px;
+        background: var(--fill-hover);
+        color: var(--muted);
+        font-family: var(--font-mono);
+    }
+
+    .shot :global(.shot-img) {
+        flex: 1;
+    }
+
+    .shot :global(.shot-img) :global(img),
+    .shot :global(.shot-img) :global(video) {
+        transition: transform 700ms var(--ease-space);
+    }
+
+    .work:hover .shot :global(.shot-img) :global(:is(img, video):not([aria-hidden])) {
+        transform: scale(1.03);
+    }
+
+    .work-body {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+    }
+
+    .work-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--accent-text);
+    }
+
+    .work-meta span:first-child {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .work-links {
+        margin-top: auto;
+        padding-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 24px;
+    }
+
+    .work-links a {
+        position: relative;
+        z-index: 1;
+    }
+
+    :global(:root[data-motion="reduce"]) .work:hover,
+    :global(:root[data-motion="reduce"]) .work:hover .shot :global(.shot-img) :global(:is(img, video)) {
+        transform: none;
+    }
+</style>

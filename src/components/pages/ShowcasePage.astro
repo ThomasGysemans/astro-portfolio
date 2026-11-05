@@ -1,13 +1,19 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getFeaturedProjects } from "@data/projects";
+import type { Project } from "@data/models";
 import ShowcaseViewer from "@components/svelte/ShowcaseViewer.svelte";
 import PageLayout from "@layouts/PageLayout.astro";
 import trans from "@i18n";
 
+interface Props {
+    projects: Project[]; // the featured ones
+}
+
+// Loaded by the route, which answers 503 when PocketBase is unreachable
+const { projects } = Astro.props;
 const lang = Astro.locals.lang;
 
-const items = (await getFeaturedProjects()).map(p => ({
+const items = projects.map(p => ({
     name: p.name[lang],
     tagline: p.tagline[lang],
     desc: p.description[lang],
@@ -28,6 +34,12 @@ const labels = {
 };
 ---
 
-<PageLayout title={trans.showcase.title[lang]} description={trans.showcase.description[lang]}>
+<!-- The showcase keeps the design it had before the site's star chart, with
+     the site's faces (see .theme-showcase in tailwind.css). -->
+<PageLayout
+    title={trans.showcase.title[lang]}
+    description={trans.showcase.description[lang]}
+    bodyClass="theme-showcase"
+>
     <ShowcaseViewer {items} {labels} exitHref={getRelativeLocaleUrl(lang, "/")} client:load />
 </PageLayout>

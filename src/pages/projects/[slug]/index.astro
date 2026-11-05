@@ -1,13 +1,24 @@
 ---
 import SingleProjectPage from "@components/pages/SingleProjectPage.astro";
+import ErrorPage from "@components/pages/ErrorPage.astro";
 import { findProject } from "@data/projects";
+import { ContentUnavailableError } from "@data/pb";
+import type { Project } from "@data/models";
 
 const { slug } = Astro.params;
-const project = slug ? await findProject(slug) : undefined;
+// PocketBase unreachable: the project may well exist, so this is a 503, not a 404
+let project: Project | undefined;
+let unavailable = false;
+try {
+    project = slug ? await findProject(slug) : undefined;
+} catch (error) {
+    if (!(error instanceof ContentUnavailableError)) throw error;
+    unavailable = true;
+}
 
-if (project === undefined) {
+if (!unavailable && project === undefined) {
     return Astro.rewrite("/404");
 }
 ---
 
-<SingleProjectPage {project} />
+{project ? <SingleProjectPage {project} /> : <ErrorPage status={503} />}

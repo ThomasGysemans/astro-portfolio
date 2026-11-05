@@ -15,9 +15,13 @@ if (Astro.request.method === "POST") {
         const token = await adminLogin(email, password);
         setAdminCookie(Astro.cookies, token);
         return Astro.redirect("/admin/projects");
-    } catch {
-        // Same message whatever the failure: no hint about which field is wrong.
-        error = "Identifiants invalides.";
+    } catch (failure) {
+        // Same message for every refused login: no hint about which field is
+        // wrong. A server that does not answer at all is another matter.
+        const status = (failure as { status?: unknown }).status;
+        error = status === 0 || (typeof status === "number" && status >= 500)
+            ? "PocketBase est injoignable. Vérifiez qu'il tourne, puis réessayez."
+            : "Identifiants invalides.";
     }
 }
 ---

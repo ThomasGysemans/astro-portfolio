@@ -1,0 +1,82 @@
+---
+import { Icon } from "astro-icon/components";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import MainLayout from "@layouts/MainLayout.astro";
+import type { PlanetPlacement } from "@lib/space/planets";
+import trans, { pathInLocale } from "@i18n";
+
+interface Props {
+    // 404: the page does not exist. 503: PocketBase cannot be reached and the
+    // page has nothing to show without it.
+    status: 404 | 503;
+}
+
+const { status } = Astro.props;
+const lang = Astro.locals.lang;
+const t = status === 503 ? trans.unavailable : trans.error;
+
+// Rendered by the router (unmatched routes), by explicit
+// `Astro.rewrite("/404")` calls, which don't set the status on their own, and
+// by the pages whose content is unavailable. Forcing the status avoids a soft
+// error (a 200 response that search engines would index as the real page).
+Astro.response.status = status;
+if (status === 503) {
+    // Tells crawlers the outage is temporary and when to come back
+    Astro.response.headers.set("Retry-After", "300");
+}
+
+// Same page, asked again (in the language it was asked in)
+const retryHref = pathInLocale(lang, Astro.url.pathname) + Astro.url.search;
+
+// A lone Moon, drifting off course
+const planets: PlanetPlacement[] = [
+    { name: "moon", anchor: "#lost", at: 0.5, x: 0.78, mAt: 0.15, mx: 0.82 },
+];
+---
+
+<MainLayout title={`${t.title[lang]} · Thomas Gysemans`} noindex {planets}>
+    <main id="main-content" tabindex="-1">
+        <section class="lost" id="lost" aria-labelledby="lost-title">
+            <div class="wrap content">
+                <p class="eyebrow caption-3">{t.eyebrow[lang]}</p>
+                <h1 id="lost-title" class="heading-1 grad">{t.heading[lang]}</h1>
+                <p class="body-7 text-muted">{t.text[lang]}</p>
+                <div class="ctas">
+                    <a class="btn btn-primary button-md" href={getRelativeLocaleUrl(lang, "/")}><Icon name="house" class="size-5" />{trans.error.backhome[lang]}</a>
+                    {status === 503
+                        ? <a class="btn btn-ghost button-md" href={retryHref}>{trans.unavailable.retry[lang]}</a>
+                        : <a class="btn btn-ghost button-md" href={getRelativeLocaleUrl(lang, "/projects")}>{trans.error.seework[lang]}</a>}
+                </div>
+            </div>
+        </section>
+    </main>
+</MainLayout>
+
+<style>
+    .lost {
+        position: relative;
+        z-index: 1;
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        padding-block: 144px 96px;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .content > :is(h1, p) {
+        max-width: 720px;
+    }
+
+    .ctas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 8px;
+    }
+</style>

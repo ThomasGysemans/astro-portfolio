@@ -1,47 +1,97 @@
 @import "tailwindcss";
 
-/* Keep the existing v3-style JavaScript config (color tokens, fontFamily,
-   hocus variant) as the single source of truth for the theme. */
-@config "../../tailwind.config.mjs";
+/* ============================================================================
+   Design system of the public site: a deep-space "star chart".
+   Dark only, on purpose: the night sky is the identity of the site (the
+   back-office keeps its own light/dark themes in admin.css).
 
-/* Both faces are self-hosted (variable, wght 300-700): no request to Google
-   Fonts, so no visitor IP leaves the site just to render text (GDPR). Each
-   single WOFF2 covers every weight used; heavier ones (e.g. font-extrabold)
-   are synthesized from 700, and italics are synthesized from the roman —
-   the site only uses italic for a couple of 13px notes.
-   Licenses in /fonts/OFL.txt and /fonts/OFL-SourceSans3.txt; the raw sources
-   live in public/fonts/<family>/ (gitignored).
+   Colors are CSS variables (declared below on :root) exposed to Tailwind as
+   theme colors, so markup uses `bg-panel`, `text-heading`, `border-line`…
+   The back-office remaps the same variables onto its own palette inside
+   `body.adm`, which is why its few shared classes (btn-outline) keep working.
+   ============================================================================ */
 
-   Comfortaa is a display face: low x-height, geometric, rounded. It carries
-   the brand on headings and the logo, but it is not made for running text,
-   which is why body copy had drifted down to 11-12px to stay compact. Source
-   Sans 3 takes over everything below heading level, at readable sizes: it is
-   a humanist face, so it stays quiet under the geometric headings instead of
-   competing with them. */
+/* All faces are self-hosted variable WOFF2 files: no request to a font CDN, so
+   no visitor IP leaves the site just to render text (GDPR). Licenses next to
+   them in /fonts.
+   - Geist: the whole public site, /showcase included (text, headings).
+   - Geist Mono: data, codes and figures. */
 @font-face {
-    font-family: "Comfortaa";
-    src: url("/fonts/comfortaa-vf.woff2") format("woff2-variations");
-    font-weight: 300 700;
+    font-family: "Geist";
+    src: url("/fonts/geist-vf.woff2") format("woff2-variations");
+    font-weight: 100 900;
     font-style: normal;
     font-display: swap;
 }
 
-/* Subset to latin + latin-ext + the arrows/symbols the UI uses, with the
-   `wght` axis clipped to 300-700 (the source ships 200-900). */
 @font-face {
-    font-family: "Source Sans 3";
-    src: url("/fonts/source-sans-3-vf.woff2") format("woff2-variations");
-    font-weight: 300 700;
+    font-family: "Geist Mono";
+    src: url("/fonts/geist-mono-vf.woff2") format("woff2-variations");
+    font-weight: 100 900;
     font-style: normal;
     font-display: swap;
+}
+
+
+@theme {
+    --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+    --color-page: var(--bg);
+    --color-page-2: var(--bg-2);
+    --color-panel: var(--panel);
+    --color-panel-solid: var(--panel-solid);
+    --color-line: var(--line);
+    --color-line-strong: var(--line-strong);
+    --color-fill: var(--fill);
+    --color-fill-hover: var(--fill-hover);
+    --color-fill-active: var(--fill-active);
+    --color-heading: var(--heading);
+    --color-text: var(--text);
+    --color-muted: var(--muted);
+    /* Accent: what you act on (buttons, the chosen column). White text on it is
+       5.2:1, and 6.7:1 on the hover, which is darker for that reason (RGAA). */
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    /* The accent as text on the dark background (links, highlighted labels) */
+    --color-accent-text: var(--accent-text);
+    --color-accent-text-hover: var(--accent-text-hover);
+    --color-accent-soft: var(--accent-soft);
+    --color-accent-line: var(--accent-line);
+    --color-star: #FFE3B0;
+    --color-pass: #5FD394;
+    --color-warn: #E9B866;
+    --color-danger: #FF8F87;
+    /* Border of the back-office's outline buttons */
+    --color-outline: var(--outline-bd);
+    /* Fixed dark ink of the /showcase buttons */
+    --color-night: #030F20;
+
+    --ease-space: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* The numeric type scale of the previous design. The public pages use the
+       named text styles below instead; this scale stays for /showcase and the
+       back-office islands, which must not change. */
+    --text-xs: 0.8125rem;
+    --text-xs--line-height: 1.5;
+    --text-sm: 0.9375rem;
+    --text-sm--line-height: 1.6;
+    --text-base: 1rem;
+    --text-base--line-height: 1.7;
+    --text-lg: 1.125rem;
+    --text-lg--line-height: 1.5;
+    --text-xl: 1.3125rem;
+    --text-xl--line-height: 1.4;
+    --text-2xl: 1.625rem;
+    --text-2xl--line-height: 1.3;
+    --text-3xl: 2.125rem;
+    --text-3xl--line-height: 1.2;
 }
 
 @layer base {
-    /* Tailwind v4 compatibility shims: restore the v3 Preflight defaults so
-       the upgrade does not change any rendered style.
-       - default border color (v4 uses currentColor)
-       - placeholder color (v4 uses currentColor at 50% opacity)
-       - pointer cursor on buttons (v4 uses the default cursor) */
+    /* Tailwind v4 compatibility shims kept from the v3 era (the back-office
+       relies on them): default border color, placeholder color, pointer
+       cursor on buttons. */
     *,
     ::after,
     ::before,
@@ -60,114 +110,89 @@
         cursor: pointer;
     }
 
-    /* Design tokens of the "Portfolio Prototype v2" design.
-       Dark is the default theme; light overrides are applied
-       through the `data-theme` attribute set on <html> by the middleware. */
     :root {
-        --bg: #030F20;
-        --heading: #ffffff;
-        --text: #ffffff;
-        --body: #a9b8d8;
-        --muted: #8fa2c6;
-        --faint: #7b8fb5;
-        --card: rgba(255, 255, 255, .045);
-        --card-solid: #0A1D38;
-        --edge: rgba(255, 255, 255, .1);
-        --edge-strong: rgba(255, 255, 255, .18);
-        --accent: #87b3f6;
-        --accent-heading: #87b3f6;
-        --btn-bg: #619cf3;
-        --btn-text: #030F20;
-        --btn-glow: 0 0 26px rgba(97, 156, 243, .45);
-        --outline-bd: rgba(255, 255, 255, .3);
-        --chip: rgba(255, 255, 255, .05);
-        --chip-text: #c9d6ef;
-        --hero-scene: 1;
-        --header-bg: transparent;
-        --avail-bg: rgba(47, 168, 102, .12);
-        --avail-bd: rgba(47, 168, 102, .4);
-        --avail-c: #7fe0a7;
-        --logo-stroke: #87b3f6;
+        color-scheme: dark;
+        --bg: #030713;
+        --bg-2: #050B1A;
+        --panel: rgb(8 15 33 / 0.86);
+        --panel-solid: #0A1328;
+        --line: rgb(140 170 255 / 0.13);
+        --line-strong: rgb(140 170 255 / 0.26);
+        --heading: #F4F7FF;
+        --text: #AEBBD6;
+        --muted: #7F8DAD;
+        --accent: #2563EB;
+        --accent-hover: #1D4ED8;
+        --accent-text: #78A8FF;
+        --accent-text-hover: #A9C7FF;
+        --accent-soft: rgb(37 99 235 / 0.14);
+        --accent-line: rgb(94 155 255 / 0.4);
+        --accent-glow: rgb(37 99 235 / 0.55);
+        --outline-bd: var(--line-strong);
+        /* Translucent blue fills of controls: at rest, hovered, selected */
+        --fill: rgb(140 170 255 / 0.06);
+        --fill-hover: rgb(140 170 255 / 0.12);
+        --fill-active: rgb(140 170 255 / 0.14);
+        --line-hover: rgb(140 170 255 / 0.4);
+        /* The star chart drawings: lit lines, stars, highlighted words */
+        --chart: #5E9BFF;
+        --chart-light: #8DB4FF;
+        --chart-pale: #B4CEFF;
+        --nav-bg: rgb(6 12 28 / 0.66);
+        --menu-bg: rgb(3 7 19 / 0.94);
+        --word-dim: 0.36;
     }
 
-    html[data-theme="light"] {
-        --bg: #F4F7FB;
-        --heading: #062451;
-        --text: #030F20;
-        --body: #4d5e82;
-        --muted: #5f6f93;
-        --faint: #5f6f93;
-        --card: #ffffff;
-        --card-solid: #ffffff;
-        --edge: rgba(6, 36, 81, .1);
-        --edge-strong: rgba(6, 36, 81, .15);
-        --accent: #2f66c4;
-        --accent-heading: #062451;
-        --btn-bg: #062451;
-        --btn-text: #ffffff;
-        --btn-glow: none;
-        --outline-bd: #062451;
-        --chip: #ffffff;
-        --chip-text: #062451;
-        --hero-scene: 0;
-        --header-bg: #ffffff;
-        --avail-bg: #e9f7ef;
-        --avail-bd: #bfe6cd;
-        --avail-c: #2c7a4b;
-        --logo-stroke: #062451;
+    html {
+        -webkit-text-size-adjust: 100%;
+        /* The fixed navigation bar must not cover an anchored heading */
+        scroll-padding-top: 96px;
+        background: var(--bg);
+    }
+
+    :root[data-motion="full"] {
+        scroll-behavior: smooth;
+    }
+
+    html.lock {
+        overflow: hidden;
     }
 
     body {
-        @apply bg-page text-text font-sans text-base;
-        transition: background-color .3s, color .3s;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        font-size: 1rem;
+        line-height: 1.5rem;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Headings carry the brand face; body copy stays on Source Sans 3.
-       Setting it here means a new heading is on the display face by default,
-       instead of every template having to remember `font-display`. */
-    h1,
-    h2,
-    h3 {
-        @apply font-display;
+    h1, h2, h3, h4 {
+        text-wrap: balance;
+    }
+
+    p, li, dd, dt, blockquote, figcaption, summary, td, th {
+        text-wrap: pretty;
     }
 
     strong {
-        @apply text-heading font-bold;
+        font-weight: 600;
+        color: var(--heading);
+    }
+
+    ::selection {
+        background: var(--accent);
+        color: #FFFFFF;
     }
 
     /* RGAA: visible keyboard focus */
-    a:focus-visible,
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    textarea:focus-visible,
-    [role="button"]:focus-visible {
-        outline: 3px solid var(--accent);
-        outline-offset: 3px;
-        border-radius: 4px;
+    :focus-visible {
+        outline: 2px solid var(--accent-text);
+        outline-offset: 2px;
     }
 
-    /* RGAA: skip link, off-screen until it receives keyboard focus. */
-    .skip-link {
-        position: fixed;
-        top: 12px;
-        left: 12px;
-        z-index: 100;
-        transform: translateY(-150%);
-        padding: 10px 16px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 13px;
-        background: var(--btn-bg);
-        color: var(--btn-text);
-        transition: transform .2s ease;
-    }
-
-    .skip-link:focus-visible {
-        transform: translateY(0);
-    }
-
-    /* RGAA: respect reduced-motion preference */
+    /* RGAA: the operating system's "reduce motion" setting */
     @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
@@ -179,22 +204,241 @@
 }
 
 @layer components {
-    /* Main horizontal padding of every page section. */
-    .px-page {
-        padding-inline: clamp(20px, 3.5vw, 44px);
+    /* ---------- Text styles ---------- */
+    .heading-1 { font-size: 2.25rem; line-height: 2.5rem; font-weight: 600; letter-spacing: -0.02em; color: var(--heading); }
+    .heading-2 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 600; letter-spacing: -0.02em; color: var(--heading); }
+    .heading-3 { font-size: 2.25rem; line-height: 2.5rem; font-weight: 600; letter-spacing: -0.02em; color: var(--heading); }
+    .heading-4 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 600; letter-spacing: -0.02em; color: var(--heading); }
+    .heading-5 { font-size: 1.5rem; line-height: 2rem; font-weight: 600; letter-spacing: -0.01em; color: var(--heading); }
+    .heading-6 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; letter-spacing: -0.01em; color: var(--heading); }
+
+    @media (min-width: 640px) {
+        .heading-1, .heading-2 { font-size: 3rem; line-height: 1; letter-spacing: -0.03em; }
     }
 
-    .btn-primary {
-        @apply inline-block bg-btn text-btn-text font-bold rounded-lg cursor-pointer text-center whitespace-nowrap;
-        box-shadow: var(--btn-glow);
-        transition: filter .2s, transform .2s;
+    @media (min-width: 1200px) {
+        .heading-1 { font-size: 3.75rem; line-height: 1; }
+    }
 
-        &:hover {
-            filter: brightness(1.12);
-            transform: translateY(-2px);
+    .title-1 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 500; }
+    .title-2 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 500; }
+    .title-3 { font-size: 1rem; line-height: 1.5rem; font-weight: 500; }
+    .title-4 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+    .body-3 { font-size: 1rem; line-height: 1.5rem; font-weight: 400; }
+    .body-5 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+    .body-6 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+    .body-7 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 400; }
+    .button-lg { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; }
+    .button-md { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+    .button-sm { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+    .caption-1 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+    .caption-2 { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+    .caption-3 { font-size: 0.75rem; line-height: 1rem; font-weight: 600; }
+    .caption-4 { font-size: 0.75rem; line-height: 1rem; font-weight: 500; }
+    .caption-5 { font-size: 0.75rem; line-height: 1rem; font-weight: 400; }
+
+    /* Small label above a section title */
+    .eyebrow {
+        font-family: var(--font-mono);
+        color: var(--accent-text);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    /* Gradient heading text: white to grey, the highlighted words in blue */
+    .grad {
+        background: linear-gradient(90deg, #FFFFFF, #9B9B9B);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .hl {
+        position: relative;
+        display: inline-block;
+        background: linear-gradient(90deg, var(--chart), var(--chart-pale));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    @media (forced-colors: active) {
+        .grad, .hl { background: none; color: CanvasText; }
+    }
+
+    /* ---------- Layout ---------- */
+    .wrap {
+        width: 100%;
+        max-width: 1248px;
+        margin-inline: auto;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    @media (min-width: 640px) {
+        .wrap {
+            padding-left: max(24px, env(safe-area-inset-left, 0px));
+            padding-right: max(24px, env(safe-area-inset-right, 0px));
         }
     }
 
+    /* Every content block sits above the fixed sky and planets (z-index 0) */
+    .section {
+        position: relative;
+        z-index: 1;
+        padding-block: 64px;
+    }
+
+    @media (min-width: 1024px) {
+        .section { padding-block: 96px; }
+    }
+
+    .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 48px;
+    }
+
+    /* Section head: eyebrow and title on the left, introduction on the right */
+    .split-head {
+        display: grid;
+        gap: 24px;
+        align-items: end;
+    }
+
+    .split-head > div {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .split-head p {
+        max-width: 560px;
+    }
+
+    @media (min-width: 1024px) {
+        .split-head {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 64px;
+        }
+    }
+
+    .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+    }
+
+    /* Hairline frame with corner crosses */
+    .frame {
+        position: relative;
+        border: 1px solid var(--line);
+    }
+
+    .plus {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .plus::before,
+    .plus::after {
+        content: "";
+        position: absolute;
+        background: var(--line-strong);
+    }
+
+    .plus::before { left: 7px; top: 0; width: 1px; height: 16px; }
+    .plus::after { top: 7px; left: 0; width: 16px; height: 1px; }
+    .plus.tl { top: -8px; left: -8px; }
+    .plus.tr { top: -8px; right: -8px; }
+    .plus.bl { bottom: -8px; left: -8px; }
+    .plus.br { bottom: -8px; right: -8px; }
+
+    /* ---------- Buttons and links ---------- */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 9999px;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        transition: transform 300ms var(--ease-space), background-color 300ms var(--ease-space), border-color 300ms var(--ease-space), color 300ms var(--ease-space), box-shadow 300ms var(--ease-space), opacity 300ms var(--ease-space);
+    }
+
+    .btn:active { transform: scale(0.98); }
+    .btn svg { transition: transform 500ms var(--ease-space); }
+
+    .btn-primary {
+        background: var(--accent);
+        color: #FFFFFF;
+        box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1) inset, 0 12px 32px -12px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-hover);
+        box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14) inset, 0 16px 44px -10px var(--accent-glow);
+    }
+
+    .btn-primary:hover svg { transform: translateX(4px); }
+
+    .btn-ghost {
+        background: var(--fill);
+        border-color: var(--line-strong);
+        color: var(--heading);
+    }
+
+    .btn-ghost:hover {
+        background: var(--fill-hover);
+        border-color: var(--line-hover);
+    }
+
+    .btn-light {
+        background: #FFFFFF;
+        color: #1D3FAF;
+    }
+
+    .btn-light:hover { background: #E6EEFF; }
+    .btn-sm { padding: 8px 16px; }
+    .btn[aria-busy="true"] { opacity: 0.7; cursor: progress; }
+
+    .text-link {
+        color: var(--accent-text);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 6px;
+        transition: color 300ms var(--ease-space);
+    }
+
+    .text-link:hover {
+        color: var(--accent-text-hover);
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    .text-link svg { transition: transform 500ms var(--ease-space); }
+    .text-link:hover svg { transform: translate(2px, -2px); }
+
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 9999px;
+        display: inline-grid;
+        place-items: center;
+        color: var(--heading);
+        transition: background-color 300ms var(--ease-space), transform 300ms var(--ease-space);
+    }
+
+    .icon-btn:hover { background: var(--fill-hover); }
+    .icon-btn:active { transform: scale(0.98); }
+
+    /* The back-office's outline button (admin.css remaps its colors) */
     .btn-outline {
         @apply inline-block border-[1.5px] border-outline text-heading font-bold rounded-lg cursor-pointer text-center whitespace-nowrap;
         transition: border-color .2s, color .2s, transform .2s;
@@ -205,11 +449,87 @@
         }
     }
 
-    .token-chip {
-        @apply inline-flex items-center gap-2 font-semibold text-heading border border-edge-strong rounded-full bg-chip;
+    /* A link stretched over its whole card; the card shows its focus ring */
+    .stretched::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
     }
 
-    .surface-card {
-        @apply bg-card border border-edge rounded-[13px];
+    .stretched:focus-visible { outline: none; }
+
+    /* ---------- Scroll reveal (see lib/reveal.ts) ---------- */
+    .reveal {
+        transition: opacity 700ms var(--ease-space), transform 700ms var(--ease-space);
+        transition-delay: var(--d, 0ms);
+    }
+
+    .reveal.pending {
+        opacity: 0;
+        transform: translateY(32px);
+    }
+
+    /* RGAA: skip link, off-screen until it receives keyboard focus */
+    .skip-link {
+        position: fixed;
+        z-index: 100;
+        top: calc(16px + env(safe-area-inset-top, 0px));
+        left: max(16px, env(safe-area-inset-left, 0px));
+        padding: 8px 16px;
+        border-radius: 9999px;
+        background: var(--accent);
+        color: #FFFFFF;
+        transform: translateY(-160%);
+        opacity: 0;
+        transition: transform 500ms var(--ease-space), opacity 300ms var(--ease-space);
+    }
+
+    .skip-link:focus {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+/* ---------- The pause button and the system setting ----------
+   `data-motion` is set on <html> before the first paint (see PageLayout): it
+   is "reduce" when the visitor paused the animations, or when the system asks
+   for reduced motion. Movement then becomes a plain change of opacity. */
+:root[data-motion="reduce"] *,
+:root[data-motion="reduce"] *::before,
+:root[data-motion="reduce"] *::after {
+    animation: none !important;
+    transition-property: opacity, color, background-color, border-color !important;
+}
+
+:root[data-motion="reduce"] .reveal.pending { transform: none; }
+:root[data-motion="reduce"] .btn:active,
+:root[data-motion="reduce"] .btn-primary:hover svg,
+:root[data-motion="reduce"] .text-link:hover svg { transform: none; }
+
+/* ---------- /showcase ----------
+   The immersive viewer keeps the look it had before this design (white text,
+   its teal palette, the previous focus ring) but shares the site's faces. */
+.theme-showcase {
+    --accent: #87b3f6;
+    --heading: #FFFFFF;
+    --text: #FFFFFF;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-x: hidden;
+
+    & :is(h1, h2, h3) {
+        letter-spacing: -0.02em;
+    }
+
+    & strong {
+        font-weight: 700;
+    }
+
+    & :is(a, button):focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 4px;
     }
 }

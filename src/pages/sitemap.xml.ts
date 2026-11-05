@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { LOCALES } from "@i18n/config";
 import { alternateLinks, pathInLocale } from "@i18n/paths";
 import { getAllProjects } from "@data/projects";
+import { ifAvailable } from "@data/pb";
 
 const DOMAIN = "https://thomasgysemans.dev";
 
@@ -39,7 +40,15 @@ function urlEntries(path: string, lastmod?: string): string {
 }
 
 export const GET: APIRoute = async () => {
-    const projects = await getAllProjects();
+    const projects = await ifAvailable(getAllProjects());
+    // A sitemap without the projects would read as if they were gone: tell
+    // crawlers to come back later instead.
+    if (!projects) {
+        return new Response("PocketBase is unreachable, try again later.", {
+            status: 503,
+            headers: { "Content-Type": "text/plain; charset=utf-8", "Retry-After": "300", "Cache-Control": "no-store" },
+        });
+    }
 
     // The listing pages surface the projects, so their freshness tracks the
     // most recently edited project.
@@ -49,7 +58,7 @@ export const GET: APIRoute = async () => {
     // Locale-less canonical paths of every public, indexable page, each with
     // the <lastmod> to advertise: the project's own for detail pages, the
     // latest project edit for the listing pages.
-    const staticPaths = ["/", "/projects", "/freelance", "/showcase"];
+    const staticPaths = ["/", "/projects", "/showcase"];
     const entries = [
         ...staticPaths.map((path) => ({ path, lastmod: latestMod })),
         ...projects.map((p) => ({ path: `/projects/${p.slug}`, lastmod: isoDate(p.updated) })),
