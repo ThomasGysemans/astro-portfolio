@@ -69,6 +69,18 @@ export const home = {
     "why5chip2": text("RGAA 4.1", "WCAG 2.1"),
     "why5chip3": text("0 traceur", "0 trackers"),
     "why5chip4": text("clavier ✓", "keyboard ✓"),
+    // Lighthouse scores of this site, framed below the bento
+    "scorestitle": text("Mesuré, pas promis", "Measured, not promised"),
+    "scorestext": text(
+        "Google Lighthouse note chaque page sur quatre critères : vitesse, accessibilité, bonnes pratiques et référencement. Voici les notes de ce site.",
+        "Google Lighthouse scores every page on four criteria: speed, accessibility, best practices and search visibility. Here are this site's scores.",
+    ),
+    "scoresreport": text("Voir le rapport PageSpeed Insights", "See the PageSpeed Insights report"),
+    // The category names of the Lighthouse report itself, in each language
+    "scoreperf": text("Performances", "Performance"),
+    "scorea11y": text("Accessibilité", "Accessibility"),
+    "scorebp": text("Bonnes pratiques", "Best Practices"),
+    "scoreseo": text("SEO"),
 
     // Tagline: the {shine} word lights up like a star
     "tagline1": text("Il y a des milliards de sites. Le vôtre doit", "There are billions of websites. Yours has to"),

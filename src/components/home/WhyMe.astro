@@ -1,9 +1,22 @@
 ---
+import { Icon } from "astro-icon/components";
 import trans from "@i18n";
 
 const lang = Astro.locals.lang;
 const t = trans.home;
 const typed = t.why2typed[lang];
+const newWindow = ` (${trans.common.newwindow[lang]})`;
+
+// The PageSpeed Insights report behind the scores below. TODO: link the
+// published report itself once it exists; until then, the tool's home page.
+const REPORT_URL = "https://pagespeed.web.dev/";
+// This site's Lighthouse scores, out of 100: each ring is filled from its value
+const scores = [
+    { label: t.scoreperf[lang], value: 100 },
+    { label: t.scorea11y[lang], value: 100 },
+    { label: t.scorebp[lang], value: 100 },
+    { label: t.scoreseo[lang], value: 100 },
+];
 ---
 
 <section class="section" id="pourquoi" aria-labelledby="why-title">
@@ -84,8 +97,8 @@ const typed = t.why2typed[lang];
                             <circle class="fill" cx="100" cy="100" r="70" pathLength="100" transform="rotate(-90 100 100)"></circle>
                             <line class="tick" x1="51.5" y1="135.3" x2="35.3" y2="147"></line>
                             <text class="lbl" x="25" y="166" text-anchor="middle">65</text>
-                            <circle class="moon" cx="78.4" cy="33.4" r="7"></circle>
-                            <text class="num" x="100" y="108" text-anchor="middle">95</text>
+                            <circle class="moon" cx="100" cy="30" r="7"></circle>
+                            <text class="num" x="100" y="108" text-anchor="middle">100</text>
                             <text class="lbl" x="100" y="128" text-anchor="middle">{t.why3outof[lang]}</text>
                         </svg>
                     </div>
@@ -118,6 +131,36 @@ const typed = t.why2typed[lang];
                     <h3 class="heading-6">{t.why5title[lang]}</h3>
                     <p class="body-3">{t.why5[lang]}</p>
                 </article>
+            </div>
+        </div>
+
+        <div class="frame reveal">
+            <span class="plus tl" aria-hidden="true"></span><span class="plus tr" aria-hidden="true"></span><span class="plus bl" aria-hidden="true"></span><span class="plus br" aria-hidden="true"></span>
+            <div class="bento">
+                <div class="cell scores-intro">
+                    <h3 class="heading-6">{t.scorestitle[lang]}</h3>
+                    <p class="body-3">{t.scorestext[lang]}</p>
+                    <p class="caption-1 scores-link">
+                        <a class="text-link" href={REPORT_URL} target="_blank" rel="noopener">{t.scoresreport[lang]}<span class="sr-only">{newWindow}</span> <Icon name="arrow-up-right" class="size-4" /></a>
+                    </p>
+                </div>
+                <div class="cell span-2 scores-cell">
+                    <!-- One ring per Lighthouse category, as the report draws them -->
+                    <dl class="scores">
+                        {scores.map((score, i) => (
+                            <div class="score" style={`--score:${score.value};--i:${i}`}>
+                                <dt class="caption-2 text-muted">{score.label}</dt>
+                                <dd class="dial">
+                                    <svg viewBox="0 0 88 88" aria-hidden="true">
+                                        <circle class="track" cx="44" cy="44" r="40"></circle>
+                                        <circle class="fill" cx="44" cy="44" r="40" pathLength="100" transform="rotate(-90 44 44)"></circle>
+                                    </svg>
+                                    <span class="heading-5 font-mono">{score.value}</span><span class="sr-only"> {t.why3outof[lang]}</span>
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
+                </div>
             </div>
         </div>
     </div>
@@ -213,7 +256,7 @@ const typed = t.why2typed[lang];
     /* Speed gauge */
     .gauge { width: 200px; height: 200px; overflow: visible; }
     .gauge .track { fill: none; stroke: rgb(140 170 255 / 0.14); stroke-width: 6; }
-    .gauge .fill { fill: none; stroke: #4C86FF; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 95 100; transition: stroke-dasharray 1400ms var(--ease-space) 200ms; filter: drop-shadow(0 0 6px rgb(76 134 255 / 0.7)); }
+    .gauge .fill { fill: none; stroke: #4C86FF; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 100 100; transition: stroke-dasharray 1400ms var(--ease-space) 200ms; filter: drop-shadow(0 0 6px rgb(76 134 255 / 0.7)); }
     :global(.reveal.pending) .gauge .fill { stroke-dasharray: 0 100; }
     .gauge .moon { fill: var(--color-star); filter: drop-shadow(0 0 6px rgb(255 227 176 / 0.9)); transition: opacity 600ms var(--ease-space) 1300ms; }
     :global(.reveal.pending) .gauge .moon { opacity: 0; }
@@ -242,7 +285,27 @@ const typed = t.why2typed[lang];
     .chip-c { left: 16px; bottom: 16px; }
     .chip-d { right: 12px; bottom: 4px; }
 
-    :global(:root[data-motion="reduce"]) :global(.reveal.pending) .gauge .fill { stroke-dasharray: 95 100; }
+    /* Lighthouse scores */
+    .scores-intro h3 { margin-top: 0; }
+    .scores-link { margin-top: auto; padding-top: 8px; }
+    /* Inline rather than flex: when the label wraps, the arrow follows its last word */
+    .scores-link .text-link { display: inline; }
+    .scores-link .text-link :global(svg) { display: inline-block; vertical-align: -3px; }
+    .scores-cell { justify-content: center; }
+    .scores { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; }
+    @media (min-width: 600px) {
+        .scores { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    .score { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+    .dial { order: -1; position: relative; width: 88px; height: 88px; display: grid; place-items: center; color: var(--color-pass); }
+    .dial svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .dial .track { fill: none; stroke: rgb(95 211 148 / 0.14); stroke-width: 5; }
+    .dial .fill { fill: none; stroke: var(--color-pass); stroke-width: 5; stroke-linecap: round; stroke-dasharray: var(--score) 100; transition: stroke-dasharray 1400ms var(--ease-space) calc(200ms + var(--i) * 150ms); filter: drop-shadow(0 0 6px rgb(95 211 148 / 0.55)); }
+    :global(.reveal.pending) .dial .fill { stroke-dasharray: 0 100; }
+    .dial .heading-5 { color: inherit; font-weight: 500; }
+
+    :global(:root[data-motion="reduce"]) :global(.reveal.pending) .gauge .fill { stroke-dasharray: 100 100; }
+    :global(:root[data-motion="reduce"]) :global(.reveal.pending) .dial .fill { stroke-dasharray: var(--score) 100; }
     :global(:root[data-motion="reduce"]) :global(.reveal.pending) .cms-typed { width: calc(var(--chars) * 1ch); }
     :global(:root[data-motion="reduce"]) :global(.reveal.pending) .cms-toast { transform: none; }
 </style>
