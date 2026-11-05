@@ -10,23 +10,32 @@
 // looks at is not worth the frames.
 
 interface Props {
-    thumb: string;
+    thumb: string; // ~800px wide
+    // The ~1200px version, for the cards that get wide on large screens. The
+    // browser then picks one of the two from `sizes` (the card's width).
+    large?: string;
+    sizes?: string;
     video?: string;
     alt: string;
     // Extra classes for the frame (the compact and freelance cards differ).
     class?: string;
 }
 
-const { thumb, video, alt, class: className } = Astro.props;
+const { thumb, large, sizes, video, alt, class: className } = Astro.props;
+// A poster cannot choose between sizes: under a video, the backdrop and the
+// poster share the larger picture (one download for both). Otherwise the two
+// pictures share the same candidates, for the same reason.
+const picture = video ? large ?? thumb : thumb;
+const srcset = !video && large ? `${thumb} 800w, ${large} 1200w` : undefined;
 ---
 
 <div class:list={["relative aspect-video overflow-hidden", className]}>
-    <img src={thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
+    <img src={picture} srcset={srcset} sizes={srcset && sizes} alt="" aria-hidden="true" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-70" />
     {video ? (
         <video
             data-thumb-video
             data-src={video}
-            poster={thumb}
+            poster={picture}
             muted
             loop
             playsinline
@@ -35,7 +44,7 @@ const { thumb, video, alt, class: className } = Astro.props;
             class="relative w-full h-full object-contain"
         ></video>
     ) : (
-        <img src={thumb} alt={alt} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
+        <img src={picture} srcset={srcset} sizes={srcset && sizes} alt={alt} loading="lazy" decoding="async" class="relative w-full h-full object-contain" />
     )}
     <slot />
 </div>

@@ -43,7 +43,14 @@ const links = [
 
         {project && (
             <article class="card astro-card reveal">
-                <ProjectThumb thumb={project.thumbLarge} video={project.thumbVideo} alt={project.caption[lang] || project.name[lang]} class="astro-shot" />
+                <ProjectThumb
+                    thumb={project.thumb}
+                    large={project.thumbLarge}
+                    sizes="(min-width: 1280px) 645px, (min-width: 1024px) 50vw, calc(100vw - 50px)"
+                    video={project.thumbVideo}
+                    alt={project.caption[lang] || project.name[lang]}
+                    class="astro-shot"
+                />
                 <div class="astro-body">
                     <p class="work-meta caption-3">
                         <span><Icon name={categoryIcon(project.categories[0])} class="size-4" />{project.sub[lang]}</span>

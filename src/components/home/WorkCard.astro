@@ -28,7 +28,14 @@ const newWindow = ` (${trans.common.newwindow[lang]})`;
 <article class:list={["card work reveal", { "work-feature": feature }]} style={delay ? `--d:${delay}ms` : undefined}>
     <div class="shot">
         <div class="shot-bar" aria-hidden="true"><i></i><i></i><i></i><span class="shot-url caption-5">{host}</span></div>
-        <ProjectThumb thumb={feature ? project.thumbLarge : project.thumb} video={project.thumbVideo} alt={project.caption[lang] || name} class="shot-img" />
+        <ProjectThumb
+            thumb={project.thumb}
+            large={feature ? project.thumbLarge : undefined}
+            sizes="(min-width: 1280px) 683px, (min-width: 1024px) 54vw, calc(100vw - 52px)"
+            video={project.thumbVideo}
+            alt={project.caption[lang] || name}
+            class="shot-img"
+        />
     </div>
     <div class="work-body">
         <p class="work-meta caption-3">
