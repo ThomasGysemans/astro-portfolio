@@ -54,7 +54,7 @@ const { reviews, notice, error } = Astro.props;
                                 <span aria-hidden="true">{"★".repeat(review.rating)}</span><span class="adm-stars-off" aria-hidden="true">{"★".repeat(5 - review.rating)}</span>
                             </span>
                         </td>
-                        <td class="adm-cell-wide"><p class="adm-quote">« {review.quote} »</p></td>
+                        <td class="adm-cell-wide"><p class="adm-quote">{review.quote}</p></td>
                         <td class="adm-cell-wide">
                             {review.translated
                                 ? <span class="adm-badge"><span class="fi fi-gb rounded-[2px]" aria-hidden="true"></span>Traduit</span>
@@ -76,7 +76,7 @@ const { reviews, notice, error } = Astro.props;
     ) : (
         <div class="adm-empty">
             <strong>Aucun avis pour le moment.</strong>
-            Ajoute le premier avec « Nouvel avis » : il s'affichera sur la page /freelance.
+            Ajoute le premier avec « Nouvel avis » : il s'affichera sur la page d'accueil.
         </div>
     )}
 </AdminLayout>

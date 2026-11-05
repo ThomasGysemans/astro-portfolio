@@ -14,22 +14,24 @@ export type ReviewFormValues = {
     quoteEn: string,
     roleEn: string,
     companyEn: string,
+    project: string, // id of the linked project, "" when none
 };
 
 interface Props {
     id?: string;
     values: ReviewFormValues;
+    projects: { id: string, name: string, hidden: boolean }[]; // choices of the "project" select
     error?: string;
     fields?: FieldErrors;
 }
 
-const { id, values, error, fields } = Astro.props;
+const { id, values, projects, error, fields } = Astro.props;
 const isNew = !id;
 const heading = isNew ? "Nouvel avis" : values.company || "Avis";
 const title = isNew ? "Nouvel avis" : `Avis : ${values.company}`;
 
 const texts = [
-    { name: "quote", label: "Citation", fr: values.quote, en: values.quoteEn, required: true, area: 5 },
+    { name: "quote", label: "Résumé de l'avis", fr: values.quote, en: values.quoteEn, required: true, area: 5 },
     { name: "role", label: "Rôle", hint: "Gérant, Fondateur…", fr: values.role, en: values.roleEn },
     { name: "company", label: "Entreprise", fr: values.company, en: values.companyEn, required: true },
 ];
@@ -44,8 +46,8 @@ const texts = [
         <section class="adm-section">
             <div class="adm-section-intro">
                 <h2>Avis</h2>
-                <p>Affiché sur /freelance. C'est ta reformulation des retours du client : reste fidèle à ce qu'il a dit.</p>
-                <p>Sans guillemets : ils sont ajoutés à l'affichage. L'anglais est facultatif et retombe sur le français.</p>
+                <p>Affiché sur la page d'accueil. C'est ta reformulation des retours du client : reste fidèle à ce qu'il a dit.</p>
+                <p>Il est présenté comme un résumé, sans guillemets : n'en mets pas. L'anglais est facultatif et retombe sur le français.</p>
             </div>
             <div class="adm-section-body">
                 <div class="adm-parallel">
@@ -81,6 +83,7 @@ const texts = [
             <div class="adm-section-intro">
                 <h2>Détails</h2>
                 <p>Les avis sont triés du plus récent au plus ancien.</p>
+                <p>Le projet choisi est relié depuis l'avis, tant qu'il n'est pas masqué.</p>
             </div>
             <div class="adm-section-body">
                 <div class="adm-grid">
@@ -98,6 +101,15 @@ const texts = [
                                 </label>
                             ))}
                         </div>
+                    </div>
+                    <div class="adm-field">
+                        <label for="project" class="adm-label">Projet concerné <span class="adm-label-hint">facultatif</span></label>
+                        <select id="project" name="project" class="adm-input">
+                            <option value="" selected={!values.project}>Aucun</option>
+                            {projects.map(project => (
+                                <option value={project.id} selected={values.project === project.id}>{project.name}{project.hidden ? " (masqué)" : ""}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             </div>

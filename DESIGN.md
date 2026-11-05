@@ -207,7 +207,7 @@ Depth comes from the sky, not from shadows: the fixed starfield, the drifting pl
 
 ## Shapes
 
-Radii: 6px (small inner elements), 8px, 12px (inputs, quotes, small windows), 16px (framed pictures), 24px (cards, hairline grids), full (buttons, pills, chips, the navigation bar).
+Radii: 6px (small inner elements), 8px, 12px (inputs, reviews, small windows), 16px (framed pictures), 24px (cards, hairline grids), full (buttons, pills, chips, the navigation bar).
 
 ## Components
 

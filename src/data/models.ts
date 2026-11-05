@@ -92,4 +92,5 @@ export type Review = {
     year: number,
     rating: number, // star rating, 1 to 5
     translated: boolean, // the English quote is a real translation (false = fallback to the French text)
+    project?: string, // slug of the project the review is about, when it is set in the back-office
 };

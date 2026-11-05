@@ -1,11 +1,11 @@
 import type { Review } from "./models";
 import { cached, pb } from "./pb";
 
-// Client testimonials shown on the freelance page.
-// Quotes are stored bare: the displaying page adds the quotation marks.
+// Client reviews shown on the homepage. Each one is Thomas's own summary of
+// what the client said, not a verbatim quote, and is displayed as such.
 export async function getReviews(): Promise<Review[]> {
     return cached("reviews", async () => {
-        const records = await pb.collection("reviews").getFullList({ sort: "-year" });
+        const records = await pb.collection("reviews").getFullList({ sort: "-year", expand: "project" });
         // en falls back to fr, like the project translations, when the
         // English columns are left empty in the back-office.
         return records.map(r => ({
@@ -19,6 +19,9 @@ export async function getReviews(): Promise<Review[]> {
             // column is empty the page shows the French text as-is, so the
             // "Translated from French" note would be wrong twice.
             translated: !!r.quote_en,
+            // Only the slug: the page resolves it against the public projects,
+            // so a review never links to a hidden project (whose page is a 404)
+            project: r.expand?.project?.slug,
         }));
     });
 }

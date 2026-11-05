@@ -5,6 +5,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { categoryIcon } from "@data/categories";
 import ProjectThumb from "@components/ProjectThumb.astro";
 import { GITHUB_URL, LINKEDIN_URL, MALT_URL } from "@lib/contact";
+import { yearsOfCode } from "@lib/profile";
 import trans from "@i18n";
 
 interface Props {
@@ -31,7 +32,7 @@ const links = [
             <p class="body-7">{t.about1[lang]}</p>
             <p class="body-3">{t.about2[lang]}</p>
             <dl class="stats">
-                <div class="stat"><dt class="caption-2 text-muted">{t.statyears[lang]}</dt><dd class="heading-4 font-mono">10+</dd></div>
+                <div class="stat"><dt class="caption-2 text-muted">{t.statyears[lang]}</dt><dd class="heading-4 font-mono">{yearsOfCode()}</dd></div>
                 {total > 0 && <div class="stat"><dt class="caption-2 text-muted">{t.statprojects[lang]}</dt><dd class="heading-4 font-mono">{total}</dd></div>}
             </dl>
             <div class="about-links">
