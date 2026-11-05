@@ -25,7 +25,6 @@ const teamLabel = project.teamSize === 1 ? trans.common.solo[lang] : `${trans.co
 const languagesLabel = project.languages.map(l => l.toUpperCase()).join(" · ");
 const categoriesLabel = project.categories.map(c => categoryMeta(c).single[lang]).join(" · ");
 const context = contextLabel(project.context, lang);
-const chips = [context, project.date, teamLabel, languagesLabel].filter(Boolean);
 // The gallery shows every media of the project, each with its own caption
 // (also used as the alt text); media without one fall back to the project's
 // caption. Only the images open the fullscreen viewer — the uploaded videos
@@ -83,9 +82,6 @@ const planets: PlanetPlacement[] = [
                         )}
                     </div>
                 )}
-                <ul class="chips caption-4">
-                    {chips.map(chip => <li>{chip}</li>)}
-                </ul>
             </header>
 
             <div class="wrap layout">
@@ -227,22 +223,6 @@ const planets: PlanetPlacement[] = [
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-    }
-
-    .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding-top: 8px;
-    }
-
-    .chips li {
-        padding: 4px 12px;
-        border-radius: 9999px;
-        border: 1px solid var(--line-strong);
-        background: var(--fill);
-        color: var(--text);
-        font-family: var(--font-mono);
     }
 
     .layout {
