@@ -2,6 +2,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 import trans, { LOCALES, pathInLocale } from "@i18n";
 import { GITHUB_URL, LINKEDIN_URL, MALT_URL } from "@lib/contact";
+import { CODING_SINCE } from "@lib/profile";
 
 const lang = Astro.locals.lang;
 const home = getRelativeLocaleUrl(lang, "/");
@@ -52,7 +53,7 @@ const elsewhere = [
         <div class="footer-rule" aria-hidden="true"></div>
         <div class="footer-bottom caption-5">
             <p>© {new Date().getFullYear()} Thomas Gysemans</p>
-            <p>{trans.footer.since[lang]}</p>
+            <p>{trans.footer.since[lang].replace("{year}", `${CODING_SINCE}`)}</p>
         </div>
     </div>
 </footer>

@@ -31,7 +31,7 @@ const price = new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-GB", {
                     <div class="plan-head">
                         <h3 class="plan-title title-1">
                             {plan.title[lang]}
-                            {plan.startingPrice && <span class="hot-badge caption-3">{t.fixedprice[lang]}</span>}
+                            {plan.startingPrice && <span class="hot-badge caption-3">{t.listedprice[lang]}</span>}
                         </h3>
                         <p class="body-6">{plan.pitch[lang]}</p>
                         {plan.startingPrice ? (

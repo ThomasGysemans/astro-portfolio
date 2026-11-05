@@ -4,6 +4,7 @@ import { invalidateCache } from "@data/pb";
 import { type FormResult, ScopedError, failure, text } from "./forms";
 import type { ReviewFormValues } from "@components/pages/admin/AdminReviewFormPage.astro";
 import type { AdminReviewRow } from "@components/pages/admin/AdminReviewsPage.astro";
+import { listAdminProjects } from "./projects";
 
 type PostResult = FormResult<ReviewFormValues>;
 
@@ -28,6 +29,15 @@ export function listAdminReviews(pb: PocketBase): Promise<AdminReviewRow[]> {
     return list;
 }
 
+// The choices of the form's "project" select. Hidden projects stay listed
+// (marked as such): the link simply appears again once one is shown.
+export async function reviewProjectChoices(pb: PocketBase) {
+    const projects = await listAdminProjects(pb);
+    return projects
+        .map(p => ({ id: p.id, name: p.name, hidden: p.hidden }))
+        .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+}
+
 export function parseReviewForm(data: FormData): ReviewFormValues {
     return {
         quote: text(data, "quote"),
@@ -38,6 +48,7 @@ export function parseReviewForm(data: FormData): ReviewFormValues {
         quoteEn: text(data, "quote_en"),
         roleEn: text(data, "role_en"),
         companyEn: text(data, "company_en"),
+        project: text(data, "project"),
     };
 }
 
@@ -53,6 +64,7 @@ export async function reviewFormValues(pb: PocketBase, id: string): Promise<Revi
             quoteEn: r.quote_en ?? "",
             roleEn: r.role_en ?? "",
             companyEn: r.company_en ?? "",
+            project: r.project ?? "",
         };
     } catch {
         return undefined;
@@ -70,6 +82,7 @@ export async function handleReviewPost(pb: PocketBase, data: FormData, id?: stri
         quote_en: values.quoteEn,
         role_en: values.roleEn,
         company_en: values.companyEn,
+        project: values.project,
     };
 
     try {

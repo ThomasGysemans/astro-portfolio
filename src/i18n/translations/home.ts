@@ -15,8 +15,8 @@ export const home = {
     "herotitle2": text("qui mettent votre projet", "that put your project"),
     "herotitlehl": text("en orbite.", "into orbit."),
     "herosub": text(
-        "Je suis Thomas Gysemans, développeur et designer freelance, passionné d'astronomie. Site vitrine, application mobile ou logiciel : je le conçois de A à Z, original, rapide, et conforme au RGPD comme au RGAA.",
-        "I'm Thomas Gysemans, a freelance developer and designer with a passion for astronomy. Showcase website, mobile app or software: I build it from A to Z, original, fast, and compliant with privacy and accessibility rules.",
+        "Je suis Thomas Gysemans, développeur et designer freelance, passionné d'astronomie. Site vitrine, application mobile ou logiciel : je le conçois et je le développe moi-même, sans agence ni sous-traitant.",
+        "I'm Thomas Gysemans, a freelance developer and designer with a passion for astronomy. Showcase website, mobile app or software: I design it and build it myself, with no agency or subcontractor.",
     ),
     "seepricing": text("Voir les tarifs", "See pricing"),
     "check1": text("Devis gratuit sous 48 h", "Free quote within 48 hours"),
@@ -27,12 +27,12 @@ export const home = {
 
     // Why me
     "whyeyebrow": text("Pourquoi moi", "Why me"),
-    // The subject is spelled out: under the "Why me" eyebrow, a bare "Beautiful
-    // to look at" would read as describing me, not the site
-    "whytitle": text("Votre site : beau à regarder, rapide à charger, ouvert à tous.", "Your site: beautiful to look at, fast to load, open to everyone."),
+    // The subject is spelled out: under the "Why me" eyebrow, a bare adjective
+    // ("Beautiful to look at") would read as describing me, not the site
+    "whytitle": text("Un design sur mesure, qui reste rapide et utilisable par tous.", "A custom design that stays fast and usable by everyone."),
     "whyintro": text(
-        "Un site joli mais lent, rapide mais banal, ou conforme en option : c'est souvent le compromis. Chez moi, ces qualités font partie du cahier des charges dès la première maquette.",
-        "Pretty but slow, fast but bland, or compliant as an extra: that is the usual trade-off. With me, these qualities are part of the brief from the very first mockup.",
+        "Je prévois la vitesse et l'accessibilité dès la première maquette. Ce site est construit de la même façon, et ses notes Google se trouvent un peu plus bas.",
+        "I plan for speed and accessibility from the very first mockup. This site is built the same way, and its Google scores are a little further down.",
     ),
     "why1title": text("Original, dessiné à partir d'une page blanche", "Original, drawn from a blank page"),
     "why1": text(
@@ -42,8 +42,8 @@ export const home = {
     "why1art": text("accroche", "headline"),
     "why2title": text("Vous modifiez votre site, sans passer par moi", "You update your site yourself, without calling me"),
     "why2": text(
-        "Je livre souvent une interface d'administration sur mesure : textes, photos ou nouvelles réalisations, vous les publiez en quelques clics, sans toucher au code.",
-        "I often deliver a tailor-made admin interface: texts, photos or new work, you publish them in a few clicks, without touching the code.",
+        "Je livre souvent une interface d'administration sur mesure : textes, photos ou nouvelles réalisations, vous les publiez depuis votre navigateur, sans toucher au code.",
+        "I often deliver a tailor-made admin interface: texts, photos or new work, you publish them from your browser, without touching the code.",
     ),
     "why2window": text("administration", "admin"),
     "why2field": text("titre", "title"),
@@ -59,23 +59,23 @@ export const home = {
     "why3outof": text("sur 100", "out of 100"),
     "why4title": text("Beau sur chaque écran", "Beautiful on every screen"),
     "why4": text(
-        "Du téléphone au grand écran, chaque mise en page est dessinée pour sa taille, pas seulement rétrécie.",
-        "From phone to large display, every layout is designed for its size, not just shrunk.",
+        "Chaque mise en page est pensée pour l'écran qui l'affiche : sur un téléphone, rien n'est simplement rétréci.",
+        "Each layout is designed for the screen that shows it: on a phone, nothing is simply shrunk.",
     ),
     "why5title": text("Conforme au RGPD et au RGAA", "Privacy and accessibility compliant"),
     "why5": text(
-        "Aucun traceur sans votre accord, une navigation complète au clavier, des contrastes vérifiés.",
-        "No tracker without your consent, full keyboard navigation, checked contrasts.",
+        "Aucun traceur sans l'accord de vos visiteurs. Votre site se parcourt entièrement au clavier, et ses contrastes sont vérifiés.",
+        "No tracker without your visitors' consent. Your site works entirely with a keyboard, and its contrasts are checked.",
     ),
     "why5chip1": text("RGPD", "GDPR"),
     "why5chip2": text("RGAA 4.1", "WCAG 2.1"),
     "why5chip3": text("0 traceur", "0 trackers"),
     "why5chip4": text("clavier ✓", "keyboard ✓"),
     // Lighthouse scores of this site, framed below the bento
-    "scorestitle": text("Mesuré, pas promis", "Measured, not promised"),
+    "scorestitle": text("Ce site, noté par Google", "This site, scored by Google"),
     "scorestext": text(
-        "Google Lighthouse note chaque page sur quatre critères : vitesse, accessibilité, bonnes pratiques et référencement. Voici les notes de ce site.",
-        "Google Lighthouse scores every page on four criteria: speed, accessibility, best practices and search visibility. Here are this site's scores.",
+        "Son outil Lighthouse note chaque page sur quatre critères : vitesse, accessibilité, bonnes pratiques et référencement.",
+        "Its Lighthouse tool scores every page on four criteria: speed, accessibility, best practices and search visibility.",
     ),
     "scoresreport": text("Voir le rapport PageSpeed Insights", "See the PageSpeed Insights report"),
     // The category names of the Lighthouse report itself, in each language
@@ -89,39 +89,43 @@ export const home = {
     "taglineshine": text("briller", "shine"),
     "tagline2": text("assez fort pour qu'on le remarque.", "bright enough to be noticed."),
 
-    // Work. The title and the introduction describe the three projects shown
-    // (the "carousel" project of the back-office, then the next two featured).
+    // Work. The title and the introduction name none of the projects shown, so
+    // they stay true whichever ones the back-office features.
     "workeyebrow": text("Réalisations", "Work"),
-    "worktitle": text("Du coffre chiffré au logiciel métier.", "From an encrypted vault to business software."),
+    "worktitle": text("Des projets menés seul, de A à Z.", "Projects I designed and built on my own."),
     "workintro": text(
-        "Une application de sécurité pour cinq systèmes, une plateforme de vulgarisation et l'outil interne d'une entreprise. Chacun conçu, dessiné et développé par moi, de A à Z.",
-        "A security app for five platforms, a science outreach platform and a company's internal tool. Each one designed, drawn and built by me, from A to Z.",
+        "Pour des clients ou pour moi-même : chaque fiche donne le contexte du projet et les technologies utilisées.",
+        "For clients or for myself: each page gives the project's context and the technologies used.",
     ),
     "seeallprojects": text("Voir les {count} projets", "See all {count} projects"),
     "livesite": text("Site en ligne", "Live site"),
     "reviewseyebrow": text("Avis clients", "Client reviews"),
+    // The reviews are Thomas's own summaries of what each client said, never
+    // verbatim quotes: the page says so instead of dressing them in quotation marks
+    "reviewsnote": text("Leurs retours, que j'ai résumés en une phrase.", "Their feedback, which I summed up in one sentence."),
+    "reviewproject": text("Voir le projet {name}", "See the {name} project"),
     "rating": text("Note de {n} sur 5", "Rated {n} out of 5"),
 
     // About
     "abouteyebrow": text("Derrière l'écran", "Behind the screen"),
-    "abouttitle": text("Développeur, designer, et la tête dans les étoiles.", "Developer, designer, and head in the stars."),
+    "abouttitle": text("Développeur et designer, la tête dans les étoiles.", "Developer and designer, head in the stars."),
     "about1": text(
         "Je code depuis mes 13 ans, d'abord en autodidacte, puis à l'IUT A de Lille. Stages chez Kimple et Tabuléo, un an d'alternance sur Quizéo, puis mes premiers clients freelance, venus par recommandation.",
         "I have been coding since I was 13, self-taught at first, then at the IUT A in Lille. Internships at Kimple and Tabuléo, a year-long apprenticeship on Quizéo, then my first freelance clients, who came through word of mouth.",
     ),
     "about2": text(
-        "L'astronomie est mon autre passion, et elle se glisse souvent dans mon code. Space Visitor et ScienceSky m'ont appris la 3D, la performance, et l'art d'expliquer simplement.",
-        "Astronomy is my other passion, and it often finds its way into my code. Space Visitor and ScienceSky taught me 3D, performance, and the art of explaining things simply.",
+        "L'astronomie est mon autre passion, et elle se glisse souvent dans mon code. Avec Space Visitor et ScienceSky, j'ai appris à garder la 3D fluide et à expliquer simplement des sujets difficiles.",
+        "Astronomy is my other passion, and it often finds its way into my code. With Space Visitor and ScienceSky, I learned to keep 3D smooth and to explain hard topics simply.",
     ),
     "statyears": text("ans de code", "years of code"),
     "statprojects": text("projets menés", "projects shipped"),
     "play": text("Jouer", "Play"),
 
     // Method
-    "methodtitle": text("Du premier échange au décollage.", "From first call to liftoff."),
+    "methodtitle": text("Vous validez, puis je code.", "You approve, then I code."),
     "methodintro": text(
-        "Un seul interlocuteur du début à la fin. Vous voyez votre projet à chaque étape, avant qu'il coûte une ligne de code.",
-        "One single contact from start to finish. You see your project at every stage, before it costs a line of code.",
+        "Vous avez un seul interlocuteur, moi, et vous voyez votre projet à chaque étape, avant qu'il coûte une ligne de code.",
+        "You deal with one person, me, and you see your project at every stage, before it costs a line of code.",
     ),
     "step": text("Étape {n} : ", "Step {n}: "),
     "guaranteetitle": text("Garantie un an", "One-year guarantee"),
@@ -156,12 +160,14 @@ export const home = {
 
     // Pricing
     "pricingeyebrow": text("Tarifs", "Pricing"),
-    "pricingtitle": text("Un prix pensé pour votre projet, pas pour un modèle.", "A price built for your project, not for a template."),
+    "pricingtitle": text("Le prix est fixé avant de commencer.", "The price is set before work begins."),
     "pricingintro": text(
-        "Chaque projet est différent, chaque devis aussi. On fait le point gratuitement, et vous connaissez le prix avant que le travail commence.",
-        "Every project is different, and so is every quote. We review it together for free, and you know the price before any work begins.",
+        "Le site vitrine a un prix de départ. Pour une application ou un logiciel, je chiffre votre projet après un premier échange.",
+        "The showcase website has a starting price. For an app or software, I price your project after a first conversation.",
     ),
-    "fixedprice": text("Prix fixe", "Fixed price"),
+    // Every plan has a fixed price once its quote is signed: the badge names
+    // what sets this one apart, a price shown up front
+    "listedprice": text("Tarif affiché", "Listed price"),
     "from": text("à partir de", "from"),
     "price": text("prix", "price"),
     "onquote": text("Sur devis", "On quote"),
@@ -172,16 +178,16 @@ export const home = {
     "pricingnote2": text("Paiement sécurisé possible via Malt.", "Secure payment available through Malt."),
 
     // FAQ
-    "faqtitle": text("Vos questions, mes réponses.", "Your questions, my answers."),
+    "faqtitle": text("Les questions qu'on me pose avant un devis.", "What people ask me before a quote."),
     "askbox": text("Encore une question ?", "Still have a question?"),
     "askboxtext": text("Écrivez à cette adresse, je réponds sous 48 h.", "Write to this address, I reply within 48 hours."),
 
     // Quote
     "launcheyebrow": text("Réponse sous 48 h", "Reply within 48 hours"),
-    "launchtitle": text("Prêt pour le décollage ?", "Ready for liftoff?"),
+    "launchtitle": text("Parlez-moi de votre projet.", "Tell me about your project."),
     "launchintro": text(
-        "Décrivez votre projet en quelques lignes. Je vous réponds sous 48 h avec un devis gratuit, sans engagement.",
-        "Describe your project in a few lines. I reply within 48 hours with a free, no-commitment quote.",
+        "Quelques lignes suffisent. Vous recevez un devis gratuit et sans engagement.",
+        "A few lines are enough. You get a free quote, with no commitment.",
     ),
 } satisfies Record<string, Localized>;
 
@@ -262,7 +268,7 @@ export const plans: {
     {
         preset: "site",
         title: text("Site vitrine", "Showcase website"),
-        pitch: text("Votre activité, présentée sous son meilleur jour.", "Your business, shown at its best."),
+        pitch: text("Présentez votre activité et laissez vos clients vous joindre.", "Show your business and let customers reach you."),
         audience: text("Pour les artisans, commerçants et indépendants.", "For craftspeople, shops and independents."),
         features: [
             text("Design sur mesure", "Custom design"),
@@ -276,7 +282,7 @@ export const plans: {
     {
         preset: "app",
         title: text("Application mobile", "Mobile app"),
-        pitch: text("Votre service, dans la poche de vos clients.", "Your service, in your customers' pockets."),
+        pitch: text("Votre appli, sur l'App Store et Google Play.", "Your app, on the App Store and Google Play."),
         audience: text("Pour les entreprises et les porteurs de projet.", "For businesses and project founders."),
         features: [
             text("iOS et Android, avec Flutter ou Tauri", "iOS and Android, with Flutter or Tauri"),
@@ -290,7 +296,7 @@ export const plans: {
     {
         preset: "soft",
         title: text("Logiciel ou appli web", "Software or web app"),
-        pitch: text("Un outil taillé pour votre métier.", "A tool cut out for your trade."),
+        pitch: text("Un outil construit autour de votre façon de travailler.", "A tool built around the way you work."),
         audience: text("Pour les équipes qui veulent gagner du temps.", "For teams that want to save time."),
         features: [
             text("Comptes et espaces clients", "Accounts and client areas"),

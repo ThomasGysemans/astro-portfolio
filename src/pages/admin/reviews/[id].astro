@@ -1,6 +1,6 @@
 ---
 import AdminReviewFormPage from "@components/pages/admin/AdminReviewFormPage.astro";
-import { handleReviewPost, reviewFormValues } from "@data/admin/reviews";
+import { handleReviewPost, reviewFormValues, reviewProjectChoices } from "@data/admin/reviews";
 import { type FieldErrors, formResponse, isAsyncRequest } from "@data/admin/forms";
 
 const pb = Astro.locals.admin!;
@@ -18,6 +18,7 @@ if (Astro.request.method === "POST") {
 
 const values = submitted ?? await reviewFormValues(pb, id);
 if (!values) return Astro.redirect("/admin/reviews");
+const projects = await reviewProjectChoices(pb);
 ---
 
-<AdminReviewFormPage {id} {values} {error} {fields} />
+<AdminReviewFormPage {id} {values} {projects} {error} {fields} />

@@ -8,15 +8,13 @@ import trans from "@i18n";
 interface Props {
     feature?: Project; // the wide card
     others: Project[]; // the two cards below it
-    reviews: Review[];
+    reviews: { review: Review, project?: Project }[]; // project: the public project the review is about
     total: number; // number of public projects
 }
 
 const { feature, others, reviews, total } = Astro.props;
 const lang = Astro.locals.lang;
 const t = trans.home;
-// The quotation marks come from the page, not the data (localized style)
-const quote = (text: string) => (lang === "fr" ? `« ${text} »` : `“${text}”`);
 ---
 
 <section class="section" id="realisations" aria-labelledby="work-title">
@@ -37,23 +35,35 @@ const quote = (text: string) => (lang === "fr" ? `« ${text} »` : `“${text}
             {others.map((project, i) => <WorkCard {project} delay={i * 80} />)}
         </div>
 
+        <!-- Each review is Thomas's summary of what the client said, so it is
+             neither quoted nor marked up as a <blockquote>: the note says so -->
         {reviews.length > 0 && (
             <div class="reviews reveal">
-                <h3 class="eyebrow caption-3">{t.reviewseyebrow[lang]}</h3>
-                <div class="reviews-row">
-                    {reviews.map(review => (
-                        <figure class="quote">
+                <div class="reviews-head">
+                    <h3 class="eyebrow caption-3">{t.reviewseyebrow[lang]}</h3>
+                    <p class="caption-2 text-muted">{t.reviewsnote[lang]}</p>
+                </div>
+                <ul class="reviews-row" role="list">
+                    {reviews.map(({ review, project }) => (
+                        <li class="review">
                             <div class="stars" role="img" aria-label={t.rating[lang].replace("{n}", `${review.rating}`)}>
                                 {Array.from({ length: review.rating }, () => <Icon name="star" class="size-4" />)}
                             </div>
-                            <blockquote class="title-2"><p>{quote(review.quote[lang])}</p></blockquote>
-                            <figcaption class="caption-2 text-muted">
-                                {review.role[lang]}, {review.company[lang]}
-                                {lang === "en" && review.translated && <span class="block caption-5">Translated from French</span>}
-                            </figcaption>
-                        </figure>
+                            <p class="title-2 summary">{review.quote[lang]}</p>
+                            <div class="review-foot">
+                                <p class="caption-2 text-muted">
+                                    {review.role[lang]}, {review.company[lang]}
+                                    {lang === "en" && review.translated && <span class="block caption-5">Translated from French</span>}
+                                </p>
+                                {project && (
+                                    <a class="text-link caption-1" href={getRelativeLocaleUrl(lang, `/projects/${project.slug}`)}>
+                                        {t.reviewproject[lang].replace("{name}", project.name[lang])} <Icon name="arrow-right" class="size-4" />
+                                    </a>
+                                )}
+                            </div>
+                        </li>
                     ))}
-                </div>
+                </ul>
             </div>
         )}
     </div>
@@ -76,6 +86,13 @@ const quote = (text: string) => (lang === "fr" ? `« ${text} »` : `“${text}
         gap: 16px;
     }
 
+    .reviews-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 16px;
+    }
+
     .reviews-row {
         display: grid;
         gap: 16px;
@@ -86,11 +103,11 @@ const quote = (text: string) => (lang === "fr" ? `« ${text} »` : `“${text}
         .reviews-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
-    .quote {
+    .review {
         padding: 16px;
         border-radius: 12px;
         /* Nearly opaque, like the cards: a planet drifting behind never
-           costs the quote its contrast */
+           costs the review its contrast */
         background: var(--panel);
         border: 1px solid var(--line);
         display: flex;
@@ -98,8 +115,18 @@ const quote = (text: string) => (lang === "fr" ? `« ${text} »` : `“${text}
         gap: 8px;
     }
 
-    .quote blockquote {
+    .summary {
         color: var(--heading);
+    }
+
+    /* The attribution sits at the bottom of every card, whatever the length
+       of the summary above it */
+    .review-foot {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 
     .stars {

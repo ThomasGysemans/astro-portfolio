@@ -26,6 +26,8 @@ const featured = projects.filter(p => p.featured);
 // cards under it the next featured ones
 const headline = projects.find(p => p.carousel) ?? featured[0];
 const others = featured.filter(p => p !== headline).slice(0, 2);
+// A review links to its project only while that project is public
+const reviewed = reviews.map(review => ({ review, project: projects.find(p => p.slug === review.project) }));
 // Next to "Behind the screen": the featured astronomy game
 const astronomy = featured.find(p => p.categories.includes("games") && p !== headline && !others.includes(p));
 
@@ -59,7 +61,7 @@ const faqData = {
         <Hero />
         <WhyMe />
         <Tagline />
-        {headline && <Work feature={headline} {others} {reviews} total={projects.length} />}
+        {headline && <Work feature={headline} {others} reviews={reviewed} total={projects.length} />}
         <About project={astronomy} total={projects.length} />
         <Method />
         <Compare />

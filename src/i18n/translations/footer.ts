@@ -2,15 +2,16 @@ import { text, type Localized } from "../text";
 
 export const footer = {
     "status": text(
-        "Actuellement développeur indépendant, disponible pour donner vie à vos projets.",
-        "Currently an independent developer, available to bring your projects to life.",
+        "Développeur et designer freelance, disponible pour de nouveaux projets.",
+        "Freelance developer and designer, available for new projects.",
     ),
     "site": text("Le site", "The site"),
     "elsewhere": text("Ailleurs", "Elsewhere"),
     "allprojects": text("Tous les projets", "All projects"),
+    // {year} is CODING_SINCE (src/lib/profile.ts), shared with "Behind the screen"
     "since": text(
-        "Initié au développement informatique depuis 2017.",
-        "Programming since 2017.",
+        "Initié au développement informatique depuis {year}.",
+        "Programming since {year}.",
     ),
 } satisfies Record<string, Localized>;
 
