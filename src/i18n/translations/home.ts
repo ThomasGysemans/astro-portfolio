@@ -118,7 +118,6 @@ export const home = {
     "play": text("Jouer", "Play"),
 
     // Method
-    "methodeyebrow": text("Méthode", "Process"),
     "methodtitle": text("Du premier échange au décollage.", "From first call to liftoff."),
     "methodintro": text(
         "Un seul interlocuteur du début à la fin. Vous voyez votre projet à chaque étape, avant qu'il coûte une ligne de code.",

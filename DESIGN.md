@@ -187,10 +187,12 @@ All borders and translucent fills are the same blue at different strengths: **li
 **Geist** for everything, **Geist Mono** for eyebrows, labels, numbers, the language switch and the chart. Both are self-hosted variable WOFF2 files (no font CDN, GDPR).
 
 ### Hierarchy
-Named text styles, never raw sizes in the markup: `heading-1` to `heading-6` (600, tight tracking), `title-1` to `title-4` (500), `body-3`, `body-5`, `body-6`, `body-7` (reading), `button-lg/md/sm` (600), `caption-1` to `caption-5`. Big headings use the white-to-grey **grad** text; the key words of the hero use the blue **hl** gradient with its orbit ring.
+Named text styles, never raw sizes in the markup: `heading-1` to `heading-6` (600, tight tracking), `title-1` to `title-4` (500), `body-3`, `body-5`, `body-6`, `body-7` (reading), `button-lg/md/sm` (600), `caption-1` to `caption-5`. Only the homepage hero's title uses the white-to-grey **grad** text, its key words in the blue **hl** gradient with their orbit ring. Every other heading, page titles included, is plain `heading`.
 
 ### Named Rules
-**The Eyebrow Rule.** Every section opens with a mono uppercase eyebrow in `accent-text`, then a gradient heading, then an introduction on the right (`split-head`).
+**The One Gradient Rule.** A gradient on every heading reads as a template: the hero's title is the only gradient text of the site.
+**The Eyebrow Rule.** A section may open with a mono uppercase eyebrow in `accent-text` when the label says something its heading does not (the section's name, a commitment such as "Réponse sous 48 h"). A label that would only repeat the heading is left out: the FAQ and the process open on their heading.
+**The Section Head Rule.** A section's head follows what comes after it, so the sections do not all open alike. Before a grid of work, a table or plans, the heading and its introduction stand side by side (`split-head`). Where the heading is the page's thesis (Why me), it takes the full width and the introduction follows under it. Where the section has a drawing, the heading lives in it: the process title sits in the sky above the start of the launch trajectory, which only climbs once past it (from 1024px; below, the trajectory is hidden and the head stacks).
 **The No Italics Rule.** Emphasis is weight or colour, never italics.
 
 ## Layout

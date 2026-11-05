@@ -10,22 +10,23 @@ const numbers = ["3", "2", "1"];
 
 <section class="section" id="methode" aria-labelledby="method-title">
     <div class="wrap stack">
-        <div class="split-head reveal">
-            <div>
-                <p class="eyebrow caption-3">{t.methodeyebrow[lang]}</p>
-                <h2 id="method-title" class="heading-2 grad">{t.methodtitle[lang]}</h2>
+        <!-- The heading is written in the sky the rocket climbs through: on wide
+             screens it sits in the empty corner above the start of the curve -->
+        <div class="flight">
+            <div class="method-head reveal">
+                <h2 id="method-title" class="heading-2">{t.methodtitle[lang]}</h2>
+                <p class="body-7 text-muted">{t.methodintro[lang]}</p>
             </div>
-            <p class="body-7 text-muted">{t.methodintro[lang]}</p>
-        </div>
 
-        <!-- The rocket follows the scroll along its trajectory, lighting each step -->
-        <div class="trajectory" data-trajectory aria-hidden="true">
-            <svg viewBox="0 0 1000 180">
-                <path class="base" data-traj-path d="M 24 166 C 330 166, 650 140, 976 22"></path>
-                <path class="prog" data-traj-prog pathLength="1" d="M 24 166 C 330 166, 650 140, 976 22"></path>
-                <g data-traj-marks></g>
-            </svg>
-            <span class="rocket" data-traj-rocket><Icon name="rocket" class="size-7" /></span>
+            <!-- The rocket follows the scroll along its trajectory, lighting each step -->
+            <div class="trajectory" data-trajectory aria-hidden="true">
+                <svg viewBox="0 0 1000 300">
+                    <path class="base" data-traj-path d="M 24 290 C 420 290, 700 240, 976 20"></path>
+                    <path class="prog" data-traj-prog pathLength="1" d="M 24 290 C 420 290, 700 240, 976 20"></path>
+                    <g data-traj-marks></g>
+                </svg>
+                <span class="rocket" data-traj-rocket><Icon name="rocket" class="size-7" /></span>
+            </div>
         </div>
 
         <ol class="countdown">
@@ -51,12 +52,27 @@ const numbers = ["3", "2", "1"];
 </section>
 
 <style>
+    .method-head {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .method-head h2 { text-wrap: balance; }
+    .method-head p { max-width: 560px; }
+
     .trajectory {
         position: relative;
         display: none;
     }
 
-    @media (min-width: 900px) {
+    /* The heading and the drawing share one cell: the curve stays low under
+       the heading and only climbs once past it */
+    @media (min-width: 1024px) {
+        .flight { display: grid; }
+        .method-head, .trajectory { grid-area: 1 / 1; }
+        .method-head { max-width: 48%; align-self: start; position: relative; z-index: 1; }
         .trajectory { display: block; }
     }
 
@@ -202,7 +218,8 @@ const numbers = ["3", "2", "1"];
             b = a;
             a = path.getPointAtLength(Math.max(0, at - 2));
         }
-        const frame = traj.getBoundingClientRect(), sx = frame.width / 1000, sy = frame.height / 180;
+        const view = path.ownerSVGElement!.viewBox.baseVal;
+        const frame = traj.getBoundingClientRect(), sx = frame.width / view.width, sy = frame.height / view.height;
         // The icon points to the upper right: +45° aligns it with the curve
         const angle = Math.atan2((b.y - a.y) * sy, (b.x - a.x) * sx) * 180 / Math.PI;
         const point = path.getPointAtLength(at);

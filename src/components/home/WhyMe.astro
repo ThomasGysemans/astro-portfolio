@@ -21,11 +21,11 @@ const scores = [
 
 <section class="section" id="pourquoi" aria-labelledby="why-title">
     <div class="wrap stack">
-        <div class="split-head reveal">
-            <div>
-                <p class="eyebrow caption-3">{t.whyeyebrow[lang]}</p>
-                <h2 id="why-title" class="heading-2 grad">{t.whytitle[lang]}</h2>
-            </div>
+        <!-- The heading is the thesis of the page: it takes the width, and the
+             introduction follows it instead of standing beside it -->
+        <div class="why-head reveal">
+            <p class="eyebrow caption-3">{t.whyeyebrow[lang]}</p>
+            <h2 id="why-title" class="heading-2">{t.whytitle[lang]}</h2>
             <p class="body-7 text-muted">{t.whyintro[lang]}</p>
         </div>
 
@@ -167,6 +167,23 @@ const scores = [
 </section>
 
 <style>
+    .why-head {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .why-head h2 {
+        max-width: 22em;
+        text-wrap: balance;
+    }
+
+    .why-head p:last-child {
+        max-width: 600px;
+        margin-top: 8px;
+    }
+
     .bento {
         display: grid;
         gap: 1px;
