@@ -6,7 +6,7 @@ import { contact } from "@i18n/translations/contact";
 //
 // Imports the translation namespace directly rather than "@i18n", which
 // re-exports the path helpers and would drag in the "astro:i18n" virtual module.
-export const EMAIL = "contact@thomasgysemans.dev";
+export const EMAIL = "thomas@gysemans.dev";
 export const MALT_URL = "https://malt.fr/profile/thomasgysemans";
 export const GITHUB_URL = "https://github.com/ThomasGysemans";
 export const LINKEDIN_URL = "https://fr.linkedin.com/in/thomas-gysemans-950536268";

@@ -8,7 +8,7 @@ web
 
 ## Users
 
-**Primary: the freelance prospect.** A business owner, founder or project lead looking for someone to deliver a website or an application. They arrive from word of mouth, from Malt, or from a search, usually already having a project in mind and a budget question they have not dared ask. Their job is to decide, within a few minutes, whether this one person can be trusted to deliver the whole thing on time. Success is a quote request — an email to `contact@thomasgysemans.dev` or a contact through Malt.
+**Primary: the freelance prospect.** A business owner, founder or project lead looking for someone to deliver a website or an application. They arrive from word of mouth, from Malt, or from a search, usually already having a project in mind and a budget question they have not dared ask. Their job is to decide, within a few minutes, whether this one person can be trusted to deliver the whole thing on time. Success is a quote request — an email to `thomas@gysemans.dev` or a contact through Malt.
 
 **Secondary, real but not prioritised:** recruiters and CTOs (a CV lives at `public/cv.pdf`), and technically curious peers who come for the projects, the GitHub account and the 3D showcase. They must remain served, but no design decision is arbitrated in their favour against the prospect.
 
