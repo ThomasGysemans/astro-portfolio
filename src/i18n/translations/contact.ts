@@ -57,6 +57,7 @@ export const contact = {
 
     // The form
     "legend": text("Votre projet", "Your project"),
+    "several": text("(plusieurs choix possibles)", "(several choices allowed)"),
     "typesite": text("Site web", "Website"),
     "typeapp": text("Application mobile", "Mobile app"),
     "typesoft": text("Logiciel", "Software"),
@@ -77,7 +78,7 @@ export const contact = {
         "Votre messagerie s'ouvre avec votre demande déjà rédigée : il ne reste qu'à l'envoyer. Rien n'est enregistré sur ce site.",
         "Your email app opens with your request already written: you just have to send it. Nothing is stored on this site.",
     ),
-    "errtype": text("Choisissez le type de projet.", "Choose the type of project."),
+    "errtype": text("Choisissez au moins un type de projet.", "Choose at least one type of project."),
     "erridea": text("Décrivez votre idée en quelques mots.", "Describe your idea in a few words."),
     "errideashort": text("Ajoutez quelques détails, 20 caractères au minimum.", "Add a few details, 20 characters minimum."),
     "errone": text("1 champ à corriger.", "1 field to fix."),

@@ -46,11 +46,32 @@ test.describe("home page", () => {
         await page.goto("/");
         const form = page.locator("#devis-form");
         await form.getByRole("button", { name: "Demander un devis gratuit" }).click();
-        await expect(page.locator("#err-type")).toHaveText("Choisissez le type de projet.");
+        await expect(page.locator("#err-type")).toHaveText("Choisissez au moins un type de projet.");
         await expect(page.locator("#err-idea")).toHaveText("Décrivez votre idée en quelques mots.");
         await expect(page.locator("#idea")).toHaveAttribute("aria-invalid", "true");
         // Nothing was sent: the form is still there
         await expect(form).toBeVisible();
         await expect(page.locator("#form-done")).toBeHidden();
+    });
+
+    test("the quote form accepts several project types, but not alongside \"not sure yet\"", async ({ page }) => {
+        await page.goto("/");
+        // Clicked like a visitor does: on the chip (the checkbox itself is invisible)
+        const chip = (name: string) => page.locator("#devis-form label.choice", { hasText: name });
+        const site = page.getByRole("checkbox", { name: "Site web" });
+        const app = page.getByRole("checkbox", { name: "Application mobile" });
+        const unsure = page.getByRole("checkbox", { name: "Pas encore sûr" });
+        await chip("Site web").click();
+        await chip("Application mobile").click();
+        await expect(site).toBeChecked();
+        await expect(app).toBeChecked();
+        // Not sure yet clears the actual types, and the other way round
+        await chip("Pas encore sûr").click();
+        await expect(unsure).toBeChecked();
+        await expect(site).not.toBeChecked();
+        await expect(app).not.toBeChecked();
+        await chip("Site web").click();
+        await expect(site).toBeChecked();
+        await expect(unsure).not.toBeChecked();
     });
 });

@@ -31,11 +31,11 @@ const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
             <div class="card form-card reveal" style="--d:120ms">
                 <form class="form" id="devis-form" novalidate aria-describedby="form-status">
                     <fieldset class="field" aria-describedby="err-type">
-                        <legend class="label title-4">{c.legend[lang]}</legend>
+                        <legend class="label title-4">{c.legend[lang]} <span class="opt">{c.several[lang]}</span></legend>
                         <div class="choices" id="type-group">
                             {types.map(type => (
                                 <label class="choice">
-                                    <input type="radio" name="type" value={type.value} id={`type-${type.value}`} />
+                                    <input type="checkbox" name="type" value={type.value} id={`type-${type.value}`} />
                                     <span class="body-5"><Icon name="check" class="size-4" />{type.label}</span>
                                 </label>
                             ))}
@@ -490,11 +490,22 @@ const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
     const pad = section && canvas && padEl ? mountLaunchPad(section, canvas, padEl) : null;
     let attempted = false;
 
-    const checkedType = () => form?.querySelector<HTMLInputElement>('input[name="type"]:checked') ?? null;
+    const typeBoxes = () => [...(form?.querySelectorAll<HTMLInputElement>('input[name="type"]') ?? [])];
+    const checkedTypes = () => typeBoxes().filter(box => box.checked);
+
+    // Several types can be asked at once, but "not sure yet" excludes the
+    // actual types: checking one side unchecks the other.
+    function keepTypesConsistent(changed: HTMLInputElement): void {
+        if (!changed.checked) return;
+        const unsure = changed.value === "unsure";
+        for (const box of typeBoxes()) {
+            if ((box.value === "unsure") !== unsure) box.checked = false;
+        }
+    }
 
     // Each required field returns its error message, or "" when it is valid
     const fields: Record<"type" | "idea", () => string> = {
-        type: () => (checkedType() ? "" : contact.errtype[lang]),
+        type: () => (checkedTypes().length > 0 ? "" : contact.errtype[lang]),
         idea: () => {
             const value = idea?.value.trim() ?? "";
             if (!value) return contact.erridea[lang];
@@ -513,9 +524,9 @@ const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
         if (message) target?.setAttribute("aria-invalid", "true");
         else target?.removeAttribute("aria-invalid");
         if (name === "type") {
-            form?.querySelectorAll<HTMLInputElement>('input[name="type"]').forEach(radio => {
-                if (message) radio.setAttribute("aria-invalid", "true");
-                else radio.removeAttribute("aria-invalid");
+            typeBoxes().forEach(box => {
+                if (message) box.setAttribute("aria-invalid", "true");
+                else box.removeAttribute("aria-invalid");
             });
         }
         return message;
@@ -534,11 +545,15 @@ const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
         pad?.setReady(all);
     }
 
-    // The request as it lands in the mail: the label of the type, the idea as
-    // written, and the optional fields or "to be defined together"
+    // The request as it lands in the mail: the labels of the types as a
+    // sentence ("Site web et application mobile"), the idea as written, and
+    // the optional fields or "to be defined together"
     function compose(): { subject: string, body: string } {
-        const type = checkedType();
-        const typeLabel = (type?.closest("label")?.querySelector("span")?.textContent ?? "").trim();
+        const labels = checkedTypes().map((box, i) => {
+            const label = (box.closest("label")?.querySelector("span")?.textContent ?? "").trim();
+            return i === 0 ? label : label.charAt(0).toLocaleLowerCase(lang) + label.slice(1);
+        });
+        const typeLabel = new Intl.ListFormat(lang, { type: "conjunction" }).format(labels);
         const optional = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.value.trim() || contact.undecided[lang];
         const body = contact.brief[lang]
             .replace("{type}", typeLabel)
@@ -548,6 +563,10 @@ const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
         return { subject: contact.subjecttype[lang].replace("{type}", typeLabel), body };
     }
 
+    form?.addEventListener("change", event => {
+        const target = event.target as HTMLInputElement;
+        if (target.name === "type") keepTypesConsistent(target);
+    });
     form?.addEventListener("input", syncChecks);
     form?.addEventListener("change", syncChecks);
     form?.addEventListener("input", event => {
@@ -565,7 +584,7 @@ const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
         const invalid = (Object.keys(fields) as Field[]).filter(name => showError(name));
         if (invalid.length > 0) {
             if (status) status.textContent = invalid.length === 1 ? contact.errone[lang] : contact.errmany[lang].replace("{count}", `${invalid.length}`);
-            (invalid[0] === "type" ? form.querySelector<HTMLInputElement>('input[name="type"]') : idea)?.focus();
+            (invalid[0] === "type" ? typeBoxes()[0] : idea)?.focus();
             return;
         }
         const { subject, body } = compose();
@@ -587,12 +606,14 @@ const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
         idea?.focus();
     });
 
-    // "Get a free quote" in a pricing plan pre-selects the matching project type
+    // "Get a free quote" in a pricing plan checks the matching project type,
+    // on top of the ones already chosen
     document.querySelectorAll<HTMLAnchorElement>("[data-preset]").forEach(link => {
         link.addEventListener("click", () => {
-            const radio = document.getElementById(`type-${link.dataset.preset}`) as HTMLInputElement | null;
-            if (!radio) return;
-            radio.checked = true;
+            const box = document.getElementById(`type-${link.dataset.preset}`) as HTMLInputElement | null;
+            if (!box) return;
+            box.checked = true;
+            keepTypesConsistent(box);
             syncChecks();
             if (attempted) showError("type");
         });
