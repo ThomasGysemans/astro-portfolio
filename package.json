@@ -18,7 +18,7 @@
     "dev:e2e": "astro dev --host --background && astro dev logs --follow"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.12",
     "@astrojs/svelte": "^9.0.1",
     "@astrojs/vercel": "^11.0.14",
     "@threlte/core": "^8.5.16",

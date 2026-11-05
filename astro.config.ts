@@ -29,6 +29,13 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // One chunk is expected above Vite's 500 kB default: /showcase's viewer
+      // (three.js + Threlte + postprocessing, ~820 kB, ~210 kB gzipped), loaded
+      // by that page alone. Splitting it would not get three.js itself under
+      // 500 kB, so the bar sits just above it and still flags any other chunk.
+      chunkSizeWarningLimit: 900,
+    },
     server: {
       host: true,
     },

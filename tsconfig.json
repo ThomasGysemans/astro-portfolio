@@ -6,16 +6,16 @@
     // Vite config), so they are transpiled by those tools, not by astro check.
     "exclude": ["dist", "db/pb_migrations", "vitest.config.ts", "playwright.config.ts"],
     "compilerOptions": {
-        "baseUrl": ".",
+        // Relative to this file: `baseUrl` is deprecated in TypeScript 6
         "paths": {
-            "@*": ["src/*"],
-            "@components/*": ["src/components/*"],
-            "@layouts/*": ["src/layouts/*"],
-            "@styles/*": ["src/styles/*"],
-            "@lib/*": ["src/lib/*"],
-            "@data/*": ["src/data/*"],
-            "@i18n": ["src/i18n/index.ts"],
-            "@i18n/*": ["src/i18n/*"],
+            "@*": ["./src/*"],
+            "@components/*": ["./src/components/*"],
+            "@layouts/*": ["./src/layouts/*"],
+            "@styles/*": ["./src/styles/*"],
+            "@lib/*": ["./src/lib/*"],
+            "@data/*": ["./src/data/*"],
+            "@i18n": ["./src/i18n/index.ts"],
+            "@i18n/*": ["./src/i18n/*"],
         }
     }
 }
