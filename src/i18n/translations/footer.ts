@@ -8,9 +8,9 @@ export const footer = {
     "site": text("Le site", "The site"),
     "elsewhere": text("Ailleurs", "Elsewhere"),
     "allprojects": text("Tous les projets", "All projects"),
-    "credit": text(
-        "Conçu et codé par mes soins, étoiles, planètes et fusée comprises.",
-        "Designed and coded by me, stars, planets and rocket included.",
+    "since": text(
+        "Initié au développement informatique depuis 2017.",
+        "Programming since 2017.",
     ),
 } satisfies Record<string, Localized>;
 
