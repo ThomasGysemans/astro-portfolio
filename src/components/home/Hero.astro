@@ -4,13 +4,62 @@ import trans from "@i18n";
 
 const lang = Astro.locals.lang;
 const checks = [trans.home.check1[lang], trans.home.check2[lang], trans.home.check3[lang]];
+
+// The constellations are drawn like a pen stroke, from 900 ms on the
+// `--ease-space` curve. The Big Dipper is one line, one path, drawn in 2200 ms.
+// Orion branches, and one path with several subpaths cannot do it: the dash
+// pattern restarts on each subpath, so with pathLength="1" every short line was
+// whole within the first instants. Each line is therefore its own path, drawn
+// when the pen reaches it, starting from the head and spreading along the figure.
+type Point = [number, number];
+const DIPPER: Point[] = [[6, 36], [30, 22], [54, 24], [76, 30], [114, 26], [110, 60], [80, 56], [76, 30]];
+const ORION: [Point, Point][] = [
+    [[48, 6], [22, 22]], [[48, 6], [70, 28]], // head to shoulders
+    [[22, 22], [40, 64]], [[70, 28], [60, 58]], // shoulders to belt
+    [[60, 58], [50, 61]], [[50, 61], [40, 64]], // the belt
+    [[40, 64], [32, 112]], [[60, 58], [80, 106]], // legs
+];
+const DELAY = 900, DIPPER_DURATION = 2200;
+const distance = (a: Point, b: Point) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+const dipper = `M${DIPPER.map(point => point.join(" ")).join(" L")}`;
+const dipperLength = DIPPER.slice(1).reduce((sum, point, i) => sum + distance(DIPPER[i], point), 0);
+
+// The time fraction at which `--ease-space` (cubic-bezier(0.22, 1, 0.36, 1))
+// reaches the progress `p`, by bisection on the curve's parameter
+function easedTime(p: number): number {
+    const bezier = (t: number, p1: number, p2: number) => 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3;
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 24; i++) {
+        const mid = (lo + hi) / 2;
+        if (bezier(mid, 1, 1) < p) lo = mid;
+        else hi = mid;
+    }
+    return bezier((lo + hi) / 2, 0.22, 0.36);
+}
+
+// How far along the figure the pen is when it reaches each star
+const reach = new Map<string, number>([["48,6", 0]]);
+const strokes = ORION.map(([from, to]) => {
+    const start = reach.get(from.join(","))!;
+    const end = start + distance(from, to);
+    reach.set(to.join(","), Math.min(reach.get(to.join(",")) ?? Infinity, end));
+    return { d: `M${from.join(" ")} L${to.join(" ")}`, start, end };
+});
+const length = Math.max(...strokes.map(stroke => stroke.end));
+// The pen goes as fast as on the Big Dipper (both are drawn at about the same
+// scale): Orion's path is shorter, so it is over sooner
+const duration = DIPPER_DURATION * length / dipperLength;
+const orion = strokes.map(({ d, start, end }) => {
+    const t0 = easedTime(start / length), t1 = easedTime(end / length);
+    return { d, style: `--delay:${Math.round(DELAY + duration * t0)}ms;--duration:${Math.round(duration * (t1 - t0))}ms` };
+});
 ---
 
 <section class="hero" id="top" aria-labelledby="hero-title">
     <!-- Two real constellations, drawn like a star chart (wide screens only) -->
     <div class="const const-left" aria-hidden="true">
         <svg viewBox="0 0 100 130">
-            <path class="cl" pathLength="1" d="M48 6 L22 22 M48 6 L70 28 M22 22 L40 64 M70 28 L60 58 M40 64 L50 61 L60 58 M40 64 L32 112 M60 58 L80 106"></path>
+            {orion.map(line => <path class="cl line" pathLength="1" d={line.d} style={line.style}></path>)}
             <circle class="st" cx="48" cy="6" r="1.4"></circle>
             <circle class="st warm tw2" cx="22" cy="22" r="3"></circle>
             <circle class="st" cx="70" cy="28" r="2.1"></circle>
@@ -24,7 +73,7 @@ const checks = [trans.home.check1[lang], trans.home.check2[lang], trans.home.che
     </div>
     <div class="const const-right" aria-hidden="true">
         <svg viewBox="0 0 130 80">
-            <path class="cl" pathLength="1" d="M6 36 L30 22 L54 24 L76 30 L114 26 L110 60 L80 56 L76 30"></path>
+            <path class="cl" pathLength="1" d={dipper}></path>
             <circle class="st" cx="6" cy="36" r="2"></circle>
             <circle class="st" cx="30" cy="22" r="2"></circle>
             <circle class="st" cx="33.5" cy="17.5" r="0.9"></circle>
@@ -97,6 +146,14 @@ const checks = [trans.home.check1[lang], trans.home.check2[lang], trans.home.che
         stroke-dasharray: 1;
         stroke-dashoffset: 1;
         animation: draw 2200ms var(--ease-space) 900ms forwards;
+    }
+
+    /* One of Orion's lines: its slice of the eased timeline, drawn at an even
+       pace (see the frontmatter) */
+    .const .cl.line {
+        animation-delay: var(--delay);
+        animation-duration: var(--duration);
+        animation-timing-function: linear;
     }
 
     .const .st { fill: #EAF1FF; filter: drop-shadow(0 0 2px rgb(200 220 255 / 0.9)); }
