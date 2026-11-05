@@ -47,6 +47,7 @@ function isBot(context: APIContext): boolean {
 }
 
 export const userMiddleware = defineMiddleware((context, next) => {
+    // Only the back-office has a light theme (the public site is dark only).
     const themeCookie = context.cookies.get("theme");
     context.locals.theme = themeCookie?.value === "light" ? "light" : "dark";
 

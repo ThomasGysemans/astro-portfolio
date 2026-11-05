@@ -129,7 +129,7 @@
     <!-- left rail -->
     <nav class="absolute left-8 top-7 bottom-7 w-70 xl:w-80 2xl:w-96 z-20 max-lg:hidden flex flex-col" aria-label={labels.title}>
         <div class="text-xs 2xl:text-sm font-bold tracking-[.22em] text-[#9ad1d4] mb-2">{labels.label}</div>
-        <div class="font-display text-2xl 2xl:text-3xl font-bold mb-5">{labels.title}</div>
+        <div class="text-2xl 2xl:text-3xl font-bold tracking-[-0.02em] mb-5">{labels.title}</div>
         <div class="flex flex-col gap-1">
             {#each items as item, i (item.href)}
                 <button

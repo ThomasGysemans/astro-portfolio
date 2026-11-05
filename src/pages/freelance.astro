@@ -1,5 +1,9 @@
 ---
-import FreelancePage from "@components/pages/FreelancePage.astro";
----
+// The freelance pitch now lives on the homepage (method, pricing, FAQ and the
+// quote form). The old URL is kept as a permanent redirect so links and search
+// engines land on it, in the visitor's language (/en/freelance -> /en/).
+import { getRelativeLocaleUrl } from "astro:i18n";
 
-<FreelancePage />
+const home = getRelativeLocaleUrl(Astro.locals.lang, "/");
+return Astro.redirect(home, 301);
+---

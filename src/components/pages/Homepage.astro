@@ -1,189 +1,70 @@
 ---
-import { Icon } from "astro-icon/components";
-import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAllProjects } from "@data/projects";
-import { countTechnologies } from "@data/technologies";
-import FeaturedCarousel from "@components/svelte/FeaturedCarousel.svelte";
-import AvailabilityBadge from "@components/AvailabilityBadge.astro";
-import ProjectCard from "@components/ProjectCard.astro";
-import StatCard from "@components/StatCard.astro";
+import { getReviews } from "@data/reviews";
+import { ifAvailable } from "@data/pb";
 import MainLayout from "@layouts/MainLayout.astro";
-import Earth from "@components/svelte/Earth.svelte";
-import { youtubeEmbedUrl, youtubeThumbnail } from "@data/media";
-import trans from "@i18n";
+import Hero from "@components/home/Hero.astro";
+import WhyMe from "@components/home/WhyMe.astro";
+import Tagline from "@components/home/Tagline.astro";
+import Work from "@components/home/Work.astro";
+import About from "@components/home/About.astro";
+import Method from "@components/home/Method.astro";
+import Compare from "@components/home/Compare.astro";
+import Pricing from "@components/home/Pricing.astro";
+import Faq from "@components/home/Faq.astro";
+import Launch from "@components/home/Launch.astro";
+import type { PlanetPlacement } from "@lib/space/planets";
+import trans, { faq } from "@i18n";
 
 const lang = Astro.locals.lang;
-// One cached PocketBase query feeds everything project-related: the featured
-// cards, the carousel project and the total count are all derived from the
-// same list. The technologies stat goes through a count-only query (a number,
-// not the collection); both requests run in parallel and hit the 60s cache.
-const [allProjects, technologiesCount] = await Promise.all([getAllProjects(), countTechnologies()]);
-const featured = allProjects.filter(p => p.featured);
-// The carousel explores the single project flagged in the back-office,
-// falling back to the first featured one.
-const carouselProject = allProjects.find(p => p.carousel) ?? featured[0];
-const totalProjects = allProjects.length;
-const allProjectsLabel = trans.home.allprojectscount[lang].replace("{count}", `${totalProjects}`);
-const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
-const showcaseUrl = getRelativeLocaleUrl(lang, "/showcase");
-const freelanceUrl = getRelativeLocaleUrl(lang, "/freelance");
+// One cached PocketBase query feeds every project of the page. The homepage
+// stands on its own without them: if PocketBase is unreachable, the sections
+// that show projects and reviews are simply left out.
+const [projects = [], reviews = []] = await Promise.all([ifAvailable(getAllProjects()), ifAvailable(getReviews())]);
+const featured = projects.filter(p => p.featured);
+// The wide card is the project flagged in the back-office ("carousel"), the two
+// cards under it the next featured ones
+const headline = projects.find(p => p.carousel) ?? featured[0];
+const others = featured.filter(p => p !== headline).slice(0, 2);
+// Next to "Behind the screen": the featured astronomy game
+const astronomy = featured.find(p => p.categories.includes("games") && p !== headline && !others.includes(p));
 
-// The carousel explores the pictures of a single project (picked in the back-office).
-// A YouTube slide ships as a still plus the URLs the island needs to swap in
-// the player on demand: mounting an iframe per slide would load a full player
-// for every picture of the project.
-const carouselMedia = (carouselProject?.pictures ?? []).map(picture => ({
-    src: picture.url,
-    kind: picture.kind,
-    poster: picture.youtubeId ? youtubeThumbnail(picture.youtubeId) : undefined,
-    // `maxresdefault` only exists for videos uploaded in HD.
-    posterFallback: picture.youtubeId ? youtubeThumbnail(picture.youtubeId, true) : undefined,
-    embedUrl: picture.youtubeId ? youtubeEmbedUrl(picture.youtubeId, true) : undefined,
-}));
-const carouselInfo = carouselProject && {
-    name: carouselProject.name[lang],
-    tagline: carouselProject.tagline[lang],
-    caption: carouselProject.caption[lang],
-    href: getRelativeLocaleUrl(lang, `/projects/${carouselProject.slug}`),
-};
-
-const carouselLabels = {
-    details: trans.common.details[lang],
-    prevPicture: trans.carousel.previouspicture[lang],
-    nextPicture: trans.carousel.nextpicture[lang],
-    gotoPicture: trans.carousel.gotopicture[lang],
-    pause: trans.carousel.pause[lang],
-    resume: trans.carousel.resume[lang],
-    playVideo: trans.carousel.playvideo[lang],
-};
-
-const roleChips = [
-    { label: trans.home.webdev[lang], icon: "globe" },
-    { label: trans.home.appdev[lang], icon: "smartphone" },
-    { label: trans.home.designer[lang], icon: "flower-2" },
+// A trip home through the solar system as the page scrolls: Neptune at the top,
+// then Uranus, Saturn, Jupiter and Mars, down to the Earth and its Moon next to
+// the launch pad. Mercury and Venus are not on the way.
+const planets: PlanetPlacement[] = [
+    { name: "neptune", anchor: "#top", at: 0.66, x: 0.86, mAt: 1.38, mx: 0.12 },
+    { name: "uranus", anchor: "#tagline", at: 0.5, x: 0.11, mAt: 0.05, mx: 0.1 },
+    { name: "saturn", anchor: "#apropos", at: 0, x: 0.88, mAt: 0.02, mx: 0.86 },
+    { name: "jupiter", anchor: "#comparatif", at: 0.3, x: -0.045, mAt: 0.02, mx: 0.04 },
+    { name: "mars", anchor: "#tarifs", at: 0.08, x: 0.9, mAt: 0.02, mx: 0.88 },
+    { name: "earth", anchor: "#devis", at: 0.34, x: 0.13, mAt: -0.01, mx: 0.8 },
 ];
 
-const aboutCards = [
-    { icon: "graduation-cap", title: trans.home.studiestitle[lang], text: trans.home.studies[lang] },
-    { icon: "briefcase", title: trans.home.experiencetitle[lang], text: trans.home.experience[lang] },
-    { icon: "rocket", title: trans.home.freelancetitle[lang], text: trans.home.freelance[lang] },
-    { icon: "handshake", title: trans.home.teamskillstitle[lang], text: trans.home.teamskills[lang] },
-];
+// The visible questions, also published as structured data so both always match
+const faqData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map(item => ({
+        "@type": "Question",
+        name: item.q[lang],
+        acceptedAnswer: { "@type": "Answer", text: item.a[lang] },
+    })),
+};
 ---
 
-<MainLayout title={trans.common.title[lang]}>
-    <main id="main-content" class="relative overflow-hidden">
-        <!-- Nebula-like scene, faded out in light mode through --hero-scene. -->
-        <div class="hero-scene absolute inset-0 pointer-events-none" aria-hidden="true" />
-
-        <div class="relative max-w-415 mx-auto">
-            <!-- hero -->
-            <section class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5 px-page pt-[clamp(32px,7vh,110px)] pb-8 items-center min-h-[min(660px,calc(100vh-320px))]">
-                <div>
-                    <div class="mb-5.5">
-                        <AvailabilityBadge />
-                    </div>
-                    <h1 class="text-[clamp(34px,3.4vw,60px)] font-bold leading-[1.16] mb-4 text-heading" set:html={trans.home.herotitle[lang]} />
-                    <p class="text-[clamp(16px,1.1vw,18px)] leading-[1.7] text-body max-w-125 mb-6" set:html={trans.home.herointro[lang]} />
-                    <div class="flex items-center gap-3 mb-6.5 flex-wrap">
-                        <a href={freelanceUrl} class="btn-primary text-sm font-extrabold py-3.75 px-7.5 rounded-[10px]">{trans.home.createproject[lang]}</a>
-                        <a href={showcaseUrl} class="btn-outline text-sm py-3 px-5.5">{trans.home.showcasemode[lang]}</a>
-                        <div class="flex gap-2 ml-1.5">
-                            <a href="https://github.com/ThomasGysemans" target="_blank" rel="noopener" aria-label={`${trans.common.mygithubaccount[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="github" class="text-lg text-heading" /></a>
-                            <a href="https://fr.linkedin.com/in/thomas-gysemans-950536268" target="_blank" rel="noopener" aria-label={`${trans.common.mylinkedinaccount[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="linkedin" class="text-lg text-heading" /></a>
-                            <a href="https://malt.fr/profile/thomasgysemans" target="_blank" rel="noopener" aria-label={`${trans.common.mymaltprofile[lang]} (${trans.common.newwindow[lang]})`} class="social-circle"><Icon name="malt" class="text-lg text-malt" /></a>
-                        </div>
-                    </div>
-                    <div class="flex gap-2.5 flex-wrap">
-                        {roleChips.map(chip => (
-                            <span class="token-chip text-sm py-2 px-4">
-                                <Icon name={chip.icon} class="text-sm text-accent-strong" />
-                                {chip.label}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-                <div class="relative flex justify-center">
-                    <div class="relative w-[clamp(260px,32vw,540px)] max-w-full aspect-square">
-                        <div class="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(97,156,243,.28),transparent_70%)]" aria-hidden="true" />
-                        <Earth dragLabel={trans.home.dragtoorbit[lang]} client:idle />
-                    </div>
-                </div>
-            </section>
-
-            <!-- stats -->
-            <section class="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-4 px-page pt-2.5 pb-8.5">
-                <StatCard value={trans.home.stat1num[lang]}>{trans.home.stat1[lang]}</StatCard>
-                <StatCard value={`${totalProjects}`}>{trans.home.stat2[lang]}</StatCard>
-                <StatCard value={`${technologiesCount}`}>{trans.home.stat3[lang]}</StatCard>
-                <StatCard value={trans.home.stat4num[lang]}>{trans.home.stat4[lang]}</StatCard>
-            </section>
-
-            <!-- featured carousel: the pictures of the project picked in the back-office -->
-            {carouselInfo && carouselMedia.length > 0 && (
-                <section class="px-page pt-1.5 pb-10">
-                    <div class="flex justify-between items-baseline mb-4 gap-4 flex-wrap">
-                        <h2 class="text-2xl font-bold m-0 text-heading">{trans.home.featuredprojects[lang]}</h2>
-                        <a href={showcaseUrl} class="text-sm font-bold text-accent hover:underline hover:brightness-110">{trans.home.opentheshowcase[lang]}</a>
-                    </div>
-                    <FeaturedCarousel project={carouselInfo} media={carouselMedia} labels={carouselLabels} client:visible />
-                </section>
-            )}
-
-            <!-- selected projects -->
-            <section class="px-page pb-10">
-                <div class="flex justify-between items-baseline mb-5 gap-4 flex-wrap">
-                    <h2 class="text-2xl font-bold m-0 text-heading">{trans.home.selectedprojects[lang]}</h2>
-                    <a href={projectsUrl} class="text-sm font-bold text-accent hover:underline hover:brightness-110">{allProjectsLabel}</a>
-                </div>
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(min(380px,100%),1fr))] gap-5">
-                    {featured.map(project => (
-                        <ProjectCard {project} />
-                    ))}
-                </div>
-                <div class="flex justify-center mt-6">
-                    <a href={projectsUrl} class="btn-outline text-sm py-3 px-6.5">{trans.common.seemore[lang]}</a>
-                </div>
-            </section>
-
-            <!-- about -->
-            <section class="px-page pt-1 pb-11">
-                <h2 class="text-2xl font-bold mb-5 text-heading">{trans.home.aboutme[lang]}</h2>
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
-                    {aboutCards.map(card => (
-                        <div class="surface-card p-5">
-                            <h3 class="flex items-center gap-2 text-base font-bold text-accent-heading mb-2.5">
-                                <Icon name={card.icon} class="text-base shrink-0" />
-                                {card.title}
-                            </h3>
-                            <p class="text-sm text-body" set:html={card.text} />
-                        </div>
-                    ))}
-                </div>
-            </section>
-        </div>
+<MainLayout title={trans.home.title[lang]} description={trans.home.description[lang]} {planets}>
+    <script slot="head" type="application/ld+json" set:html={JSON.stringify(faqData).replace(/</g, "\\u003c")} is:inline />
+    <main id="main-content" tabindex="-1">
+        <Hero />
+        <WhyMe />
+        <Tagline />
+        {headline && <Work feature={headline} {others} {reviews} total={projects.length} />}
+        <About project={astronomy} total={projects.length} />
+        <Method />
+        <Compare />
+        <Pricing />
+        <Faq />
+        <Launch />
     </main>
 </MainLayout>
-
-<style>
-    @reference "../../styles/tailwind.css";
-
-    .hero-scene {
-        opacity: var(--hero-scene);
-        transition: opacity .3s;
-        background:
-            radial-gradient(ellipse 60% 50% at 70% 30%, rgba(97, 156, 243, .17), transparent 65%),
-            radial-gradient(ellipse 40% 35% at 20% 65%, rgba(97, 156, 243, .07), transparent 70%),
-            linear-gradient(180deg, rgba(3, 15, 32, .25), #030F20 78%);
-    }
-
-    .social-circle {
-        @apply w-10 h-10 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center;
-        transition: transform .2s, border-color .2s;
-
-        &:hover {
-            @apply border-accent;
-            transform: translateY(-3px);
-        }
-    }
-</style>

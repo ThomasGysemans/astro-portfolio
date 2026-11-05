@@ -1,5 +1,11 @@
 ---
 import ShowcasePage from "@components/pages/ShowcasePage.astro";
+import ErrorPage from "@components/pages/ErrorPage.astro";
+import { getFeaturedProjects } from "@data/projects";
+import { ifAvailable } from "@data/pb";
+
+// Without PocketBase there is nothing to tour: a 503 instead of an empty viewer
+const projects = await ifAvailable(getFeaturedProjects());
 ---
 
-<ShowcasePage />
+{projects ? <ShowcasePage {projects} /> : <ErrorPage status={503} />}

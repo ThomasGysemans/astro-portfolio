@@ -1,0 +1,248 @@
+---
+import trans from "@i18n";
+
+const lang = Astro.locals.lang;
+const t = trans.home;
+const typed = t.why2typed[lang];
+---
+
+<section class="section" id="pourquoi" aria-labelledby="why-title">
+    <div class="wrap stack">
+        <div class="split-head reveal">
+            <div>
+                <p class="eyebrow caption-3">{t.whyeyebrow[lang]}</p>
+                <h2 id="why-title" class="heading-2 grad">{t.whytitle[lang]}</h2>
+            </div>
+            <p class="body-7 text-muted">{t.whyintro[lang]}</p>
+        </div>
+
+        <div class="frame reveal">
+            <span class="plus tl" aria-hidden="true"></span><span class="plus tr" aria-hidden="true"></span><span class="plus bl" aria-hidden="true"></span><span class="plus br" aria-hidden="true"></span>
+            <div class="bento">
+                <article class="cell span-2">
+                    <!-- A page layout drawn as a star chart -->
+                    <div class="art" aria-hidden="true">
+                        <svg class="constellation" viewBox="0 0 420 184">
+                            <path class="link" d="M16 16 H404"></path>
+                            <path class="link on grow" d="M16 40 H220 V116 H16 Z"></path>
+                            <path class="link" d="M36 64 H176 M36 82 H132"></path>
+                            <path class="link on grow" d="M36 100 H76"></path>
+                            <circle class="link" cx="318" cy="76" r="34"></circle>
+                            <ellipse class="link" cx="318" cy="76" rx="54" ry="12" transform="rotate(-14 318 76)"></ellipse>
+                            <path class="link" d="M16 136 H134 V172 H16 Z M150 136 H268 V172 H150 Z M286 136 H404 V172 H286 Z"></path>
+                            <text x="16" y="33">{t.why1art[lang]}</text>
+                            <circle class="star big" cx="16" cy="16" r="3"></circle>
+                            <circle class="star" cx="292" cy="16" r="1.5"></circle><circle class="star" cx="322" cy="16" r="1.5"></circle><circle class="star" cx="352" cy="16" r="1.5"></circle>
+                            <circle class="star blue" cx="404" cy="16" r="2.5"></circle>
+                            <circle class="star blue" cx="16" cy="40" r="2.5"></circle><circle class="star blue" cx="220" cy="40" r="2.5"></circle>
+                            <circle class="star blue" cx="220" cy="116" r="2.5"></circle><circle class="star blue" cx="16" cy="116" r="2.5"></circle>
+                            <circle class="star big" cx="36" cy="64" r="2"></circle><circle class="star" cx="176" cy="64" r="1.5"></circle>
+                            <circle class="star" cx="36" cy="82" r="1.5"></circle><circle class="star" cx="132" cy="82" r="1.2"></circle>
+                            <circle class="star blue" cx="36" cy="100" r="2.5"></circle><circle class="star" cx="76" cy="100" r="1.5"></circle>
+                            <circle class="star" cx="318" cy="42" r="1.5"></circle><circle class="star big" cx="352" cy="76" r="2"></circle>
+                            <circle class="star" cx="318" cy="110" r="1.5"></circle><circle class="star" cx="284" cy="76" r="1.5"></circle>
+                            <circle class="star big" cx="369" cy="63" r="3"></circle>
+                            <circle class="star" cx="16" cy="136" r="1.5"></circle><circle class="star big" cx="134" cy="172" r="2"></circle>
+                            <circle class="star" cx="150" cy="136" r="1.5"></circle><circle class="star big" cx="268" cy="172" r="2"></circle>
+                            <circle class="star" cx="286" cy="136" r="1.5"></circle><circle class="star big" cx="404" cy="172" r="2"></circle>
+                        </svg>
+                    </div>
+                    <h3 class="heading-6">{t.why1title[lang]}</h3>
+                    <p class="body-3">{t.why1[lang]}</p>
+                </article>
+
+                <article class="cell">
+                    <!-- A small admin screen: a title gets typed, then published without the developer -->
+                    <div class="art" aria-hidden="true">
+                        <div class="cms">
+                            <div class="cms-win">
+                                <div class="cms-bar"><i></i><i></i><i></i><span class="caption-5">{t.why2window[lang]}</span></div>
+                                <div class="cms-body">
+                                    <div class="cms-side"><span class="ln w80"></span><span class="ln on w90"></span><span class="ln w60"></span><span class="ln w70"></span></div>
+                                    <div class="cms-main">
+                                        <span class="cms-label caption-5">{t.why2field[lang]}</span>
+                                        <span class="cms-field caption-4"><span class="cms-typed" style={`--chars:${typed.length}`}>{typed}</span><i class="caret"></i></span>
+                                        <div class="cms-row">
+                                            <span class="cms-img"><svg viewBox="0 0 26 18"><path d="M2 16 L9 8 L14 13 L17 10 L24 16 Z"></path><circle cx="19" cy="5" r="2.5"></circle></svg></span>
+                                            <span class="cms-pub caption-3">{t.why2publish[lang]}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="chip-float caption-4 cms-toast">{t.why2live[lang]}</span>
+                        </div>
+                    </div>
+                    <h3 class="heading-6">{t.why2title[lang]}</h3>
+                    <p class="body-3">{t.why2[lang]}</p>
+                </article>
+
+                <article class="cell">
+                    <!-- The speed score as an orbit -->
+                    <div class="art" aria-hidden="true">
+                        <svg class="gauge" viewBox="0 0 200 200">
+                            <circle class="track" cx="100" cy="100" r="70"></circle>
+                            <circle class="fill" cx="100" cy="100" r="70" pathLength="100" transform="rotate(-90 100 100)"></circle>
+                            <line class="tick" x1="51.5" y1="135.3" x2="35.3" y2="147"></line>
+                            <text class="lbl" x="25" y="166" text-anchor="middle">65</text>
+                            <circle class="moon" cx="78.4" cy="33.4" r="7"></circle>
+                            <text class="num" x="100" y="108" text-anchor="middle">95</text>
+                            <text class="lbl" x="100" y="128" text-anchor="middle">{t.why3outof[lang]}</text>
+                        </svg>
+                    </div>
+                    <h3 class="heading-6">{t.why3title[lang]}</h3>
+                    <p class="body-3">{t.why3[lang]}</p>
+                </article>
+
+                <article class="cell">
+                    <div class="art" aria-hidden="true">
+                        <div class="devices">
+                            <div class="dev dev-desk"><span class="ln strong w60"></span><span class="ln w80"></span><span class="blk"></span><span class="ln w50"></span></div>
+                            <div class="dev dev-tab"><span class="ln strong w70"></span><span class="blk"></span><span class="ln w80"></span></div>
+                            <div class="dev dev-phone"><span class="ln strong w80"></span><span class="blk blk-sm"></span><span class="ln w70"></span></div>
+                        </div>
+                    </div>
+                    <h3 class="heading-6">{t.why4title[lang]}</h3>
+                    <p class="body-3">{t.why4[lang]}</p>
+                </article>
+
+                <article class="cell">
+                    <div class="art" aria-hidden="true">
+                        <div class="shield-wrap">
+                            <svg class="shield" viewBox="0 0 96 112"><path d="M48 4 L88 18 V54 C88 80 70 98 48 108 C26 98 8 80 8 54 V18 Z"></path><path class="ok" d="M30 56 L43 69 L67 44"></path></svg>
+                            <span class="chip-float caption-4 chip-a">{t.why5chip1[lang]}</span>
+                            <span class="chip-float caption-4 chip-b">{t.why5chip2[lang]}</span>
+                            <span class="chip-float caption-4 chip-c">{t.why5chip3[lang]}</span>
+                            <span class="chip-float caption-4 chip-d">{t.why5chip4[lang]}</span>
+                        </div>
+                    </div>
+                    <h3 class="heading-6">{t.why5title[lang]}</h3>
+                    <p class="body-3">{t.why5[lang]}</p>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .bento {
+        display: grid;
+        gap: 1px;
+        background: var(--line);
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 900px) {
+        .bento { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .span-2 { grid-column: span 2; }
+    }
+
+    .cell {
+        background: var(--bg-2);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    @media (min-width: 1024px) {
+        .cell { padding: 32px; }
+    }
+
+    .cell h3 { margin-top: 16px; }
+    .cell p { max-width: 520px; }
+
+    .art {
+        position: relative;
+        height: 216px;
+        display: grid;
+        place-items: center;
+    }
+
+    .ln {
+        display: block;
+        height: 6px;
+        border-radius: 9999px;
+        background: var(--line-strong);
+    }
+
+    .ln.strong {
+        height: 8px;
+        background: rgb(244 247 255 / 0.75);
+    }
+
+    .w50 { width: 50%; } .w60 { width: 60%; } .w70 { width: 70%; } .w80 { width: 80%; } .w90 { width: 90%; }
+
+    /* Star chart page layout */
+    .constellation { width: 100%; max-width: 440px; height: auto; overflow: visible; }
+    .constellation .link { fill: none; stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 3 5; }
+    .constellation .link.on { stroke: var(--chart); stroke-dasharray: none; stroke-width: 1.5; filter: drop-shadow(0 0 4px rgb(94 155 255 / 0.8)); }
+    .constellation .star { fill: #DCE7FF; }
+    .constellation .star.big { filter: drop-shadow(0 0 4px rgb(220 231 255 / 0.95)); }
+    .constellation .star.blue { fill: var(--chart-light); filter: drop-shadow(0 0 5px rgb(94 155 255 / 0.95)); }
+    .constellation text { font-family: var(--font-mono); font-size: 12px; fill: var(--accent-text); }
+    .constellation .grow { transition: opacity 900ms var(--ease-space) 300ms; }
+    :global(.reveal.pending) .constellation .grow { opacity: 0; }
+
+    /* Admin screen */
+    .cms { position: relative; width: 264px; height: 184px; }
+    .cms-win { position: absolute; left: 0; right: 0; top: 0; height: 164px; border-radius: 12px; border: 1px solid var(--line-strong); background: #060E22; display: flex; flex-direction: column; overflow: hidden; }
+    .cms-bar { display: flex; align-items: center; gap: 4px; padding: 8px 12px; border-bottom: 1px solid var(--line); color: var(--muted); }
+    .cms-bar i { width: 6px; height: 6px; border-radius: 9999px; background: var(--line-strong); }
+    .cms-bar span { margin-left: 4px; font-family: var(--font-mono); }
+    .cms-body { flex: 1; display: grid; grid-template-columns: 60px minmax(0, 1fr); }
+    .cms-side { border-right: 1px solid var(--line); padding: 12px 8px; display: flex; flex-direction: column; gap: 12px; }
+    .cms-side .ln.on { background: var(--accent-text); box-shadow: 0 0 8px rgb(120 168 255 / 0.6); }
+    .cms-main { padding: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .cms-label { color: var(--muted); font-family: var(--font-mono); }
+    .cms-field { display: flex; align-items: center; height: 28px; padding: 0 8px; border-radius: 6px; border: 1px solid rgb(94 155 255 / 0.6); background: var(--accent-soft); color: var(--heading); font-family: var(--font-mono); white-space: nowrap; overflow: hidden; }
+    .cms-typed { display: inline-block; overflow: hidden; width: calc(var(--chars) * 1ch); transition: width 1100ms steps(16) 500ms; }
+    :global(.reveal.pending) .cms-typed { width: 0; }
+    .caret { display: inline-block; width: 1px; height: 14px; margin-left: 1px; background: var(--heading); animation: caret 1000ms steps(1) infinite; }
+    .cms-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .cms-img { width: 52px; height: 34px; border-radius: 6px; border: 1px dashed var(--line-strong); display: grid; place-items: center; }
+    .cms-img svg { width: 26px; height: 18px; fill: none; stroke: var(--accent-text); stroke-width: 1.5; stroke-linejoin: round; }
+    .cms-pub { margin-left: auto; padding: 2px 12px; border-radius: 9999px; background: var(--accent); color: #FFFFFF; }
+    .chip-float.cms-toast { right: -6px; bottom: 0; color: var(--color-pass); border-color: rgb(95 211 148 / 0.45); transition: opacity 500ms var(--ease-space) 1800ms, transform 500ms var(--ease-space) 1800ms; }
+    :global(.reveal.pending) .cms-toast { opacity: 0; transform: translateY(8px); }
+
+    @keyframes caret {
+        50% { opacity: 0; }
+    }
+
+    /* Speed gauge */
+    .gauge { width: 200px; height: 200px; overflow: visible; }
+    .gauge .track { fill: none; stroke: rgb(140 170 255 / 0.14); stroke-width: 6; }
+    .gauge .fill { fill: none; stroke: #4C86FF; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 95 100; transition: stroke-dasharray 1400ms var(--ease-space) 200ms; filter: drop-shadow(0 0 6px rgb(76 134 255 / 0.7)); }
+    :global(.reveal.pending) .gauge .fill { stroke-dasharray: 0 100; }
+    .gauge .moon { fill: var(--color-star); filter: drop-shadow(0 0 6px rgb(255 227 176 / 0.9)); transition: opacity 600ms var(--ease-space) 1300ms; }
+    :global(.reveal.pending) .gauge .moon { opacity: 0; }
+    .gauge .tick { stroke: var(--muted); stroke-width: 2; }
+    .gauge text { font-family: var(--font-mono); fill: var(--heading); }
+    .gauge .num { font-size: 36px; font-weight: 500; }
+    .gauge .lbl { font-size: 12px; fill: var(--muted); }
+
+    /* Devices */
+    .devices { position: relative; width: 260px; height: 150px; }
+    .dev { position: absolute; border: 1px solid var(--line-strong); background: #060E22; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .dev .blk { height: 24px; border-radius: 6px; background: var(--accent-soft); border: 1px solid rgb(94 155 255 / 0.4); }
+    .dev .blk-sm { height: 16px; }
+    .dev-desk { left: 0; top: 0; width: 200px; height: 128px; border-radius: 8px; }
+    .dev-tab { right: 18px; bottom: 0; width: 76px; height: 104px; border-radius: 8px; }
+    .dev-phone { right: 0; bottom: 8px; width: 44px; height: 84px; border-radius: 12px; padding: 4px; }
+
+    /* Shield */
+    .shield-wrap { position: relative; width: 240px; height: 180px; display: grid; place-items: center; }
+    .shield { width: 96px; height: 112px; overflow: visible; }
+    .shield path { fill: rgb(37 99 235 / 0.16); stroke: var(--chart); stroke-width: 1.5; }
+    .shield path.ok { fill: none; stroke: var(--heading); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+    .chip-float { position: absolute; padding: 2px 8px; border-radius: 9999px; border: 1px solid var(--line-strong); background: #060E22; color: var(--heading); font-family: var(--font-mono); white-space: nowrap; }
+    .chip-a { left: 4px; top: 24px; }
+    .chip-b { right: 0; top: 40px; }
+    .chip-c { left: 16px; bottom: 16px; }
+    .chip-d { right: 12px; bottom: 4px; }
+
+    :global(:root[data-motion="reduce"]) :global(.reveal.pending) .gauge .fill { stroke-dasharray: 95 100; }
+    :global(:root[data-motion="reduce"]) :global(.reveal.pending) .cms-typed { width: calc(var(--chars) * 1ch); }
+    :global(:root[data-motion="reduce"]) :global(.reveal.pending) .cms-toast { transform: none; }
+</style>

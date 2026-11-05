@@ -70,3 +70,19 @@ export function contextLabel(id: string, lang: App.LangCode): string {
 export function techRoleLabel(id: string, lang: App.LangCode): string {
     return lookup(TECH_ROLES, id)?.[lang] ?? id;
 }
+
+// Icon of each category (a file of public/icons), shown before the category on
+// the cards. An unknown or missing category gets the planet.
+const CATEGORY_ICONS: Record<ProjectCategory, string> = {
+    web: "browser",
+    games: "game-controller",
+    apps: "device-mobile",
+    software: "desktop",
+    languages: "code",
+    challenges: "trophy",
+    other: "planet",
+};
+
+export function categoryIcon(id: string | undefined): string {
+    return (id !== undefined ? lookup(CATEGORY_ICONS, id) : undefined) ?? "planet";
+}

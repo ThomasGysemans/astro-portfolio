@@ -1,8 +1,9 @@
 <script lang="ts">
-    // Interactive explorer of the projects page: category pills, search,
-    // year sorting, technology filter and the tech skills section.
-    // It is server-rendered by Astro with the default state, then hydrated.
+    // Interactive explorer of the projects page: category pills, search, year
+    // sorting, technology filter and the tech skills section. It is
+    // server-rendered by Astro with the state of the URL, then hydrated.
     import ProjectThumb from "./ProjectThumb.svelte";
+    import PhIcon from "./PhIcon.svelte";
 
     type ExplorerProject = {
         slug: string,
@@ -15,14 +16,11 @@
         thumbVideo?: string,
         categories: string[],
         featured: boolean,
-        // true when the project was built alone: picks the single/multiple
-        // person icon. Astro can't render <Icon> inside this island, so the
-        // Lucide paths are inlined below (same set as public/icons/).
-        solo: boolean,
+        solo: boolean, // built alone: picks the single or multiple person icon
         teamLabel: string,
         contextLabel: string,
         techs: string[], // technology names, only used by the tech filter
-        cats: { key: string, label: string, dot: string }[], // singular category labels shown as pills on the card
+        cats: { key: string, label: string, dot: string }[], // singular category labels shown as chips on the card
     };
 
     type Pill = {
@@ -39,7 +37,10 @@
     };
 
     type Labels = {
+        eyebrow: string,
+        filters: string,
         searchPlaceholder: string,
+        sortLabel: string,
         sortNewest: string,
         sortOldest: string,
         result: string,
@@ -50,8 +51,11 @@
         noProject: string,
         showAll: string,
         details: string,
+        skillsEyebrow: string,
         techSkillsTitle: string,
         techSkillsIntro: string,
+        showcase: string,
+        showcaseHint: string,
     };
 
     interface Props {
@@ -64,6 +68,7 @@
         skillHighlights: string[];
         skillGroups: SkillGroup[];
         labels: Labels;
+        showcaseHref: string;
         initialFilter?: string;
         initialTech?: string | null;
         initialQuery?: string;
@@ -78,6 +83,7 @@
         skillHighlights,
         skillGroups,
         labels,
+        showcaseHref,
         initialFilter = "featured",
         initialTech = null,
         initialQuery = "",
@@ -98,7 +104,7 @@
                 (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)))
             .sort((a, b) => sort === "oldest" ? a.year - b.year : b.year - a.year)
     );
-    let techDot = $derived(tech ? (techColors[tech] ?? "var(--accent)") : "var(--accent)");
+    let techDot = $derived(tech ? (techColors[tech] ?? "var(--accent-text)") : "var(--accent-text)");
 
     // Keep the URL shareable without polluting the history.
     // `$effect` only runs in the browser, so no explicit `window` guard is needed.
@@ -115,203 +121,489 @@
         history.replaceState(null, "", `${location.pathname}${search ? `?${search}` : ""}`);
     });
 
+    function scrollToToolbar() {
+        const motion = document.documentElement.dataset.motion !== "reduce";
+        document.getElementById("projects-toolbar")?.scrollIntoView({ behavior: motion ? "smooth" : "auto", block: "start" });
+    }
+
     function pickTech(name: string) {
         tech = name;
         filter = "all";
-        document.getElementById("projects-toolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrollToToolbar();
     }
 
     function pickCategory(key: string) {
         filter = key;
-        document.getElementById("projects-toolbar")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrollToToolbar();
     }
 </script>
 
 <!-- heading following the active filter -->
-<div class="px-page pt-11">
-    <h1 class="text-3xl font-bold m-0 text-heading">{title}</h1>
-    <p class="text-base text-body mt-2">{subtitle}</p>
-</div>
-
-<!-- filter pills -->
-<div class="flex gap-2 flex-wrap px-page mt-4.5">
-    {#each pills as pill (pill.key)}
-        <button
-            type="button"
-            aria-pressed={filter === pill.key}
-            onclick={() => filter = pill.key}
-            class="inline-flex items-center gap-1.75 text-xs font-bold rounded-full py-2.5 px-4 whitespace-nowrap border transition-colors {filter === pill.key ? 'bg-btn text-btn-text border-btn' : 'bg-chip text-chip-text border-edge-strong hover:border-accent'}"
-        >
-            <span class="w-1.75 h-1.75 rounded-full" style="background:{pill.dot}" />
-            {pill.label}
-            <span class="text-xs opacity-65">{pill.count}</span>
-        </button>
-    {/each}
-</div>
-
-<!-- search + sort toolbar -->
-<!-- `flex-wrap` keeps the sort button reachable on small screens: it drops
-     to a second row instead of being hidden or crushing the search input. -->
-<div id="projects-toolbar" class="mx-page-margin bg-card border border-edge rounded-[11px] py-3 px-4 flex gap-2.5 items-center flex-wrap scroll-mt-6">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" class="stroke-muted shrink-0" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
-    <input
-        type="search"
-        bind:value={query}
-        aria-label={labels.searchPlaceholder}
-        placeholder={labels.searchPlaceholder}
-        class="flex-1 min-w-32 bg-transparent border-none text-text text-base font-sans placeholder:text-muted"
-    />
-    <button
-        type="button"
-        onclick={() => sort = sort === "oldest" ? "recent" : "oldest"}
-        class="text-xs font-semibold text-chip-text border border-edge-strong rounded-lg py-2.25 px-3.5 inline-flex items-center gap-1.5 whitespace-nowrap hover:border-accent transition-colors"
-    >
-        {sort === "oldest" ? labels.sortOldest : labels.sortNewest}
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M8 7l4-4 4 4M8 17l4 4 4-4" /></svg>
-    </button>
-    <span class="text-xs text-muted whitespace-nowrap" role="status">{filtered.length} {filtered.length === 1 ? labels.result : labels.results}</span>
-</div>
-
-<!-- active technology filter -->
-{#if tech}
-    <div class="px-page mt-4 flex items-center gap-2.5 text-sm text-body flex-wrap">
-        <span>{labels.builtWith}</span>
-        <button
-            type="button"
-            aria-label="{labels.removeTechFilter} {tech}"
-            onclick={() => tech = null}
-            class="inline-flex items-center gap-1.75 font-bold text-heading bg-chip border border-accent rounded-full py-1.5 px-3.5"
-        >
-            <span class="w-1.75 h-1.75 rounded-full" style="background:{techDot}" />
-            {tech}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="opacity-60" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
-        </button>
-        <span class="text-muted">{labels.clickToFilter}</span>
+<header class="wrap head" id="projects-head">
+    <p class="eyebrow caption-3">{labels.eyebrow}</p>
+    <div class="head-text">
+        <h1 class="heading-2 grad">{title}</h1>
+        <p class="body-7 text-muted">{subtitle}</p>
+        <a class="text-link button-sm" href={showcaseHref}>
+            {labels.showcase}<span class="sr-only">, {labels.showcaseHint}</span>
+            <PhIcon name="arrow-right" class="size-4" />
+        </a>
     </div>
-{/if}
+
+    <!-- filter pills -->
+    <div class="pills" role="group" aria-label={labels.filters}>
+        {#each pills as pill (pill.key)}
+            <button type="button" class="pill body-5" aria-pressed={filter === pill.key} onclick={() => filter = pill.key}>
+                <span class="dot" style="background:{pill.dot}"></span>
+                {pill.label}
+                <span class="count caption-5">{pill.count}</span>
+            </button>
+        {/each}
+    </div>
+
+    <!-- search + sort; `flex-wrap` keeps the sort button reachable on small
+         screens: it drops to a second row instead of crushing the search -->
+    <div id="projects-toolbar" class="toolbar">
+        <PhIcon name="magnifying-glass" class="size-5 shrink-0 text-muted" />
+        <input
+            type="search"
+            bind:value={query}
+            aria-label={labels.searchPlaceholder}
+            placeholder={labels.searchPlaceholder}
+            class="search body-3"
+        />
+        <button type="button" class="sort caption-1" aria-label="{labels.sortLabel} : {sort === 'oldest' ? labels.sortOldest : labels.sortNewest}" onclick={() => sort = sort === "oldest" ? "recent" : "oldest"}>
+            {sort === "oldest" ? labels.sortOldest : labels.sortNewest}
+            <PhIcon name="arrows-down-up" class="size-4" />
+        </button>
+        <span class="caption-2 text-muted whitespace-nowrap" role="status">{filtered.length} {filtered.length === 1 ? labels.result : labels.results}</span>
+    </div>
+
+    <!-- active technology filter -->
+    {#if tech}
+        <div class="tech-filter body-6">
+            <span>{labels.builtWith}</span>
+            <button type="button" class="tech-chip body-5" aria-label="{labels.removeTechFilter} {tech}" onclick={() => tech = null}>
+                <span class="dot" style="background:{techDot}"></span>
+                {tech}
+                <PhIcon name="x" class="size-3.5 opacity-70" />
+            </button>
+            <span class="text-muted">{labels.clickToFilter}</span>
+        </div>
+    {/if}
+</header>
 
 <!-- projects grid -->
-<div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5 px-page mt-6 pb-6">
-    {#each filtered as p (p.slug)}
-        <article class="explorer-card relative rounded-[13px] overflow-hidden border border-edge flex flex-col">
-            <ProjectThumb thumb={p.thumb} video={p.thumbVideo} alt={p.name} />
-            <div class="bg-card-solid pt-3.75 px-4.25 pb-3.25 flex flex-col gap-2.25 flex-1">
-                <div class="flex justify-between items-baseline gap-2">
-                    <h3 class="m-0"><a href={p.href} class="card-link text-lg font-bold text-heading">{p.name}</a></h3>
-                    <span class="text-xs font-bold text-muted">{p.date}</span>
+<div class="wrap grid-wrap">
+    <div class="grid">
+        {#each filtered as p (p.slug)}
+            <article class="explorer-card">
+                <ProjectThumb thumb={p.thumb} video={p.thumbVideo} alt={p.name} class="thumb" />
+                <div class="body">
+                    <div class="meta">
+                        <div class="chips">
+                            {#each p.cats as c (c.key)}
+                                <button type="button" class="chip caption-4" onclick={() => pickCategory(c.key)}>
+                                    <span class="dot" style="background:{c.dot}"></span>
+                                    {c.label}
+                                </button>
+                            {/each}
+                        </div>
+                        <span class="caption-5 font-mono text-muted whitespace-nowrap">{p.date}</span>
+                    </div>
+                    <h2 class="heading-6"><a href={p.href} class="card-link">{p.name}</a></h2>
+                    <p class="body-6">{p.desc}</p>
+                    <div class="foot caption-2">
+                        <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                            <PhIcon name={p.solo ? "user" : "users"} class="size-4" />
+                            {p.teamLabel}
+                        </span>
+                        <span class="whitespace-nowrap">{p.contextLabel}</span>
+                        <span class="details" aria-hidden="true">{labels.details} <PhIcon name="arrow-right" class="size-4" /></span>
+                    </div>
                 </div>
-                <p class="text-sm text-body m-0">{p.desc}</p>
-                <div class="relative z-10 flex gap-1.5 flex-wrap mt-auto">
-                    {#each p.cats as c (c.key)}
-                        <button
-                            type="button"
-                            onclick={() => pickCategory(c.key)}
-                            class="inline-flex items-center gap-1.25 text-xs font-semibold text-chip-text border border-edge-strong rounded-full py-1.5 px-3 hover:border-accent hover:text-heading transition-colors"
-                        >
-                            <span class="w-1.5 h-1.5 rounded-full" style="background:{c.dot}" />
-                            {c.label}
-                        </button>
-                    {/each}
-                </div>
-                <div class="border-t border-edge pt-2.5 flex gap-3.5 text-xs text-muted items-center">
-                    <span class="inline-flex items-center gap-1.25 whitespace-nowrap">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            {#if p.solo}
-                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                            {:else}
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                            {/if}
-                        </svg>
-                        {p.teamLabel}
-                    </span>
-                    <span class="whitespace-nowrap">{p.contextLabel}</span>
-                    <span class="ml-auto text-accent font-bold whitespace-nowrap" aria-hidden="true">{labels.details} →</span>
-                </div>
-            </div>
-        </article>
-    {/each}
+            </article>
+        {/each}
+    </div>
+
+    {#if filtered.length === 0}
+        <p class="empty body-3 text-muted">{labels.noProject}</p>
+    {/if}
+
+    {#if filter !== "all" || tech || q}
+        <div class="show-all">
+            <button type="button" class="btn btn-ghost button-sm" onclick={() => { filter = "all"; tech = null; query = ""; }}>{labels.showAll}</button>
+        </div>
+    {/if}
 </div>
 
-{#if filtered.length === 0}
-    <div class="text-center px-page pb-14 text-muted text-base">{labels.noProject}</div>
-{/if}
-
-{#if filter !== "all" || tech || q}
-    <div class="flex justify-center px-page pb-12">
-        <button
-            type="button"
-            onclick={() => { filter = "all"; tech = null; query = ""; }}
-            class="btn-outline text-sm py-3 px-6"
-        >{labels.showAll}</button>
-    </div>
-{/if}
-
 <!-- tech skills -->
-<section class="border-t border-edge mx-page-margin pt-10.5 pb-1.5">
-    <h2 class="text-2xl font-bold m-0 text-heading">{labels.techSkillsTitle}</h2>
-    <p class="text-base text-body mt-2.5 max-w-155">{labels.techSkillsIntro}</p>
-    <div class="flex gap-2.5 flex-wrap mt-6">
-        {#each skillHighlights as highlight (highlight)}
-            <span class="inline-flex items-center gap-2 text-sm font-semibold text-heading bg-card border border-edge-strong rounded-full py-2.5 px-4.5">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent shrink-0" aria-hidden="true"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" /><path d="M11 12 5.12 2.2M13 12l5.88-9.8M8 7h8" /><circle cx="12" cy="17" r="5" /><path d="M12 18v-2h-.5" /></svg>
-                {highlight}
-            </span>
-        {/each}
-    </div>
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4 mt-6.5">
-        {#each skillGroups as group (group.title)}
-            <div class="surface-card py-5 px-5.5">
-                <div class="flex justify-between items-baseline mb-3.5">
-                    <span class="text-base font-bold text-accent-heading">{group.title}</span>
-                    <span class="text-xs text-muted whitespace-nowrap">{group.countLabel}</span>
-                </div>
-                <div class="flex flex-col gap-2">
-                    {#each group.items as item (item.n)}
-                        {#if item.count > 0}
-                            <button type="button" onclick={() => pickTech(item.n)} class="flex items-center gap-2.25 text-sm leading-tight font-semibold text-heading hover:text-accent transition-colors text-left">
-                                <span class="w-2 h-2 rounded-full shrink-0" style="background:{item.c}" />
-                                {item.n}
-                                <span class="ml-auto text-xs font-semibold text-accent">{item.countLabel}</span>
-                            </button>
-                        {:else}
-                            <div class="flex items-center gap-2.25 text-sm leading-tight font-semibold text-heading">
-                                <span class="w-2 h-2 rounded-full shrink-0" style="background:{item.c}" />
-                                {item.n}
-                                <span class="ml-auto text-xs font-semibold text-muted">0</span>
-                            </div>
-                        {/if}
-                    {/each}
-                </div>
+<section class="section" id="skills" aria-labelledby="skills-title">
+    <div class="wrap stack">
+        <div class="split-head">
+            <div>
+                <p class="eyebrow caption-3">{labels.skillsEyebrow}</p>
+                <h2 id="skills-title" class="heading-2 grad">{labels.techSkillsTitle}</h2>
             </div>
-        {/each}
+            <p class="body-7 text-muted">{labels.techSkillsIntro}</p>
+        </div>
+        <ul class="highlights">
+            {#each skillHighlights as highlight (highlight)}
+                <li class="highlight body-5">
+                    <PhIcon name="medal" class="size-4 shrink-0 text-accent-text" />
+                    {highlight}
+                </li>
+            {/each}
+        </ul>
+        <div class="groups">
+            {#each skillGroups as group (group.title)}
+                <div class="group">
+                    <div class="group-head">
+                        <h3 class="title-2 text-heading">{group.title}</h3>
+                        <span class="caption-5 font-mono text-muted whitespace-nowrap">{group.countLabel}</span>
+                    </div>
+                    <div class="techs">
+                        {#each group.items as item (item.n)}
+                            {#if item.count > 0}
+                                <button type="button" class="tech body-5" onclick={() => pickTech(item.n)}>
+                                    <span class="dot" style="background:{item.c}"></span>
+                                    {item.n}
+                                    <span class="tech-count caption-5 font-mono">{item.countLabel}</span>
+                                </button>
+                            {:else}
+                                <div class="tech body-5">
+                                    <span class="dot" style="background:{item.c}"></span>
+                                    {item.n}
+                                    <span class="tech-count caption-5 font-mono text-muted">0</span>
+                                </div>
+                            {/if}
+                        {/each}
+                    </div>
+                </div>
+            {/each}
+        </div>
     </div>
 </section>
 
-<style lang="scss">
-    // Same page padding as .px-page but as margins, for full-width separators.
-    .mx-page-margin {
-        margin-inline: clamp(20px, 3.5vw, 44px);
+<style>
+    .head {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-top: 144px;
     }
 
-    #projects-toolbar {
-        margin-top: 18px;
+    @media (min-width: 1024px) {
+        .head { padding-top: 176px; }
+    }
+
+    .head-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        max-width: 760px;
+    }
+
+    .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 16px;
+    }
+
+    .pill,
+    .chip,
+    .tech-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        background: var(--fill);
+        color: var(--text);
+        white-space: nowrap;
+        transition: border-color 300ms var(--ease-space), background-color 300ms var(--ease-space), color 300ms var(--ease-space);
+    }
+
+    .pill {
+        padding: 8px 16px;
+    }
+
+    .pill:hover,
+    .chip:hover {
+        border-color: var(--line-hover);
+        color: var(--heading);
+    }
+
+    .pill[aria-pressed="true"] {
+        border-color: var(--accent-text);
+        background: var(--accent-soft);
+        color: var(--heading);
+    }
+
+    .count {
+        color: var(--muted);
+    }
+
+    .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+    }
+
+    .toolbar {
+        margin-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        padding: 8px 8px 8px 16px;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        background: var(--panel);
+        scroll-margin-top: 112px;
+    }
+
+    .search {
+        flex: 1;
+        min-width: 8rem;
+        background: transparent;
+        border: none;
+        color: var(--heading);
+        padding: 4px 0;
+    }
+
+    .search::placeholder {
+        color: var(--muted);
+        opacity: 1;
+    }
+
+    .search:focus-visible {
+        outline: none;
+    }
+
+    .toolbar:focus-within {
+        border-color: var(--accent-text);
+    }
+
+    .sort {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        color: var(--text);
+        white-space: nowrap;
+        transition: border-color 300ms var(--ease-space), color 300ms var(--ease-space);
+    }
+
+    .sort:hover {
+        border-color: var(--line-hover);
+        color: var(--heading);
+    }
+
+    .tech-filter {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        color: var(--text);
+    }
+
+    .tech-chip {
+        padding: 6px 12px;
+        border-color: var(--accent-text);
+        color: var(--heading);
+    }
+
+    .grid-wrap {
+        position: relative;
+        z-index: 1;
+        padding-top: 32px;
+    }
+
+    .grid {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
     }
 
     .explorer-card {
-        transition: box-shadow .25s, transform .25s;
-
-        &:hover,
-        &:focus-within {
-            box-shadow: 0 0 0 1px rgba(97, 156, 243, .7), 0 16px 44px rgba(97, 156, 243, .22);
-            transform: translateY(-3px);
-        }
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        min-width: 0;
+        transition: border-color 300ms var(--ease-space), transform 500ms var(--ease-space);
     }
 
-    // Stretch the title link over the whole card while keeping
-    // the technology chips clickable above it.
+    .explorer-card:hover {
+        border-color: var(--line-strong);
+        transform: translateY(-4px);
+    }
+
+    .explorer-card:focus-within {
+        outline: 2px solid var(--accent-text);
+        outline-offset: 2px;
+    }
+
+    .explorer-card :global(.thumb) {
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: #060E22;
+    }
+
+    .body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 12px 8px;
+        flex: 1;
+    }
+
+    .meta {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    /* Above the stretched title link, so they stay clickable */
+    .chips {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .chip {
+        padding: 4px 10px;
+    }
+
+    /* The title link covers the whole card */
     .card-link::after {
         content: "";
         position: absolute;
         inset: 0;
+        border-radius: 24px;
+    }
+
+    .card-link:focus-visible {
+        outline: none;
+    }
+
+    .foot {
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: var(--muted);
+    }
+
+    .details {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--accent-text);
+        white-space: nowrap;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 48px 0;
+    }
+
+    .show-all {
+        display: flex;
+        justify-content: center;
+        padding-top: 32px;
+    }
+
+    .highlights {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .highlight {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        background: var(--fill);
+        color: var(--heading);
+    }
+
+    .groups {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    }
+
+    .group {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .group-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .techs {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tech {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 8px;
+        margin-inline: -8px;
+        border-radius: 8px;
+        color: var(--heading);
+        text-align: left;
+    }
+
+    button.tech {
+        transition: background-color 300ms var(--ease-space);
+    }
+
+    button.tech:hover {
+        background: var(--fill-hover);
+    }
+
+    .tech-count {
+        margin-left: auto;
+        color: var(--accent-text);
+        white-space: nowrap;
+    }
+
+    :global(:root[data-motion="reduce"]) .explorer-card:hover {
+        transform: none;
     }
 </style>

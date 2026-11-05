@@ -1,312 +1,389 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { isFreelancePath, mailtoHref } from "@lib/contact";
 import trans, { LOCALES, stripLocale, pathInLocale } from "@i18n";
-import Logo from "@components/Logo.astro";
+import { EMAIL } from "@lib/contact";
 
 const lang = Astro.locals.lang;
-const langlessPathname = stripLocale(Astro.url.pathname);
+const path = stripLocale(Astro.url.pathname);
+const home = getRelativeLocaleUrl(lang, "/");
+const onHome = path === "/";
+// The homepage's sections, reached in place from the homepage and through the
+// homepage from anywhere else
+const section = (id: string) => (onHome ? `#${id}` : `${home}#${id}`);
+const projectsUrl = getRelativeLocaleUrl(lang, "/projects");
+const onProjects = path === "/projects" || path.startsWith("/projects/");
 
+// `spy` marks the links whose section is followed by the scrollspy of the homepage
 const links = [
-    { href: getRelativeLocaleUrl(lang, "/"), label: trans.nav.home[lang], route: "/" },
-    { href: getRelativeLocaleUrl(lang, "/projects"), label: trans.nav.projects[lang], route: "/projects" },
-    { href: getRelativeLocaleUrl(lang, "/freelance"), label: trans.nav.freelance[lang], route: "/freelance" },
-    { href: getRelativeLocaleUrl(lang, "/showcase"), label: trans.nav.showcase[lang], route: "/showcase" },
+    { href: projectsUrl, label: trans.nav.work[lang], current: onProjects },
+    { href: section("methode"), label: trans.nav.method[lang], spy: "methode" },
+    { href: section("tarifs"), label: trans.nav.pricing[lang], spy: "tarifs" },
+    { href: section("faq"), label: trans.nav.faq[lang], spy: "faq" },
+];
+const menuLinks = [
+    { href: section("pourquoi"), label: trans.nav.why[lang], spy: "pourquoi" },
+    { href: projectsUrl, label: trans.nav.work[lang], current: onProjects },
+    { href: section("apropos"), label: trans.nav.about[lang], spy: "apropos" },
+    { href: section("methode"), label: trans.nav.method[lang], spy: "methode" },
+    { href: section("comparatif"), label: trans.nav.compare[lang], spy: "comparatif" },
+    { href: section("tarifs"), label: trans.nav.pricing[lang], spy: "tarifs" },
+    { href: section("faq"), label: trans.nav.faq[lang], spy: "faq" },
+    { href: getRelativeLocaleUrl(lang, "/showcase"), label: trans.nav.showcase[lang] },
 ];
 
-function isActive(route: string): boolean {
-    if (route === "/") {
-        return langlessPathname === "/";
-    }
-    return langlessPathname.startsWith(route);
-}
-
-// The same page in every locale, for the language switch pill.
-// Autonyms (a language named in its own language) give the "FR"/"EN"
-// abbreviations a full, correctly-pronounced accessible name.
-const LOCALE_NAMES: Record<App.LangCode, string> = { fr: "Français", en: "English" };
-const localeLinks = LOCALES.map(locale => ({
+// The same page in every locale. The abbreviations get a full accessible name,
+// in their own language.
+const LOCALE_NAMES: Record<App.LangCode, string> = { fr: "français", en: "English" };
+const locales = LOCALES.map(locale => ({
     locale,
     name: LOCALE_NAMES[locale],
     href: pathInLocale(locale, Astro.url.pathname),
+    current: locale === lang,
 }));
-// "Me contacter" normally leads to the freelance page — but on that page it
-// would reload what the visitor is already reading, so it becomes the ask itself.
-const contactHref = isFreelancePath(langlessPathname)
-    ? mailtoHref(lang)
-    : getRelativeLocaleUrl(lang, "/freelance");
 ---
 
-<header class="relative z-30 flex items-center justify-between gap-4 flex-wrap py-4 px-page border-b border-edge bg-(--header-bg) transition-colors">
-    <a href={getRelativeLocaleUrl(lang, "/")} class="flex items-center gap-3">
-        <Logo />
-        <span class="font-display font-bold text-heading text-sm leading-tight">Thomas<br />Gysemans</span>
-    </a>
-
-    <nav aria-label={trans.nav.mainnav[lang]} class="hdr-nav flex gap-[clamp(14px,2.5vw,30px)] flex-wrap text-sm font-semibold">
-        {links.map(link => (
-            <a
-                href={link.href}
-                aria-current={isActive(link.route) ? "page" : undefined}
-                class={`whitespace-nowrap pb-1 border-b-2 transition-colors hover:text-heading ${isActive(link.route) ? "text-heading border-accent-strong" : "text-muted border-transparent"}`}
-            >
-                {link.label}
-            </a>
-        ))}
-    </nav>
-
-    <div class="hdr-actions flex items-center gap-3.5">
-        <button
-            type="button"
-            data-theme-toggle
-            title={trans.common.switchtheme[lang]}
-            aria-label={trans.common.switchtheme[lang]}
-            class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-base text-heading hover:border-accent transition-colors"
-        >
-            <Icon name="sun" class="icon-sun" />
-            <Icon name="moon" class="icon-moon" />
-        </button>
-        <div class="flex items-center h-9.5 gap-0.5 text-xs font-bold border border-edge-strong rounded-full p-1.5">
-            {localeLinks.map(link => (
-                <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted hover:text-heading"}`}>{link.locale}</a>
+<header class="nav-wrap">
+    <nav class="nav" aria-label={trans.nav.mainnav[lang]}>
+        <a class="brand" href={home}>
+            <img class="brand-logo" src="/logo-96.png" width="36" height="36" alt="" />
+            <span class="brand-name title-4">Thomas Gysemans</span>
+            <span class="sr-only">, {trans.nav.home[lang]}</span>
+        </a>
+        <ul class="nav-links">
+            {links.map(link => (
+                <li>
+                    <a class="nav-link title-4" href={link.href} data-spy={link.spy} aria-current={link.current ? "page" : undefined}>{link.label}</a>
+                </li>
+            ))}
+        </ul>
+        <div class="lang" role="group" aria-label={trans.nav.language[lang]}>
+            {locales.map(item => item.current ? (
+                <span class="lang-opt caption-3" lang={item.locale} aria-current="true">{item.locale.toUpperCase()}<span class="sr-only">, {item.name}</span></span>
+            ) : (
+                <a class="lang-opt caption-3" href={item.href} lang={item.locale} hreflang={item.locale} data-set-lang={item.locale}>{item.locale.toUpperCase()}<span class="sr-only">, {item.name}</span></a>
             ))}
         </div>
-        <a href={contactHref} class="btn-primary text-sm px-5 py-2.5">{trans.common.contactme[lang]}</a>
-    </div>
-
-    <button
-        type="button"
-        data-drawer-open
-        aria-label={trans.common.openmenu[lang]}
-        class="hdr-burger w-10.5 h-10.5 rounded-[10px] border border-edge-strong bg-chip items-center justify-center"
-    >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="stroke-heading" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-    </button>
+        <a class="btn btn-primary btn-sm button-sm nav-cta" href={section("devis")}>{trans.nav.quote[lang]}</a>
+        <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="menu" aria-label={trans.common.openmenu[lang]} data-open-label={trans.common.openmenu[lang]} data-close-label={trans.common.closemenu[lang]}>
+            <span class="bars" aria-hidden="true"><i></i><i></i></span>
+        </button>
+    </nav>
 </header>
 
-<div data-drawer hidden>
-    <button type="button" data-drawer-close tabindex="-1" aria-hidden="true" class="drawer-backdrop fixed inset-0 z-40 bg-[rgba(2,8,18,.6)] backdrop-blur-[3px]"></button>
-    <nav aria-label={trans.nav.mobilenav[lang]} class="drawer-panel fixed top-0 right-0 bottom-0 z-50 w-[min(300px,84vw)] bg-card-solid border-l border-edge py-6 px-6 flex flex-col gap-1.5 shadow-[-20px_0_60px_rgba(2,8,18,.45)]">
-        <div class="flex justify-between items-center mb-3.5">
-            <span class="font-display font-bold text-heading text-base">{trans.common.menu[lang]}</span>
-            <button type="button" data-drawer-close aria-label={trans.common.closemenu[lang]} class="w-9 h-9 rounded-full border border-edge-strong inline-flex items-center justify-center text-heading text-base"><Icon name="x" /></button>
+<div class="menu" id="menu" hidden>
+    <nav aria-label={trans.nav.mobilenav[lang]}>
+        <ul>
+            {menuLinks.map((link, i) => (
+                <li class="stagger" style={`--i:${i}`}>
+                    <a class="menu-link heading-5" href={link.href} data-spy={link.spy} aria-current={link.current ? "page" : undefined}>{link.label}</a>
+                </li>
+            ))}
+        </ul>
+        <div class="menu-foot stagger" style={`--i:${menuLinks.length}`}>
+            <a class="btn btn-primary button-lg" href={section("devis")}>{trans.nav.quotelong[lang]} <Icon name="arrow-right" class="size-5" /></a>
+            <p class="caption-2 text-muted">{trans.nav.menufoot[lang]} · {EMAIL}</p>
         </div>
-        {links.map(link => (
-            <a
-                href={link.href}
-                aria-current={isActive(link.route) ? "page" : undefined}
-                class={`text-base font-bold py-3 px-3 rounded-lg hover:bg-chip hover:text-heading ${isActive(link.route) ? "text-heading" : "text-muted"}`}
-            >
-                {link.label}
-            </a>
-        ))}
-        <div class="border-t border-edge mt-3 pt-4 flex items-center gap-3">
-            <button
-                type="button"
-                data-theme-toggle
-                aria-label={trans.common.switchtheme[lang]}
-                class="theme-toggle w-9.5 h-9.5 rounded-full border border-edge-strong bg-chip inline-flex items-center justify-center text-base text-heading"
-            >
-                <Icon name="sun" class="icon-sun" />
-                <Icon name="moon" class="icon-moon" />
-            </button>
-            <div class="flex items-center h-9.5 gap-0.5 text-xs font-bold border border-edge-strong rounded-full p-1.5">
-                {localeLinks.map(link => (
-                    <a href={link.href} data-set-lang={link.locale} hreflang={link.locale} lang={link.locale} aria-label={link.name} aria-current={lang === link.locale ? "true" : undefined} class={`rounded-full px-3 py-1 uppercase ${lang === link.locale ? "bg-btn text-btn-text" : "text-muted"}`}>{link.locale}</a>
-                ))}
-            </div>
-        </div>
-        <a href={contactHref} class="btn-primary text-base py-3 px-5 mt-2">{trans.common.contactme[lang]}</a>
     </nav>
 </div>
 
-<style lang="scss">
-    // The theme toggle ships both icons and CSS picks the right one from the
-    // `data-theme` attribute the middleware renders on <html>. Doing it in CSS
-    // (rather than swapping the node in JS) keeps the button correct on the
-    // very first paint, with no flash and no client-side theme detection.
-    // `:global` is needed because the icons come from the <Icon> component.
-    .theme-toggle :global(.icon-moon) {
+<style>
+    .nav-wrap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: center;
+        pointer-events: none;
+        padding-top: calc(16px + env(safe-area-inset-top, 0px));
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    .nav {
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        max-width: 100%;
+        padding: 4px;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        background: var(--nav-bg);
+        -webkit-backdrop-filter: blur(16px) saturate(1.4);
+        backdrop-filter: blur(16px) saturate(1.4);
+    }
+
+    .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding-right: 12px;
+        border-radius: 9999px;
+        color: var(--heading);
+    }
+
+    .brand-logo {
+        width: 36px;
+        height: 36px;
+        padding: 2px;
+        flex-shrink: 0;
+        transition: transform 700ms var(--ease-space);
+    }
+
+    .brand:hover .brand-logo {
+        transform: rotate(-24deg);
+    }
+
+    .brand-name {
+        white-space: nowrap;
+    }
+
+    /* On small screens the name is only hidden visually, so the link keeps its accessible name */
+    @media (max-width: 479px) {
+        .brand .brand-name {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+        }
+
+        .brand {
+            padding-right: 0;
+        }
+    }
+
+    /* Language switch: always visible in the bar, the current language as a filled pill */
+    .lang {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        padding: 2px;
+        margin-left: auto;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        background: var(--fill);
+    }
+
+    .lang-opt {
+        display: inline-grid;
+        place-items: center;
+        min-width: 36px;
+        height: 28px;
+        padding: 0 8px;
+        border-radius: 9999px;
+        color: var(--text);
+        font-family: var(--font-mono);
+        letter-spacing: 0.04em;
+        transition: background-color 300ms var(--ease-space), color 300ms var(--ease-space);
+    }
+
+    a.lang-opt:hover {
+        color: var(--heading);
+        background: var(--fill-hover);
+    }
+
+    .lang-opt[aria-current] {
+        background: var(--heading);
+        color: var(--bg);
+    }
+
+    .nav-links {
         display: none;
+        align-items: center;
+        gap: 2px;
     }
 
-    html[data-theme="light"] {
-        .theme-toggle :global(.icon-sun) {
-            display: none;
-        }
-
-        .theme-toggle :global(.icon-moon) {
-            display: block;
-        }
+    .nav-link {
+        display: inline-flex;
+        padding: 8px 12px;
+        border-radius: 9999px;
+        color: var(--text);
+        transition: background-color 300ms var(--ease-space), color 300ms var(--ease-space);
     }
 
-    // Collapse the nav and the actions into the drawer on small screens.
-    .hdr-burger {
-        display: none;
+    .nav-link:hover {
+        color: var(--heading);
+        background: var(--fill-hover);
     }
 
-    @media (max-width: 900px) {
-        .hdr-nav,
-        .hdr-actions {
-            display: none;
-        }
-
-        .hdr-burger {
-            display: inline-flex;
-        }
+    .nav-link[aria-current] {
+        color: var(--heading);
+        background: var(--fill-active);
     }
 
-    @keyframes drawer-in {
-        from { transform: translateX(100%); }
-        to { transform: translateX(0); }
+    .nav-cta {
+        margin-left: 4px;
     }
 
-    @keyframes drawer-fade {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    .menu-btn .bars {
+        position: relative;
+        width: 18px;
+        height: 12px;
+        display: block;
     }
 
-    [data-drawer]:not([hidden]) {
-        .drawer-backdrop {
-            animation: drawer-fade .25s ease both;
-        }
+    .menu-btn .bars i {
+        position: absolute;
+        left: 0;
+        width: 18px;
+        height: 2px;
+        border-radius: 9999px;
+        background: currentColor;
+        transition: transform 500ms var(--ease-space);
+    }
 
-        .drawer-panel {
-            animation: drawer-in .3s cubic-bezier(.25, .8, .35, 1) both;
-        }
+    .menu-btn .bars i:first-child { top: 1px; }
+    .menu-btn .bars i:last-child { top: 9px; }
+    .menu-btn[aria-expanded="true"] .bars i:first-child { transform: translateY(4px) rotate(45deg); }
+    .menu-btn[aria-expanded="true"] .bars i:last-child { transform: translateY(-4px) rotate(-45deg); }
+
+    @media (min-width: 960px) {
+        .nav-links { display: flex; }
+        .menu-btn { display: none; }
+        .lang { margin-left: 8px; }
+    }
+
+    .menu {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: var(--menu-bg);
+        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+        padding-top: calc(112px + env(safe-area-inset-top, 0px));
+        padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+        padding-left: max(24px, env(safe-area-inset-left, 0px));
+        padding-right: max(24px, env(safe-area-inset-right, 0px));
+        overflow-y: auto;
+        opacity: 0;
+        transition: opacity 300ms var(--ease-space);
+    }
+
+    .menu:global(.open) {
+        opacity: 1;
+    }
+
+    .menu nav {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        max-width: 560px;
+        margin-inline: auto;
+    }
+
+    .menu ul {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .menu-link {
+        display: flex;
+        padding: 8px 0;
+        border-radius: 8px;
+    }
+
+    .menu-link[aria-current] {
+        color: var(--accent-text);
+    }
+
+    .stagger {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 500ms var(--ease-space), transform 500ms var(--ease-space);
+        transition-delay: calc(var(--i, 0) * 50ms);
+    }
+
+    .menu:global(.open) .stagger {
+        opacity: 1;
+        transform: none;
+    }
+
+    .menu-foot {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    :global(:root[data-motion="reduce"]) .brand:hover .brand-logo,
+    :global(:root[data-motion="reduce"]) .stagger {
+        transform: none;
     }
 </style>
 
 <script>
-    // Theme switching: flip the attribute on <html> and persist the choice
-    // in a cookie so that SSR renders the right theme on the next request.
-    function setupHeader() {
-        const drawer = document.querySelector<HTMLElement>("[data-drawer]");
+    // Mobile menu: a full-screen sheet. While it is open, the rest of the page
+    // is inert (focus stays in the menu) and does not scroll; Escape closes it.
+    const menu = document.getElementById("menu");
+    const button = document.getElementById("menu-btn");
+    const outside = [document.querySelector("main"), document.querySelector("footer")];
 
-        document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const html = document.documentElement;
-                const theme = html.dataset.theme === "dark" ? "light" : "dark";
-                html.dataset.theme = theme;
-                document.cookie = `theme=${theme};path=/;max-age=31536000;samesite=lax`;
-                // The sun/moon swap is driven by CSS on html[data-theme] — the
-                // attribute above is the only thing this handler has to flip.
-            });
-        });
-
-        // Record an explicit language choice before navigating: the cookie
-        // becomes authoritative, so the middleware never auto-redirects the
-        // visitor away from the language they just picked.
-        document.querySelectorAll<HTMLAnchorElement>("[data-set-lang]").forEach(link => {
-            link.addEventListener("click", () => {
-                const locale = link.dataset.setLang;
-                document.cookie = `lang=${locale};path=/;max-age=31536000;samesite=lax`;
-            });
-        });
-
-        // Remember who opened the drawer so focus can be restored on close.
-        let opener: HTMLElement | null = null;
-
-        // Lock the page scroll behind the open drawer. The scrollbar width is
-        // compensated with padding so removing it doesn't shift the layout
-        // (only matters on desktop widths ≤900px; mobile scrollbars overlay).
-        function lockScroll() {
-            const root = document.documentElement;
-            const scrollbar = window.innerWidth - root.clientWidth;
-            root.style.overflow = "hidden";
-            if (scrollbar > 0) root.style.paddingRight = `${scrollbar}px`;
-        }
-
-        function unlockScroll() {
-            const root = document.documentElement;
-            root.style.overflow = "";
-            root.style.paddingRight = "";
-        }
-
-        function openDrawer(trigger: HTMLElement) {
-            opener = trigger;
-            drawer?.removeAttribute("hidden");
-            lockScroll();
-            // Move focus onto the panel's close button so keyboard users land
-            // inside it (not the invisible backdrop, which comes first in DOM).
-            drawer?.querySelector<HTMLElement>(".drawer-panel [data-drawer-close]")?.focus();
-        }
-
-        function closeDrawer() {
-            if (drawer?.hasAttribute("hidden")) return;
-            drawer?.setAttribute("hidden", "");
-            unlockScroll();
-            opener?.focus();
-        }
-
-        document.querySelectorAll<HTMLElement>("[data-drawer-open]").forEach(btn => {
-            btn.addEventListener("click", () => openDrawer(btn));
-        });
-
-        document.querySelectorAll("[data-drawer-close]").forEach(btn => {
-            btn.addEventListener("click", closeDrawer);
-        });
-
-        // A scroll gesture outside the panel closes the drawer. The background
-        // itself can't scroll (locked above), so this reacts to the intent —
-        // scrolling within the panel is left alone so its own content still moves.
-        function closeOnScroll(event: Event) {
-            if (drawer?.hasAttribute("hidden") !== false) return;
-            const panel = drawer.querySelector(".drawer-panel");
-            if (panel && event.target instanceof Node && panel.contains(event.target)) return;
-            closeDrawer();
-        }
-
-        document.addEventListener("wheel", closeOnScroll, { passive: true });
-        document.addEventListener("touchmove", closeOnScroll, { passive: true });
-
-        // The visible, focusable controls of the drawer panel, in DOM order.
-        // Queried on demand so the list always reflects the current state.
-        function panelFocusables(): HTMLElement[] {
-            const panel = drawer?.querySelector<HTMLElement>(".drawer-panel");
-            if (!panel) return [];
-            const selector = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
-            return Array.from(panel.querySelectorAll<HTMLElement>(selector))
-                .filter(el => el.offsetParent !== null);
-        }
-
-        // While the drawer is open: Escape closes it, and Tab/Shift+Tab are
-        // confined to the panel (focus trap) so it never escapes behind the
-        // backdrop into the inert page underneath.
-        document.addEventListener("keydown", event => {
-            if (drawer?.hasAttribute("hidden") !== false) return;
-
-            if (event.key === "Escape") {
-                closeDrawer();
-                return;
-            }
-
-            if (event.key !== "Tab") return;
-
-            const items = panelFocusables();
-            if (items.length === 0) return;
-            const first = items[0];
-            const last = items[items.length - 1];
-            const active = document.activeElement as HTMLElement | null;
-
-            if (event.shiftKey) {
-                if (active === first || !drawer.contains(active)) {
-                    event.preventDefault();
-                    last.focus();
-                }
-            } else if (active === last || !drawer.contains(active)) {
-                event.preventDefault();
-                first.focus();
-            }
-        });
-
-        // Clicking a link inside the panel navigates, so the drawer should not
-        // stay open behind the new page state.
-        drawer?.querySelectorAll<HTMLAnchorElement>(".drawer-panel a[href]").forEach(link => {
-            link.addEventListener("click", () => drawer?.setAttribute("hidden", ""));
-        });
+    function openMenu(): void {
+        if (!menu || !button) return;
+        menu.hidden = false;
+        // Two frames: the sheet must be displayed before it can fade in
+        requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add("open")));
+        button.setAttribute("aria-expanded", "true");
+        button.setAttribute("aria-label", button.dataset.closeLabel ?? "");
+        document.documentElement.classList.add("lock");
+        outside.forEach(el => { if (el) el.inert = true; });
+        menu.querySelector<HTMLElement>("a")?.focus({ preventScroll: true });
     }
 
-    setupHeader();
+    function closeMenu(returnFocus: boolean): void {
+        if (!menu || !button) return;
+        menu.classList.remove("open");
+        button.setAttribute("aria-expanded", "false");
+        button.setAttribute("aria-label", button.dataset.openLabel ?? "");
+        document.documentElement.classList.remove("lock");
+        outside.forEach(el => { if (el) el.inert = false; });
+        setTimeout(() => { if (!menu.classList.contains("open")) menu.hidden = true; }, 300);
+        if (returnFocus) button.focus();
+    }
+
+    const isOpen = () => button?.getAttribute("aria-expanded") === "true";
+
+    button?.addEventListener("click", () => (isOpen() ? closeMenu(true) : openMenu()));
+    menu?.querySelectorAll("a").forEach(link => link.addEventListener("click", () => closeMenu(false)));
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && isOpen()) closeMenu(true);
+    });
+    matchMedia("(min-width: 960px)").addEventListener("change", event => {
+        if (event.matches && isOpen()) closeMenu(false);
+    });
+
+    // An explicit language choice is recorded before navigating: the cookie
+    // becomes authoritative, so the middleware never redirects the visitor away
+    // from the language they just picked.
+    document.querySelectorAll<HTMLAnchorElement>("[data-set-lang]").forEach(link => {
+        link.addEventListener("click", () => {
+            document.cookie = `lang=${link.dataset.setLang};path=/;max-age=31536000;samesite=lax`;
+        });
+    });
+
+    // Scrollspy of the homepage: the link of the section in the middle of the
+    // screen is marked as the current location.
+    const spied = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[data-spy]"));
+    const sections = [...new Set(spied.map(link => link.dataset.spy))]
+        .map(id => document.getElementById(id ?? ""))
+        .filter((el): el is HTMLElement => !!el);
+    if (sections.length > 0 && "IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) continue;
+                for (const link of spied) {
+                    if (link.dataset.spy === entry.target.id) link.setAttribute("aria-current", "location");
+                    else link.removeAttribute("aria-current");
+                }
+            }
+        }, { rootMargin: "-45% 0px -50% 0px" });
+        // The hero has no link: reaching it clears the mark
+        const top = document.getElementById("top");
+        if (top) observer.observe(top);
+        sections.forEach(section => observer.observe(section));
+    }
 </script>

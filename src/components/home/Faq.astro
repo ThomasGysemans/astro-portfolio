@@ -1,0 +1,154 @@
+---
+import { Icon } from "astro-icon/components";
+import trans, { faq } from "@i18n";
+import { EMAIL } from "@lib/contact";
+
+const lang = Astro.locals.lang;
+const t = trans.home;
+---
+
+<section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq-grid">
+        <div class="faq-head reveal">
+            <p class="eyebrow caption-3">FAQ</p>
+            <h2 id="faq-title" class="heading-2 grad">{t.faqtitle[lang]}</h2>
+            <div class="card ask-box">
+                <p class="title-3 text-heading">{t.askbox[lang]}</p>
+                <p class="body-6">{t.askboxtext[lang]}</p>
+                <p class="direct">
+                    <a class="mail body-5" id="mail-faq" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                    <button type="button" class="icon-btn" data-copy="mail-faq" data-status="copy-faq" data-copied={trans.common.copied[lang]} data-failed={trans.common.copyfailed[lang]} aria-label={trans.common.copyaddress[lang]}><Icon name="copy" class="size-4" /></button>
+                    <span class="copy-status caption-3" id="copy-faq" role="status" aria-live="polite"></span>
+                </p>
+            </div>
+        </div>
+        <div class="faq-list">
+            {faq.map(item => (
+                <details class="qa">
+                    <summary class="title-2">{item.q[lang]}<Icon name="plus" class="size-5" /></summary>
+                    <p class="qa-body body-3">{item.a[lang]}</p>
+                </details>
+            ))}
+        </div>
+    </div>
+</section>
+
+<style>
+    .faq-grid {
+        display: grid;
+        gap: 48px;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+    }
+
+    @media (min-width: 1024px) {
+        .faq-grid {
+            grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+            gap: 64px;
+        }
+
+        .faq-head {
+            position: sticky;
+            top: 112px;
+        }
+    }
+
+    .faq-head {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    .ask-box {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .direct {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+    }
+
+    .mail {
+        color: var(--heading);
+        font-family: var(--font-mono);
+        font-weight: 500;
+        user-select: all;
+        word-break: break-all;
+        border-radius: 6px;
+    }
+
+    .mail:hover {
+        color: var(--accent-text);
+    }
+
+    .copy-status {
+        color: var(--color-pass);
+    }
+
+    .faq-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .qa {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        transition: border-color 300ms var(--ease-space);
+    }
+
+    .qa:hover,
+    .qa[open] {
+        border-color: var(--line-strong);
+    }
+
+    .qa summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 24px;
+        border-radius: 16px;
+        color: var(--heading);
+    }
+
+    .qa summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .qa summary :global(svg) {
+        color: var(--muted);
+        flex-shrink: 0;
+        transition: transform 500ms var(--ease-space), color 300ms var(--ease-space);
+    }
+
+    .qa[open] summary :global(svg) {
+        transform: rotate(45deg);
+        color: var(--accent-text);
+    }
+
+    .qa-body {
+        padding: 0 24px 24px;
+        color: var(--text);
+        max-width: 680px;
+    }
+
+    .qa[open] .qa-body {
+        animation: rise 500ms var(--ease-space) both;
+    }
+
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: none; }
+    }
+</style>

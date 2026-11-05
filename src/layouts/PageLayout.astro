@@ -8,6 +8,7 @@ interface Props {
     image?: string; // absolute or root-relative URL of the social-share image
     imageAlt?: string; // description of `image` (required by it, ignored without it)
     noindex?: boolean; // keep the page out of search engines (404, etc.)
+    bodyClass?: string;
 }
 
 const DOMAIN = "https://thomasgysemans.dev";
@@ -29,9 +30,8 @@ const DEFAULT_SOCIAL_IMAGE_ALT = {
     "en": "Thomas Gysemans, freelance developer available for new projects: iOS & Android apps and fast websites, accessible (RGAA & WCAG) and GDPR-compliant.",
 } satisfies Record<App.LangCode, string>;
 
-const { title, description, image, imageAlt, noindex = false } = Astro.props;
+const { title, description, image, imageAlt, noindex = false, bodyClass } = Astro.props;
 const lang = Astro.locals.lang;
-const theme = Astro.locals.theme;
 const og = {
     locale: {
         "fr": "fr_FR",
@@ -42,8 +42,8 @@ const og = {
         "en": "Portfolio of Thomas Gysemans",
     },
     description: {
-        "fr": "Je suis développeur d'applications et de sites internet, disponible en freelance, et je présente ici mes compétences et mes anciens projets.",
-        "en": "I am an application and website developer, available for freelance work, and I present here my skills and my past projects.",
+        "fr": "Développeur et designer freelance : sites, applications mobiles et logiciels conçus de A à Z, rapides, accessibles (RGAA) et conformes au RGPD.",
+        "en": "Freelance developer and designer: websites, mobile apps and software built from A to Z, fast, accessible and GDPR-compliant.",
     },
 } satisfies Record<string, Record<App.LangCode, string>>;
 
@@ -75,30 +75,40 @@ const structuredData = {
     name: AUTHOR,
     url: DOMAIN,
     image: DEFAULT_IMAGE,
-    jobTitle: lang === "fr" ? "Développeur d'applications et de sites internet" : "Application and website developer",
+    jobTitle: lang === "fr" ? "Développeur et designer freelance" : "Freelance developer and designer",
     description: og.description[lang],
     sameAs: [
         "https://github.com/ThomasGysemans",
         "https://www.linkedin.com/in/thomas-gysemans-950536268",
+        "https://malt.fr/profile/thomasgysemans",
     ],
 };
 ---
 
 <!DOCTYPE html>
-<html {lang} data-theme={theme}>
+<html {lang} data-motion="full">
     <head>
         <meta charset="utf-8">
+        <!-- Before anything paints: animations are off when the visitor paused
+             them (remembered by the pause button) or when the system asks for
+             reduced motion. Every animated part of the site reads this. -->
+        <script is:inline>
+            (function () {
+                var stored = null;
+                try { stored = localStorage.getItem("motion"); } catch (e) {}
+                var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+                document.documentElement.dataset.motion = stored === "reduce" || stored === "full" ? stored : (reduce ? "reduce" : "full");
+            })();
+        </script>
         <link rel="icon" type="image/png" href="/logo.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <meta name="theme-color" content="#030713">
         <meta name="generator" content={Astro.generator}>
-        <!-- Both faces are needed for the first paint of every page (Source Sans 3
-             for the body text, Comfortaa for the headings and the logo), and a
-             @font-face in the stylesheet is only fetched once the CSS has been
-             parsed and a node using it has been laid out. Preloading starts both
-             downloads with the HTML instead, which is what keeps the swap from
-             being visible. Body font first: it covers most of the page. -->
-        <link rel="preload" href="/fonts/source-sans-3-vf.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/fonts/comfortaa-vf.woff2" as="font" type="font/woff2" crossorigin>
+        <!-- A @font-face is only fetched once the CSS is parsed and a node using
+             it is laid out; preloading starts the download with the HTML, which
+             keeps the swap from being visible. Geist Mono is left out: it only
+             sets small labels, where a late swap is barely visible. -->
+        <link rel="preload" href="/fonts/geist-vf.woff2" as="font" type="font/woff2" crossorigin>
         <title>{title}</title>
 
         <link rel="canonical" href={canonical}>
@@ -138,8 +148,9 @@ const structuredData = {
         ))}
 
         <script type="application/ld+json" set:html={JSON.stringify(structuredData)} is:inline />
+        <slot name="head" />
     </head>
-    <body class="overflow-x-hidden">
+    <body class:list={["overflow-x-hidden", bodyClass]}>
         <slot />
     </body>
 </html>

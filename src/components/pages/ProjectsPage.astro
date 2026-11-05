@@ -1,15 +1,23 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getAllProjects, countProjectsUsing, projectsYearRange } from "@data/projects";
-import { getTechnologies, GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
+import { countProjectsUsing, projectsYearRange } from "@data/projects";
+import { GROUP_ORDER, GROUP_TITLES } from "@data/technologies";
+import type { Project, Technology } from "@data/models";
 import { CATEGORIES, categoryMeta, contextLabel } from "@data/categories";
 import ProjectsExplorer from "@components/svelte/ProjectsExplorer.svelte";
 import MainLayout from "@layouts/MainLayout.astro";
+import type { PlanetPlacement } from "@lib/space/planets";
 import trans, { techSkills, schoolSkills } from "@i18n";
 
+interface Props {
+    projects: Project[];
+    technologies: Technology[];
+}
+
+// Loaded by the route, which answers 503 when PocketBase is unreachable
+const { projects, technologies } = Astro.props;
 const lang = Astro.locals.lang;
-const [projects, technologies] = await Promise.all([getAllProjects(), getTechnologies()]);
 const searchParams = Astro.url.searchParams;
 const techColors = Object.fromEntries(technologies.map(t => [t.name, t.color]));
 
@@ -38,13 +46,13 @@ const pills = [
     {
         key: "featured",
         label: trans.projects.featuredpill[lang],
-        dot: "#F9DA08",
+        dot: "#FFE3B0",
         count: projects.filter(p => p.featured).length,
     },
     {
         key: "all",
         label: trans.projects.allpill[lang],
-        dot: "#87b3f6",
+        dot: "#78A8FF",
         count: projects.length,
     },
     ...Object.entries(CATEGORIES).map(([key, meta]) => ({
@@ -78,20 +86,27 @@ const skillGroups = GROUP_ORDER.map(group => {
     };
 });
 
+const t = trans.projects;
 const labels = {
-    searchPlaceholder: trans.projects.searchplaceholder[lang],
-    sortNewest: trans.projects.sortnewest[lang],
-    sortOldest: trans.projects.sortoldest[lang],
-    result: trans.projects.result[lang],
-    results: trans.projects.results[lang],
-    builtWith: trans.projects.builtwith[lang],
-    clickToFilter: trans.projects.clicktofilter[lang],
-    removeTechFilter: trans.projects.removetechfilter[lang],
-    noProject: trans.projects.noprojectfound[lang],
-    showAll: trans.projects.showallprojects[lang],
+    eyebrow: t.eyebrow[lang],
+    filters: t.filters[lang],
+    searchPlaceholder: t.searchplaceholder[lang],
+    sortLabel: t.sortlabel[lang],
+    sortNewest: t.sortnewest[lang],
+    sortOldest: t.sortoldest[lang],
+    result: t.result[lang],
+    results: t.results[lang],
+    builtWith: t.builtwith[lang],
+    clickToFilter: t.clicktofilter[lang],
+    removeTechFilter: t.removetechfilter[lang],
+    noProject: t.noprojectfound[lang],
+    showAll: t.showallprojects[lang],
     details: trans.common.details[lang],
-    techSkillsTitle: trans.projects.mytechskills[lang],
-    techSkillsIntro: trans.projects.techskillsintro[lang],
+    skillsEyebrow: t.skillseyebrow[lang],
+    techSkillsTitle: t.mytechskills[lang],
+    techSkillsIntro: t.techskillsintro[lang],
+    showcase: t.showcasecta[lang],
+    showcaseHint: t.showcasehint[lang],
 };
 
 // Restore a shareable state from the URL (?filter=web&tech=Svelte&q=...).
@@ -99,14 +114,14 @@ const validFilters = pills.map(p => p.key);
 const filterParam = searchParams.get("filter") ?? "";
 const techParam = searchParams.get("tech") ?? "";
 const initialFilter = validFilters.includes(filterParam) ? filterParam : "featured";
-const initialTech = technologies.some(t => t.name === techParam) ? techParam : null;
+const initialTech = technologies.some(tech => tech.name === techParam) ? techParam : null;
 const initialQuery = searchParams.get("q") ?? "";
 
 // The year range follows the actual projects instead of a hardcoded copy
 // (computed from the already-loaded list, so it never goes stale).
 const currentYear = new Date().getFullYear();
 const range = projectsYearRange(projects) ?? { from: currentYear, to: currentYear };
-const subtitle = trans.projects.subtitle[lang]
+const subtitle = t.subtitle[lang]
     .replace("{count}", `${projects.length}`)
     .replace("{from}", `${range.from}`)
     .replace("{to}", `${range.to}`);
@@ -114,14 +129,19 @@ const subtitle = trans.projects.subtitle[lang]
 // The heading follows the active filter pill (rendered inside the island so
 // it updates live; the SSR output already matches the ?filter= of the URL).
 const titles: Record<string, string> = {
-    featured: trans.projects.featuredtitle[lang],
-    all: trans.projects.allmyprojects[lang],
+    featured: t.featuredtitle[lang],
+    all: t.allmyprojects[lang],
     ...Object.fromEntries(Object.entries(CATEGORIES).map(([key, meta]) => [key, meta.title[lang]])),
 };
+
+const planets: PlanetPlacement[] = [
+    { name: "saturn", anchor: "#projects-head", at: 0.22, x: 0.86, mAt: -0.16, mx: 0.82 },
+    { name: "jupiter", anchor: "#skills", at: 0.25, x: -0.05, mAt: 0.05, mx: 0.04 },
+];
 ---
 
-<MainLayout title={trans.projects.title[lang]} description={trans.projects.description[lang]}>
-    <main id="main-content" class="w-full max-w-415 mx-auto">
+<MainLayout title={t.title[lang]} description={t.description[lang]} {planets}>
+    <main id="main-content" tabindex="-1">
         <ProjectsExplorer
             projects={explorerProjects}
             {pills}
@@ -131,6 +151,7 @@ const titles: Record<string, string> = {
             skillHighlights={techSkills.map(s => s[lang])}
             {skillGroups}
             {labels}
+            showcaseHref={getRelativeLocaleUrl(lang, "/showcase")}
             {initialFilter}
             {initialTech}
             {initialQuery}
@@ -138,26 +159,19 @@ const titles: Record<string, string> = {
         />
 
         <!-- education & teamwork -->
-        <section class="px-page pt-8 pb-14">
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
-                <div class="surface-card py-5.5 px-6">
-                    <h2 class="flex items-center gap-2 text-lg font-bold text-accent-heading mb-3">
-                        <Icon name="graduation-cap" class="text-base shrink-0" />
-                        {trans.projects.educationtitle[lang]}
-                    </h2>
-                    <p class="text-sm text-body">{trans.projects.education[lang]}</p>
+        <section class="section pt-0!" aria-label={`${t.educationtitle[lang]}, ${t.teamskillstitle[lang]}`}>
+            <div class="wrap background">
+                <div class="card reveal panel">
+                    <span class="seal" aria-hidden="true"><Icon name="graduation-cap" class="size-6" /></span>
+                    <h2 class="heading-6">{t.educationtitle[lang]}</h2>
+                    <p class="body-6">{t.education[lang]}</p>
                 </div>
-                <div class="surface-card py-5.5 px-6">
-                    <h2 class="flex items-center gap-2 text-lg font-bold text-accent-heading mb-3.5">
-                        <Icon name="handshake" class="text-base shrink-0" />
-                        {trans.projects.teamskillstitle[lang]}
-                    </h2>
-                    <ul class="flex flex-col gap-2.5">
+                <div class="card reveal panel" style="--d:80ms">
+                    <span class="seal" aria-hidden="true"><Icon name="handshake" class="size-6" /></span>
+                    <h2 class="heading-6">{t.teamskillstitle[lang]}</h2>
+                    <ul class="checks body-6">
                         {schoolSkills.map(skill => (
-                            <li class="flex gap-2 text-sm text-body">
-                                <Icon name="award" class="text-sm text-accent shrink-0 mt-px" aria-hidden="true" />
-                                <span>{skill[lang]}</span>
-                            </li>
+                            <li><Icon name="check-circle" class="size-5" />{skill[lang]}</li>
                         ))}
                     </ul>
                 </div>
@@ -165,3 +179,52 @@ const titles: Record<string, string> = {
         </section>
     </main>
 </MainLayout>
+
+<style>
+    .background {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    }
+
+    .panel {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    @media (min-width: 1024px) {
+        .panel { padding: 32px; }
+    }
+
+    .seal {
+        width: 48px;
+        height: 48px;
+        border-radius: 9999px;
+        display: grid;
+        place-items: center;
+        background: var(--accent-soft);
+        color: var(--accent-text);
+        border: 1px solid var(--accent-line);
+        margin-bottom: 8px;
+    }
+
+    .checks {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .checks li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        color: var(--heading);
+    }
+
+    .checks :global(svg) {
+        color: var(--accent-text);
+        flex-shrink: 0;
+    }
+</style>

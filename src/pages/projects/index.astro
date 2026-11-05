@@ -1,5 +1,12 @@
 ---
 import ProjectsPage from "@components/pages/ProjectsPage.astro";
+import ErrorPage from "@components/pages/ErrorPage.astro";
+import { getAllProjects } from "@data/projects";
+import { getTechnologies } from "@data/technologies";
+import { ifAvailable } from "@data/pb";
+
+// Without PocketBase there is nothing to list: a 503 instead of an empty page
+const data = await ifAvailable(Promise.all([getAllProjects(), getTechnologies()]));
 ---
 
-<ProjectsPage />
+{data ? <ProjectsPage projects={data[0]} technologies={data[1]} /> : <ErrorPage status={503} />}

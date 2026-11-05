@@ -1,0 +1,602 @@
+---
+// The final call to action. The form writes the quote request and opens it in
+// the visitor's own mail app (nothing is sent to or stored by this site); the
+// rocket next to it lifts off when it is sent.
+import { Icon } from "astro-icon/components";
+import trans from "@i18n";
+import { EMAIL, mailtoHref } from "@lib/contact";
+
+const lang = Astro.locals.lang;
+const t = trans.home;
+const c = trans.contact;
+const types = [
+    { value: "site", label: c.typesite[lang] },
+    { value: "app", label: c.typeapp[lang] },
+    { value: "soft", label: c.typesoft[lang] },
+    { value: "unsure", label: c.typeunsure[lang] },
+];
+const [fallbackBefore, fallbackAfter] = c.donefallback[lang].split("{email}");
+---
+
+<section class="launch" id="devis" aria-labelledby="launch-title">
+    <canvas class="launch-canvas" data-launch-canvas aria-hidden="true"></canvas>
+    <div class="wrap launch-inner">
+        <div class="launch-head reveal">
+            <p class="eyebrow caption-3">{t.launcheyebrow[lang]}</p>
+            <h2 id="launch-title" class="heading-2 grad">{t.launchtitle[lang]}</h2>
+            <p class="body-7 text-muted">{t.launchintro[lang]}</p>
+        </div>
+
+        <div class="launch-row">
+            <div class="card form-card reveal" style="--d:120ms">
+                <form class="form" id="devis-form" novalidate aria-describedby="form-status">
+                    <fieldset class="field" aria-describedby="err-type">
+                        <legend class="label title-4">{c.legend[lang]}</legend>
+                        <div class="choices" id="type-group">
+                            {types.map(type => (
+                                <label class="choice">
+                                    <input type="radio" name="type" value={type.value} id={`type-${type.value}`} />
+                                    <span class="body-5"><Icon name="check" class="size-4" />{type.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                        <p class="error caption-1" id="err-type"></p>
+                    </fieldset>
+                    <div class="field">
+                        <label class="label title-4" for="idea">{c.idealabel[lang]}</label>
+                        <p class="hint caption-2" id="hint-idea">{c.ideahint[lang]}</p>
+                        <textarea class="input" id="idea" name="idea" rows="4" aria-describedby="hint-idea err-idea" placeholder={c.ideaplaceholder[lang]}></textarea>
+                        <p class="error caption-1" id="err-idea"></p>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label class="label title-4" for="deadline">{c.deadlinelabel[lang]} <span class="opt">{c.optional[lang]}</span></label>
+                            <input class="input" type="text" id="deadline" name="deadline" autocomplete="off" placeholder={c.deadlineplaceholder[lang]} />
+                        </div>
+                        <div class="field">
+                            <label class="label title-4" for="budget">{c.budgetlabel[lang]} <span class="opt">{c.optional[lang]}</span></label>
+                            <input class="input" type="text" id="budget" name="budget" autocomplete="off" placeholder={c.budgetplaceholder[lang]} />
+                        </div>
+                    </div>
+                    <div class="form-foot">
+                        <button class="btn btn-primary button-md" type="submit">{c.submit[lang]} <Icon name="arrow-right" class="size-5" /></button>
+                        <p class="sr-only" id="form-status" role="status" aria-live="polite"></p>
+                        <p class="caption-2 text-muted">{c.howitworks[lang]}</p>
+                    </div>
+                </form>
+
+                <div class="form-done" id="form-done" hidden>
+                    <span class="seal" aria-hidden="true"><Icon name="check-circle" class="size-6" /></span>
+                    <h3 class="heading-5" id="done-title" tabindex="-1">{c.donetitle[lang]}</h3>
+                    <p class="body-3">{c.donetext[lang]}</p>
+                    <p class="body-6 text-muted">{fallbackBefore}<a class="mail" href={`mailto:${EMAIL}`}>{EMAIL}</a>{fallbackAfter}</p>
+                    <pre class="brief caption-2" id="brief" aria-label={c.briefsr[lang]}></pre>
+                    <div class="done-actions">
+                        <button type="button" class="btn btn-ghost btn-sm button-sm" data-copy="brief" data-status="brief-status" data-copied={c.briefcopied[lang]} data-failed={c.briefcopyfailed[lang]}><Icon name="copy" class="size-4" />{c.copybrief[lang]}</button>
+                        <button type="button" class="btn btn-ghost btn-sm button-sm" id="edit-btn">{c.edit[lang]}</button>
+                        <span class="copy-status caption-3" id="brief-status" role="status" aria-live="polite"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decorative: the rocket of the canvas stands on this pad, the
+                 lights mirror the required fields -->
+            <div class="pad" id="pad" aria-hidden="true">
+                <svg class="pad-art" viewBox="0 0 220 360">
+                    <path class="pad-ground" d="M0 334 H220"></path>
+                    <path class="pad-tower" d="M14 334 V60 M40 334 V60 M10 60 H44 M27 60 V36 M14 334 L40 307 L14 280 L40 253 L14 226 L40 199 L14 172 L40 145 L14 118 L40 91 L14 64"></path>
+                    <circle class="pad-beacon" cx="27" cy="32" r="3"></circle>
+                    <g class="pad-arm"><path d="M40 136 H99 M40 148 L99 136 M99 130 V142"></path></g>
+                    <path class="pad-deck" d="M70 300 H114 V310 H70 Z M166 300 H210 V310 H166 Z M80 310 V334 M104 310 V334 M176 310 V334 M200 310 V334 M114 300 L124 334 M166 300 L156 334"></path>
+                </svg>
+                <ul class="pad-checks caption-5">
+                    <li data-check="type">{c.padproject[lang]}</li>
+                    <li data-check="idea">{c.padidea[lang]}</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="direct caption-2 reveal">
+            <span class="text-muted">{c.direct[lang]}</span>
+            <a class="mail" id="mail-direct" href={mailtoHref(lang)}>{EMAIL}</a>
+            <button type="button" class="icon-btn" data-copy="mail-direct" data-status="copy-direct" data-copied={trans.common.copied[lang]} data-failed={trans.common.copyfailed[lang]} aria-label={trans.common.copyaddress[lang]}><Icon name="copy" class="size-4" /></button>
+            <span class="copy-status caption-3" id="copy-direct" role="status" aria-live="polite"></span>
+        </p>
+    </div>
+    <div class="launch-space" aria-hidden="true"></div>
+</section>
+
+<style>
+    .launch {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        padding-top: 64px;
+    }
+
+    @media (min-width: 1024px) {
+        .launch { padding-top: 96px; }
+    }
+
+    /* A full height strip centred on the pad (placed by the script): the rocket
+       fades out at the top when it leaves, the ground cloud at the sides */
+    .launch-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, #000 220px), linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+        -webkit-mask-composite: source-in;
+        mask-image: linear-gradient(to bottom, transparent, #000 220px), linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+        mask-composite: intersect;
+    }
+
+    .launch-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .launch-head {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        text-align: center;
+        max-width: 680px;
+    }
+
+    .launch-row {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .launch-space {
+        height: 64px;
+    }
+
+    .form-card {
+        width: 100%;
+        max-width: 720px;
+        padding: 24px;
+        background: rgb(8 15 33 / 0.92);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+
+    @media (min-width: 1024px) {
+        .form-card { padding: 32px; }
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border: 0;
+        margin: 0;
+        padding: 0;
+        min-width: 0;
+    }
+
+    .label {
+        color: var(--heading);
+        padding: 0;
+    }
+
+    /* A fieldset's legend is laid out outside its flex container, so the
+       field's gap does not reach it: the same 8px is given as a margin. */
+    legend.label {
+        margin-bottom: 8px;
+    }
+
+    .opt {
+        color: var(--muted);
+        font-weight: 400;
+    }
+
+    .hint {
+        color: var(--muted);
+    }
+
+    .input {
+        width: 100%;
+        min-width: 0;
+        background: var(--fill);
+        color: var(--heading);
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        transition: border-color 300ms var(--ease-space), background-color 300ms var(--ease-space);
+    }
+
+    .input::placeholder {
+        color: var(--muted);
+        opacity: 1;
+    }
+
+    .input:hover {
+        border-color: var(--line-hover);
+    }
+
+    .input:focus-visible {
+        outline: 2px solid var(--accent-text);
+        outline-offset: 0;
+        border-color: var(--accent-text);
+    }
+
+    textarea.input {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .input[aria-invalid="true"] {
+        border-color: var(--color-danger);
+    }
+
+    .field-row {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 640px) {
+        .field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .error {
+        color: var(--color-danger);
+    }
+
+    .error:empty {
+        display: none;
+    }
+
+    .choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .choice {
+        position: relative;
+    }
+
+    .choice input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .choice span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        background: var(--fill);
+        color: var(--text);
+        transition: border-color 300ms var(--ease-space), background-color 300ms var(--ease-space), color 300ms var(--ease-space), transform 300ms var(--ease-space);
+    }
+
+    .choice span :global(svg) { display: none; }
+    .choice:hover span { border-color: var(--line-hover); color: var(--heading); }
+    .choice input:active + span { transform: scale(0.98); }
+    .choice input:checked + span { border-color: var(--accent-text); color: var(--heading); background: var(--accent-soft); }
+    .choice input:checked + span :global(svg) { display: block; color: var(--accent-text); }
+    .choice input:focus-visible + span { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+    .choices[aria-invalid="true"] .choice span { border-color: var(--color-danger); }
+
+    .form-foot {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-foot .btn {
+        width: 100%;
+    }
+
+    @media (min-width: 640px) {
+        .form-foot .btn {
+            width: auto;
+            align-self: flex-start;
+        }
+    }
+
+    .form-done {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .form-done h3:focus {
+        outline: none;
+    }
+
+    .seal {
+        width: 48px;
+        height: 48px;
+        border-radius: 9999px;
+        display: grid;
+        place-items: center;
+        background: rgb(95 211 148 / 0.12);
+        color: var(--color-pass);
+        border: 1px solid rgb(95 211 148 / 0.4);
+        flex-shrink: 0;
+    }
+
+    /* The request exactly as it was written into the mail */
+    .brief {
+        width: 100%;
+        max-height: 200px;
+        overflow: auto;
+        margin: 0;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px dashed var(--line-strong);
+        background: var(--fill);
+        color: var(--text);
+        font-family: var(--font-mono);
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .done-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+    }
+
+    .direct {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 8px 12px;
+        text-align: center;
+    }
+
+    .mail {
+        color: var(--heading);
+        font-family: var(--font-mono);
+        font-weight: 500;
+        user-select: all;
+        word-break: break-all;
+        border-radius: 6px;
+    }
+
+    .mail:hover {
+        color: var(--accent-text);
+    }
+
+    .copy-status {
+        color: var(--color-pass);
+    }
+
+    /* Launch pad, drawn like the star chart. Its geometry (viewBox 220 x 360) is
+       mirrored in lib/space/rocket.ts: rocket axis at x = 140, deck at y = 300,
+       umbilical arm pivoting at (40, 142). */
+    .pad {
+        position: relative;
+        width: 180px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    @media (min-width: 1280px) {
+        .pad {
+            position: absolute;
+            left: calc(50% + 360px + 16px);
+            bottom: 0;
+            width: 210px;
+        }
+    }
+
+    .pad-art {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .pad-ground { stroke: var(--line-strong); stroke-width: 1; }
+    .pad-tower, .pad-arm path { stroke: rgb(150 180 255 / 0.5); stroke-width: 1.2; }
+    .pad-deck { stroke: rgb(150 180 255 / 0.75); stroke-width: 1.4; fill: rgb(8 15 33 / 0.7); transition: stroke 600ms var(--ease-space); }
+    .pad:global(.firing) .pad-deck { stroke: #FFC98A; }
+    .pad-arm { transform-box: view-box; transform-origin: 40px 142px; transition: transform 900ms var(--ease-space); }
+    .pad:global(.launched) .pad-arm { transform: rotate(-58deg); }
+    .pad-beacon { fill: #FFC08A; stroke: none; animation: beacon 1600ms var(--ease-space) infinite alternate; }
+
+    @keyframes beacon {
+        from { opacity: 0.25; }
+        to { opacity: 1; }
+    }
+
+    .pad-checks {
+        display: flex;
+        gap: 8px;
+        color: var(--muted);
+        font-family: var(--font-mono);
+    }
+
+    .pad-checks li {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 300ms var(--ease-space);
+    }
+
+    .pad-checks li::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: var(--line-strong);
+        transition: background-color 300ms var(--ease-space), box-shadow 300ms var(--ease-space);
+    }
+
+    .pad-checks li:global(.on) { color: var(--heading); }
+
+    .pad-checks li:global(.on)::before {
+        background: var(--color-pass);
+        box-shadow: 0 0 6px var(--color-pass);
+    }
+</style>
+
+<script>
+    import { contact } from "@i18n/translations/contact";
+    import { mailtoHref } from "@lib/contact";
+    import { mountCopyButtons } from "@lib/copy";
+    import { mountLaunchPad } from "@lib/space/rocket";
+
+    const lang = (document.documentElement.lang === "en" ? "en" : "fr") as App.LangCode;
+    const form = document.getElementById("devis-form") as HTMLFormElement | null;
+    const done = document.getElementById("form-done");
+    const status = document.getElementById("form-status");
+    const idea = document.getElementById("idea") as HTMLTextAreaElement | null;
+    const section = document.getElementById("devis");
+    const canvas = document.querySelector<HTMLCanvasElement>("[data-launch-canvas]");
+    const padEl = document.getElementById("pad");
+    const pad = section && canvas && padEl ? mountLaunchPad(section, canvas, padEl) : null;
+    let attempted = false;
+
+    const checkedType = () => form?.querySelector<HTMLInputElement>('input[name="type"]:checked') ?? null;
+
+    // Each required field returns its error message, or "" when it is valid
+    const fields: Record<"type" | "idea", () => string> = {
+        type: () => (checkedType() ? "" : contact.errtype[lang]),
+        idea: () => {
+            const value = idea?.value.trim() ?? "";
+            if (!value) return contact.erridea[lang];
+            if (value.length < 20) return contact.errideashort[lang];
+            return "";
+        },
+    };
+    type Field = keyof typeof fields;
+    const isField = (name: string): name is Field => name in fields;
+
+    function showError(name: Field): string {
+        const message = fields[name]();
+        const error = document.getElementById(`err-${name}`);
+        if (error) error.textContent = message;
+        const target = name === "type" ? document.getElementById("type-group") : idea;
+        if (message) target?.setAttribute("aria-invalid", "true");
+        else target?.removeAttribute("aria-invalid");
+        if (name === "type") {
+            form?.querySelectorAll<HTMLInputElement>('input[name="type"]').forEach(radio => {
+                if (message) radio.setAttribute("aria-invalid", "true");
+                else radio.removeAttribute("aria-invalid");
+            });
+        }
+        return message;
+    }
+
+    // The pad lights mirror the required fields, silently (errors only show
+    // after a first attempt)
+    function syncChecks(): void {
+        let all = true;
+        document.querySelectorAll<HTMLElement>(".pad-checks [data-check]").forEach(light => {
+            const name = light.dataset.check ?? "";
+            const ok = isField(name) && !fields[name]();
+            light.classList.toggle("on", ok);
+            if (!ok) all = false;
+        });
+        pad?.setReady(all);
+    }
+
+    // The request as it lands in the mail: the label of the type, the idea as
+    // written, and the optional fields or "to be defined together"
+    function compose(): { subject: string, body: string } {
+        const type = checkedType();
+        const typeLabel = (type?.closest("label")?.querySelector("span")?.textContent ?? "").trim();
+        const optional = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.value.trim() || contact.undecided[lang];
+        const body = contact.brief[lang]
+            .replace("{type}", typeLabel)
+            .replace("{idea}", idea?.value.trim() ?? "")
+            .replace("{deadline}", optional("deadline"))
+            .replace("{budget}", optional("budget"));
+        return { subject: contact.subjecttype[lang].replace("{type}", typeLabel), body };
+    }
+
+    form?.addEventListener("input", syncChecks);
+    form?.addEventListener("change", syncChecks);
+    form?.addEventListener("input", event => {
+        const name = (event.target as HTMLInputElement).name;
+        if (attempted && isField(name)) showError(name);
+    });
+    form?.addEventListener("focusout", event => {
+        const target = event.target as HTMLInputElement;
+        if (target.name === "idea" && target.value.trim()) showError("idea");
+    });
+
+    form?.addEventListener("submit", event => {
+        event.preventDefault();
+        attempted = true;
+        const invalid = (Object.keys(fields) as Field[]).filter(name => showError(name));
+        if (invalid.length > 0) {
+            if (status) status.textContent = invalid.length === 1 ? contact.errone[lang] : contact.errmany[lang].replace("{count}", `${invalid.length}`);
+            (invalid[0] === "type" ? form.querySelector<HTMLInputElement>('input[name="type"]') : idea)?.focus();
+            return;
+        }
+        const { subject, body } = compose();
+        const brief = document.getElementById("brief");
+        if (brief) brief.textContent = body;
+        if (status) status.textContent = "";
+        // Opens the visitor's mail app, the request already written
+        window.location.href = mailtoHref(lang, body, subject);
+        form.hidden = true;
+        if (done) done.hidden = false;
+        pad?.launch();
+        document.getElementById("done-title")?.focus();
+    });
+
+    document.getElementById("edit-btn")?.addEventListener("click", () => {
+        if (done) done.hidden = true;
+        if (form) form.hidden = false;
+        pad?.reset();
+        idea?.focus();
+    });
+
+    // "Get a free quote" in a pricing plan pre-selects the matching project type
+    document.querySelectorAll<HTMLAnchorElement>("[data-preset]").forEach(link => {
+        link.addEventListener("click", () => {
+            const radio = document.getElementById(`type-${link.dataset.preset}`) as HTMLInputElement | null;
+            if (!radio) return;
+            radio.checked = true;
+            syncChecks();
+            if (attempted) showError("type");
+        });
+    });
+
+    mountCopyButtons();
+</script>

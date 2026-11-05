@@ -1,0 +1,145 @@
+---
+import trans from "@i18n";
+
+const lang = Astro.locals.lang;
+// Split into words server-side: the script only lights them up one by one as
+// the sentence scrolls through the screen, like stars appearing
+const words = (s: string) => s.split(/\s+/).filter(Boolean);
+---
+
+<section class="tagline" id="tagline" aria-labelledby="tagline-text">
+    <div class="wrap">
+        <p class="heading-2 tagline-text" id="tagline-text" data-words>
+            {words(trans.home.tagline1[lang]).map(word => <><span class="w">{word}</span> </>)}<span class="w shine">{trans.home.taglineshine[lang]}<span class="spark s1" aria-hidden="true"></span><span class="spark s2" aria-hidden="true"></span></span> {words(trans.home.tagline2[lang]).map((word, i, all) => <><span class="w">{word}</span>{i < all.length - 1 ? " " : ""}</>)}
+        </p>
+    </div>
+</section>
+
+<style>
+    .tagline {
+        position: relative;
+        z-index: 1;
+        padding-block: 96px;
+        overflow-x: clip;
+    }
+
+    .tagline-text {
+        max-width: 760px;
+        margin-inline: auto;
+        text-align: center;
+    }
+
+    /* Dimmed only once the script runs: without it, the sentence reads normally */
+    .tagline-text:global(.lighting) .w {
+        opacity: var(--word-dim);
+        transition: opacity 500ms var(--ease-space);
+    }
+
+    .tagline-text:global(.lighting) .w:global(.on) {
+        opacity: 1;
+    }
+
+    /* "briller" ignites when the scroll reaches it: starlight gradient with a
+       passing glint, a tight glow hugging the letters, two sparkles */
+    .shine {
+        position: relative;
+        display: inline-block;
+    }
+
+    .shine:global(.on) {
+        background: linear-gradient(110deg, #FFD9A6 0%, #FFD9A6 40%, #FFFFFF 50%, #FFD9A6 60%, #FFD9A6 100%);
+        background-size: 300% 100%;
+        background-position: 100% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 0 5px rgb(255 228 196 / 0.55));
+        animation: glint 4200ms var(--ease-space) 700ms infinite;
+    }
+
+    @keyframes glint {
+        0% { background-position: 100% 0; }
+        55%, 100% { background-position: 0% 0; }
+    }
+
+    .spark {
+        /* A twinkling star: a bright core and two fine rays of light */
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        pointer-events: none;
+        background:
+            radial-gradient(circle, #FFFFFF 0 2px, rgb(255 236 210 / 0.9) 3px, rgb(255 200 150 / 0) 9px),
+            linear-gradient(90deg, rgb(255 240 220 / 0), rgb(255 246 235 / 0.95) 50%, rgb(255 240 220 / 0)) center / 100% 1.5px no-repeat,
+            linear-gradient(0deg, rgb(255 240 220 / 0), rgb(255 246 235 / 0.95) 50%, rgb(255 240 220 / 0)) center / 1.5px 100% no-repeat;
+        opacity: 0;
+        transform: scale(0);
+        transition: opacity 600ms var(--ease-space) 500ms, transform 600ms var(--ease-space) 500ms;
+    }
+
+    .spark.s1 { right: -22px; top: -12px; }
+    .spark.s2 { left: -14px; bottom: -2px; width: 22px; height: 22px; transition-delay: 850ms; }
+
+    .shine:global(.on) .spark {
+        opacity: 1;
+        transform: none;
+        animation: sparkle 2400ms var(--ease-space) 1500ms infinite alternate;
+    }
+
+    .shine:global(.on) .spark.s2 { animation-delay: 2300ms; }
+
+    @keyframes sparkle {
+        to { transform: scale(0.6) rotate(45deg); opacity: 0.6; }
+    }
+
+    @media (forced-colors: active) {
+        .shine:global(.on) { background: none; color: CanvasText; filter: none; }
+        .spark { display: none; }
+    }
+
+    :global(:root[data-motion="reduce"]) .tagline-text .w { opacity: 1; }
+    :global(:root[data-motion="reduce"]) .spark { transform: none; }
+</style>
+
+<script>
+    import { motionOK, onMotionChange } from "@lib/motion";
+
+    const sentence = document.querySelector<HTMLElement>("[data-words]");
+    const words = sentence ? Array.from(sentence.querySelectorAll<HTMLElement>(".w")) : [];
+    let lit = 0;
+
+    function lightAll(): void {
+        words.forEach(word => word.classList.add("on"));
+        lit = words.length;
+    }
+
+    // The words light up as the sentence travels from the bottom 85% of the
+    // screen to its middle
+    function update(): void {
+        if (!sentence || lit >= words.length) return;
+        if (!motionOK()) {
+            lightAll();
+            return;
+        }
+        const box = sentence.getBoundingClientRect(), vh = window.innerHeight, start = vh * 0.85, end = vh * 0.45;
+        const progress = Math.min(Math.max((start - box.top) / ((start - end) + box.height), 0), 1);
+        const target = Math.round(progress * words.length);
+        for (let i = lit; i < target; i++) {
+            words[i].style.transitionDelay = `${(i - lit) * 40}ms`;
+            words[i].classList.add("on");
+        }
+        if (target > lit) lit = target;
+    }
+
+    if (sentence) {
+        sentence.classList.add("lighting");
+        update();
+        let queued = false;
+        window.addEventListener("scroll", () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(() => { queued = false; update(); });
+        }, { passive: true });
+        onMotionChange(on => { if (!on) lightAll(); });
+    }
+</script>

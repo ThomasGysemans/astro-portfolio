@@ -5,31 +5,29 @@
 import { common } from "./translations/common";
 import { nav } from "./translations/nav";
 import { home } from "./translations/home";
-import { carousel } from "./translations/carousel";
 import { projects } from "./translations/projects";
 import { detail } from "./translations/detail";
 import { showcase } from "./translations/showcase";
-import { freelance } from "./translations/freelance";
-import { footer, error } from "./translations/footer";
+import { footer, error, unavailable } from "./translations/footer";
 import { contact } from "./translations/contact";
 
 const trans = {
     common,
     nav,
     home,
-    carousel,
     projects,
     detail,
     showcase,
-    freelance,
     footer,
     error,
+    unavailable,
     contact,
 };
 
 export default trans;
 export { trans };
 export { techSkills, schoolSkills } from "./translations/skills";
+export { steps, comparison, plans, faq, type Availability } from "./translations/home";
 export { text, type Localized } from "./text";
 export { LOCALES, DEFAULT_LOCALE, isLocale, type Locale } from "./config";
 export { stripLocale, localeOfPath, pathInLocale, alternateLinks } from "./paths";

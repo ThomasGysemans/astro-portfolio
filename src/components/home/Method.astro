@@ -1,0 +1,222 @@
+---
+import { Icon } from "astro-icon/components";
+import trans, { steps } from "@i18n";
+
+const lang = Astro.locals.lang;
+const t = trans.home;
+// A countdown: 3, 2, 1, then the rocket for the launch
+const numbers = ["3", "2", "1"];
+---
+
+<section class="section" id="methode" aria-labelledby="method-title">
+    <div class="wrap stack">
+        <div class="split-head reveal">
+            <div>
+                <p class="eyebrow caption-3">{t.methodeyebrow[lang]}</p>
+                <h2 id="method-title" class="heading-2 grad">{t.methodtitle[lang]}</h2>
+            </div>
+            <p class="body-7 text-muted">{t.methodintro[lang]}</p>
+        </div>
+
+        <!-- The rocket follows the scroll along its trajectory, lighting each step -->
+        <div class="trajectory" data-trajectory aria-hidden="true">
+            <svg viewBox="0 0 1000 180">
+                <path class="base" data-traj-path d="M 24 166 C 330 166, 650 140, 976 22"></path>
+                <path class="prog" data-traj-prog pathLength="1" d="M 24 166 C 330 166, 650 140, 976 22"></path>
+                <g data-traj-marks></g>
+            </svg>
+            <span class="rocket" data-traj-rocket><Icon name="rocket" class="size-7" /></span>
+        </div>
+
+        <ol class="countdown">
+            {steps.map((step, i) => (
+                <li class="cd-step reveal" style={i ? `--d:${i * 80}ms` : undefined}>
+                    <span class="cd-num heading-3 font-mono" aria-hidden="true">
+                        {numbers[i] ?? <Icon name="rocket" class="size-6" />}
+                    </span>
+                    <h3 class="heading-6"><span class="sr-only">{t.step[lang].replace("{n}", `${i + 1}`)}</span>{step.title[lang]}</h3>
+                    <p class="body-6">{step.text[lang]}</p>
+                </li>
+            ))}
+        </ol>
+
+        <div class="card guarantee reveal">
+            <span class="seal" aria-hidden="true"><Icon name="seal-check" class="size-6" /></span>
+            <div class="guarantee-text">
+                <h3 class="title-1 text-heading">{t.guaranteetitle[lang]}</h3>
+                <p class="body-6">{t.guarantee[lang]}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .trajectory {
+        position: relative;
+        display: none;
+    }
+
+    @media (min-width: 900px) {
+        .trajectory { display: block; }
+    }
+
+    .trajectory svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .trajectory .base { fill: none; stroke: var(--line-strong); stroke-width: 1.5; stroke-dasharray: 4 8; }
+    .trajectory .prog { fill: none; stroke: var(--chart); stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 6px rgb(94 155 255 / 0.8)); }
+    .trajectory :global(.mark) { fill: var(--bg); stroke: var(--line-strong); stroke-width: 1.5; transition: fill 300ms var(--ease-space), stroke 300ms var(--ease-space); }
+    .trajectory :global(.mark.on) { fill: var(--chart); stroke: var(--chart-pale); }
+
+    .rocket {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 40px;
+        height: 40px;
+        margin: -20px 0 0 -20px;
+        display: grid;
+        place-items: center;
+        color: var(--heading);
+        will-change: transform;
+    }
+
+    .rocket :global(svg) {
+        filter: drop-shadow(0 0 10px rgb(94 155 255 / 0.9));
+    }
+
+    .countdown {
+        display: grid;
+        gap: 32px;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 640px) {
+        .countdown { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (min-width: 900px) {
+        .countdown { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+    }
+
+    .cd-step {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .cd-num {
+        color: var(--muted);
+        transition: color 500ms var(--ease-space);
+        display: inline-flex;
+        align-items: center;
+        height: 40px;
+    }
+
+    .cd-step:global(.done) .cd-num {
+        color: var(--accent-text);
+    }
+
+    .guarantee {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px 24px;
+        padding: 24px;
+    }
+
+    .seal {
+        width: 48px;
+        height: 48px;
+        border-radius: 9999px;
+        display: grid;
+        place-items: center;
+        background: var(--accent-soft);
+        color: var(--accent-text);
+        border: 1px solid var(--accent-line);
+        flex-shrink: 0;
+    }
+
+    .guarantee-text {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 220px;
+    }
+</style>
+
+<script>
+    import { motionOK, onMotionChange } from "@lib/motion";
+
+    const traj = document.querySelector<HTMLElement>("[data-trajectory]");
+    const path = document.querySelector<SVGPathElement>("[data-traj-path]");
+    const progress = document.querySelector<SVGPathElement>("[data-traj-prog]");
+    const rocket = document.querySelector<HTMLElement>("[data-traj-rocket]");
+    const section = document.getElementById("methode");
+    const steps = Array.from(document.querySelectorAll<HTMLElement>(".cd-step"));
+    const marks: { el: SVGCircleElement, at: number }[] = [];
+    let length = 0;
+
+    if (path) {
+        length = path.getTotalLength();
+        const group = document.querySelector("[data-traj-marks]");
+        // One mark under each step: the point of the curve at the middle of each column
+        for (const fx of [0.125, 0.375, 0.625, 0.875]) {
+            let lo = 0, hi = length;
+            for (let k = 0; k < 24; k++) {
+                const mid = (lo + hi) / 2;
+                if (path.getPointAtLength(mid).x < fx * 1000) lo = mid;
+                else hi = mid;
+            }
+            const point = path.getPointAtLength(lo);
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", point.x.toFixed(1));
+            circle.setAttribute("cy", point.y.toFixed(1));
+            circle.setAttribute("r", "6");
+            circle.setAttribute("class", "mark");
+            group?.appendChild(circle);
+            marks.push({ el: circle, at: lo / length });
+        }
+    }
+
+    function update(): void {
+        if (!path || !section || !traj || !progress || !rocket) return;
+        const box = section.getBoundingClientRect(), vh = window.innerHeight;
+        // Without motion, the trajectory is simply complete
+        const p = motionOK() ? Math.min(Math.max((vh * 0.7 - box.top) / (box.height * 0.75), 0), 1) : 1;
+        marks.forEach((mark, i) => {
+            const on = p >= mark.at - 0.02;
+            mark.el.classList.toggle("on", on);
+            steps[i]?.classList.toggle("done", on);
+        });
+        if (!traj.offsetParent) return;
+        progress.style.strokeDashoffset = String(1 - p);
+        const at = length * p;
+        let a = path.getPointAtLength(at), b = path.getPointAtLength(Math.min(length, at + 2));
+        if (at + 2 > length) {
+            b = a;
+            a = path.getPointAtLength(Math.max(0, at - 2));
+        }
+        const frame = traj.getBoundingClientRect(), sx = frame.width / 1000, sy = frame.height / 180;
+        // The icon points to the upper right: +45° aligns it with the curve
+        const angle = Math.atan2((b.y - a.y) * sy, (b.x - a.x) * sx) * 180 / Math.PI;
+        const point = path.getPointAtLength(at);
+        rocket.style.transform = `translate(${(point.x * sx).toFixed(1)}px,${(point.y * sy).toFixed(1)}px) rotate(${(angle + 45).toFixed(1)}deg)`;
+    }
+
+    let queued = false;
+    const schedule = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; update(); });
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    onMotionChange(schedule);
+    update();
+</script>
