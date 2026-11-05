@@ -42,12 +42,14 @@ test.describe("home page", () => {
         expect(faq?.mainEntity).toHaveLength(count);
     });
 
-    test("the quote form reports its missing fields instead of opening the mail app", async ({ page }) => {
+    test("the quote form reports its missing fields instead of sending the request", async ({ page }) => {
         await page.goto("/");
         const form = page.locator("#devis-form");
         await form.getByRole("button", { name: "Demander un devis gratuit" }).click();
         await expect(page.locator("#err-type")).toHaveText("Choisissez au moins un type de projet.");
         await expect(page.locator("#err-idea")).toHaveText("Décrivez votre idée en quelques mots.");
+        await expect(page.locator("#err-email")).toHaveText("Indiquez votre adresse e-mail.");
+        await expect(page.locator("#email")).toHaveAttribute("aria-invalid", "true");
         await expect(page.locator("#idea")).toHaveAttribute("aria-invalid", "true");
         // Nothing was sent: the form is still there
         await expect(form).toBeVisible();

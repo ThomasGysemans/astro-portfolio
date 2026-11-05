@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import vercel from "@astrojs/vercel";
 import tailwindcss from "@tailwindcss/vite";
 import svelte from "@astrojs/svelte";
@@ -35,5 +35,17 @@ export default defineConfig({
   },
   security: {
     checkOrigin: true,
+  },
+  // The SMTP account the quote form sends with (src/actions/index.ts). Secrets,
+  // read at runtime and never inlined in the bundle. Optional on purpose: a
+  // missing one must only disable the form, not take the whole site down.
+  env: {
+    schema: {
+      QUOTE_EMAIL_SENDER: envField.string({ context: "server", access: "secret", optional: true }),
+      QUOTE_EMAIL_SENDER_PASSWORD: envField.string({ context: "server", access: "secret", optional: true }),
+      QUOTE_EMAIL_SENDER_HOST: envField.string({ context: "server", access: "secret", optional: true }),
+      QUOTE_EMAIL_SENDER_PORT: envField.number({ context: "server", access: "secret", optional: true }),
+      QUOTE_EMAIL_RECEIVER: envField.string({ context: "server", access: "secret", optional: true }),
+    },
   },
 });
