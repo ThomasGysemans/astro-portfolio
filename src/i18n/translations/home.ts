@@ -27,7 +27,9 @@ export const home = {
 
     // Why me
     "whyeyebrow": text("Pourquoi moi", "Why me"),
-    "whytitle": text("Beau à regarder. Rapide à charger. Ouvert à tous.", "Beautiful to look at. Fast to load. Open to everyone."),
+    // The subject is spelled out: under the "Why me" eyebrow, a bare "Beautiful
+    // to look at" would read as describing me, not the site
+    "whytitle": text("Votre site : beau à regarder, rapide à charger, ouvert à tous.", "Your site: beautiful to look at, fast to load, open to everyone."),
     "whyintro": text(
         "Un site joli mais lent, rapide mais banal, ou conforme en option : c'est souvent le compromis. Chez moi, ces qualités font partie du cahier des charges dès la première maquette.",
         "Pretty but slow, fast but bland, or compliant as an extra: that is the usual trade-off. With me, these qualities are part of the brief from the very first mockup.",
