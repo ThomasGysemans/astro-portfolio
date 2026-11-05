@@ -14,15 +14,13 @@ export const LINKEDIN_URL = "https://fr.linkedin.com/in/thomas-gysemans-95053626
 // A `mailto:` opens an empty compose window, and an empty compose window is
 // where a quote request dies: the visitor has to invent, alone, how to open a
 // money conversation with a stranger. Pre-filling a subject and a three-line
-// skeleton answers "what do I write" before the question is asked.
-//
-// `body` and `subject` are optional so the quote form can pass the request the
-// visitor wrote on the page; without them, the localized template is used.
-export function mailtoHref(lang: App.LangCode, body?: string, subject?: string): string {
+// skeleton answers "what do I write" before the question is asked. (The quote
+// form itself does not go through the visitor's mail app: see src/actions.)
+export function mailtoHref(lang: App.LangCode): string {
     // CRLF, not LF: Outlook and several Windows clients ignore a lone \n and
     // collapse the whole body onto a single line.
-    const text = (body ?? contact.body[lang]).replace(/\r?\n/g, "\r\n");
-    const params = new URLSearchParams({ subject: subject ?? contact.subject[lang], body: text });
+    const text = contact.body[lang].replace(/\r?\n/g, "\r\n");
+    const params = new URLSearchParams({ subject: contact.subject[lang], body: text });
     // URLSearchParams encodes spaces as "+", which mail clients render literally
     // in the body instead of as spaces.
     return `mailto:${EMAIL}?${params.toString().replace(/\+/g, "%20")}`;
