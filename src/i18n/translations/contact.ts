@@ -71,10 +71,6 @@ export const contact = {
         "L'envoi a échoué. Réessayez dans un instant, ou écrivez-moi directement à {email}.",
         "Sending failed. Try again in a moment, or write to me directly at {email}.",
     ),
-    "errtoomany": text(
-        "Plusieurs demandes sont déjà parties d'ici en peu de temps. Réessayez plus tard, ou écrivez-moi directement à {email}.",
-        "Several requests were already sent from here in a short time. Try again later, or write to me directly at {email}.",
-    ),
     "padproject": text("projet", "project"),
     "pademail": text("e-mail", "email"),
     "padidea": text("idée", "idea"),
