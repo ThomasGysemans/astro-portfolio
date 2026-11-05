@@ -51,8 +51,8 @@ export const home = {
     "why2live": text("en ligne ✓", "live ✓"),
     "why3title": text("Rapide à charger", "Fast to load"),
     "why3": text(
-        "Seul le code utile est envoyé, au moment où il sert. Sur la version précédente de ce site, charger la Terre 3D au premier geste a fait passer le score Lighthouse mobile de 65 à 95.",
-        "Only the code that is needed gets sent, when it is needed. On the previous version of this site, loading the 3D Earth on the first interaction raised the mobile Lighthouse score from 65 to 95.",
+        "Seul le code utile est envoyé, au moment où il sert. Les planètes 3D de ce site, par exemple, ne se chargent qu'une fois la page affichée, et chacune seulement à l'approche de l'écran.",
+        "Only the code that is needed gets sent, when it is needed. The 3D planets on this site, for instance, load only once the page is displayed, and each one only as it nears the screen.",
     ),
     "why3outof": text("sur 100", "out of 100"),
     "why4title": text("Beau sur chaque écran", "Beautiful on every screen"),
