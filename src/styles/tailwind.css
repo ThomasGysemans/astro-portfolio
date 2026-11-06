@@ -110,6 +110,14 @@
         cursor: pointer;
     }
 
+    /* Windows and Linux draw a system-grey scrollbar (macOS overlays its own):
+       a muted blue thumb on the night sky instead, inherited by every inner
+       scroller. The back-office (data-theme on <html>) keeps the system one,
+       which already follows its light or dark theme. */
+    :root:not([data-theme]) {
+        scrollbar-color: var(--line-hover) transparent;
+    }
+
     :root {
         color-scheme: dark;
         --bg: #030713;
