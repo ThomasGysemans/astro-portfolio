@@ -2,8 +2,8 @@ import { text, type Localized } from "../text";
 
 export const home = {
     "title": text(
-        "Thomas Gysemans · Sites et applis qui mettent votre projet en orbite",
-        "Thomas Gysemans · Websites and apps that put your project into orbit",
+        "Thomas Gysemans · Développeur web & mobile iOS/Android en freelance",
+        "Thomas Gysemans · Freelance web and mobile developer (iOS & Android)",
     ),
     "description": text(
         "Développeur et designer freelance : site vitrine, application mobile ou logiciel, conçus de A à Z, rapides, accessibles (RGAA) et conformes au RGPD. Devis gratuit sous 48 h.",
