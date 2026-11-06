@@ -125,6 +125,20 @@ const elsewhere = [
         color: var(--heading);
     }
 
+    /* On touch screens each link gets a finger-sized height (40px instead of
+       18px); the negative margin keeps the list where it was */
+    @media (pointer: coarse) {
+        .footer-col ul {
+            gap: 0;
+            margin-block: -10px;
+        }
+
+        .footer-col a {
+            display: inline-block;
+            padding-block: 10px;
+        }
+    }
+
     .footer-rule {
         height: 1px;
         background: var(--line);

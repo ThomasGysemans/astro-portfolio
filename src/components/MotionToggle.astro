@@ -35,7 +35,18 @@ const lang = Astro.locals.lang;
         color: var(--heading);
         border: 1px solid var(--line-strong);
         box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.6);
-        transition: background-color 300ms var(--ease-space), border-color 300ms var(--ease-space), transform 300ms var(--ease-space);
+        transition: background-color 300ms var(--ease-space), border-color 300ms var(--ease-space), transform 300ms var(--ease-space), opacity 300ms var(--ease-space), visibility 300ms;
+    }
+
+    /* On a phone the keyboard leaves little room around the field being typed
+       in, and the button would sit on it: it steps aside until the field is
+       left (checkboxes and buttons open no keyboard, so they do not count) */
+    @media (pointer: coarse) {
+        :global(body:has(:is(textarea, input:not([type="checkbox"], [type="radio"], [type="submit"], [type="button"])):focus)) .motion-btn {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px);
+        }
     }
 
     .motion-btn:hover {
