@@ -260,6 +260,8 @@ export const comparison: { group: Localized, rows: { label: Localized, cells: [A
 ];
 
 // The three offers. `preset` pre-selects the project type of the quote form.
+// The commitments every plan shares (compliance, guarantee) close each list,
+// in the same order, so they line up from one card to the next.
 export const plans: {
     preset: "site" | "app" | "soft",
     title: Localized,
@@ -276,8 +278,8 @@ export const plans: {
         features: [
             text("Design sur mesure", "Custom design"),
             text("Beau sur chaque écran", "Beautiful on every screen"),
-            text("Conforme au RGPD et au RGAA", "Privacy and accessibility compliant"),
             text("Mise en ligne et hébergement", "Launch and hosting"),
+            text("Conforme au RGPD et au RGAA", "Privacy and accessibility compliant"),
             text("Garantie un an", "One-year guarantee"),
         ],
         startingPrice: true,
@@ -292,6 +294,7 @@ export const plans: {
             text("Interface d'administration web", "Web admin interface"),
             text("Publication sur les stores", "Published on the app stores"),
             text("Tests automatisés à chaque livraison", "Automated tests on every delivery"),
+            text("Conforme au RGPD et au RGAA", "Privacy and accessibility compliant"),
             text("Garantie un an", "One-year guarantee"),
         ],
         startingPrice: false,
@@ -306,6 +309,7 @@ export const plans: {
             text("Tableaux de bord sur mesure", "Custom dashboards"),
             text("Base de données pensée pour vous", "A database designed for you"),
             text("Code source remis", "Source code handed over"),
+            text("Conforme au RGPD et au RGAA", "Privacy and accessibility compliant"),
             text("Garantie un an", "One-year guarantee"),
         ],
         startingPrice: false,
