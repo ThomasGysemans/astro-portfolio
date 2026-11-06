@@ -62,7 +62,7 @@ const { reviews, notice, error } = Astro.props;
                         </td>
                         <td class="adm-cell-actions">
                             <div>
-                                <form method="POST" data-async data-confirm={`Supprimer l'avis de ${review.company} ? Il disparaîtra de la page /freelance. Cette action est irréversible.`}>
+                                <form method="POST" data-async data-confirm={`Supprimer l'avis de ${review.company} ? Il disparaîtra de l'accueil. Cette action est irréversible.`}>
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value={review.id}>
                                     <button type="submit" class="adm-btn-danger adm-btn-sm adm-btn-icon" title="Supprimer" aria-label={`Supprimer l'avis de ${review.company}`}><AdminIcon name="trash" /></button>

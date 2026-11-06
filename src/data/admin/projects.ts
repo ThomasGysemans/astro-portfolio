@@ -11,7 +11,8 @@ import { type FormResult, FormError, ScopedError, failure, file, files, pbErrorM
 export type ProjectFormValues = {
     slug: string,
     featured: boolean,
-    carousel: boolean,
+    headline: boolean,
+    onHomepage: boolean,
     hidden: boolean, // hidden projects are filtered out of every public query
     categories: string[],
     context: string,
@@ -75,7 +76,8 @@ export type AdminProjectRow = {
     categories: string[],
     context: string,
     featured: boolean,
-    carousel: boolean,
+    headline: boolean,
+    onHomepage: boolean,
     hidden: boolean,
     thumbUrl: string,
 };
@@ -94,7 +96,8 @@ function emptyValues(): ProjectFormValues {
     return {
         slug: "",
         featured: false,
-        carousel: false,
+        headline: false,
+        onHomepage: false,
         hidden: false,
         categories: [],
         context: "personal",
@@ -123,7 +126,8 @@ function parseForm(data: FormData): ProjectFormValues {
     return {
         slug: text(data, "slug"),
         featured: data.has("featured"),
-        carousel: data.has("carousel"),
+        headline: data.has("headline"),
+        onHomepage: data.has("on_homepage"),
         hidden: data.has("hidden"),
         categories: data.getAll("categories").map(String),
         context: text(data, "context"),
@@ -153,7 +157,8 @@ function projectPayload(v: ProjectFormValues): Record<string, unknown> {
     return {
         slug: v.slug,
         featured: v.featured,
-        carousel: v.carousel,
+        headline: v.headline,
+        on_homepage: v.onHomepage,
         hidden: v.hidden,
         categories: v.categories,
         context: v.context,
@@ -247,14 +252,15 @@ async function applyPictureOrder(pb: PocketBase, recordId: string, stored: strin
     });
 }
 
-// Only one project may fill the homepage carousel: flagging one unflags the others.
-async function claimCarousel(pb: PocketBase, projectId: string): Promise<void> {
+// Only one project may be the homepage headline ("Grande carte de
+// l'accueil"): flagging one unflags the others.
+async function claimHeadline(pb: PocketBase, projectId: string): Promise<void> {
     const others = await pb.collection("projects").getFullList({
-        filter: pb.filter("carousel = true && id != {:id}", { id: projectId }),
+        filter: pb.filter("headline = true && id != {:id}", { id: projectId }),
         fields: "id",
     });
     for (const other of others) {
-        await pb.collection("projects").update(other.id, { carousel: false });
+        await pb.collection("projects").update(other.id, { headline: false });
     }
 }
 
@@ -402,7 +408,8 @@ export async function projectFormState(pb: PocketBase, id?: string): Promise<Pro
         values: {
             slug: record.slug,
             featured: !!record.featured,
-            carousel: !!record.carousel,
+            headline: !!record.headline,
+            onHomepage: !!record.on_homepage,
             hidden: !!record.hidden,
             categories: record.categories ?? [],
             context: record.context,
@@ -507,7 +514,7 @@ export async function handleProjectPost(pb: PocketBase, request: Request, id?: s
                 }
                 await upsertTranslations(pb, record.id, values);
                 await saveTechs(pb, record.id, data);
-                if (values.carousel) await claimCarousel(pb, record.id);
+                if (values.headline) await claimHeadline(pb, record.id);
             } catch (err) {
                 // A project stored without its translations has no name at
                 // all on the public site, and its slug then blocks any
@@ -547,7 +554,7 @@ export async function handleProjectPost(pb: PocketBase, request: Request, id?: s
         }
         await upsertTranslations(pb, id, values);
         await saveTechs(pb, id, data);
-        if (values.carousel) await claimCarousel(pb, id);
+        if (values.headline) await claimHeadline(pb, id);
         invalidateCache();
         return { redirect: `/admin/projects/${id}?saved=1` };
     } catch (err) {
@@ -587,7 +594,8 @@ async function fetchAdminProjects(pb: PocketBase): Promise<AdminProjectRow[]> {
         categories: record.categories ?? [],
         context: record.context,
         featured: !!record.featured,
-        carousel: !!record.carousel,
+        headline: !!record.headline,
+        onHomepage: !!record.on_homepage,
         hidden: !!record.hidden,
         thumbUrl: pb.files.getURL(record, record.thumb, { thumb: "800x0" }),
     }));

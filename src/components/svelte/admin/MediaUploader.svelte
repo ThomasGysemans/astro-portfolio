@@ -306,7 +306,7 @@
     <div class="adm-field" data-label="Vidéo de vignette">
         <label for="thumb_video" class="adm-label">Vidéo de vignette <span class="adm-label-hint">facultative</span></label>
         <p class="adm-help">
-            Jouée en boucle, sans son, à la place de la vignette sur les cartes (accueil, /projects, /freelance, showcase).
+            Jouée en boucle, sans son, à la place de la vignette sur les cartes (accueil, /projects, showcase).
             La vignette reste affichée pendant le chargement, pour les visiteurs qui ont désactivé les animations, et comme image de partage.
         </p>
         <div class={["flex items-start gap-3 flex-wrap", { hidden: !thumbVideoUrl && !videoPreview }]}>

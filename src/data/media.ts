@@ -64,7 +64,7 @@ export function youtubeEmbedUrl(id: string, autoplay = false): string {
 }
 
 // Still frame of a video, used where an iframe would be too heavy (the
-// homepage carousel). `maxresdefault` only exists for videos uploaded in HD,
+// back-office media list). `maxresdefault` only exists for videos uploaded in HD,
 // so callers displaying it must fall back to `hqdefault`, which always does.
 export function youtubeThumbnail(id: string, fallback = false): string {
     return `https://i.ytimg.com/vi/${id}/${fallback ? "hqdefault" : "maxresdefault"}.jpg`;

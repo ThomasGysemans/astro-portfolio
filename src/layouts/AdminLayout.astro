@@ -82,7 +82,8 @@ const filterText = (...parts: (string | number)[]) => parts.join(" ").toLocaleLo
                                             <AdminIcon name="file" />
                                             <span class="adm-tree-name">{project.name}</span>
                                             <span class="adm-decos">
-                                                {project.carousel && <span class="adm-deco-carousel" title="Projet du carrousel"><AdminIcon name="carousel" /><span class="adm-sr-only">carrousel</span></span>}
+                                                {project.headline && <span class="adm-deco-headline" title="Grande carte de l'accueil"><AdminIcon name="headline" /><span class="adm-sr-only">grande carte de l'accueil</span></span>}
+                                                {project.onHomepage && <span class="adm-deco-home" title="Sur l'accueil"><AdminIcon name="home" /><span class="adm-sr-only">sur l'accueil</span></span>}
                                                 {project.featured && <span class="adm-deco-featured" title="Projet vitrine"><AdminIcon name="star" /><span class="adm-sr-only">vitrine</span></span>}
                                                 {project.hidden && <span class="adm-deco-hidden" title="Masqué"><AdminIcon name="eyeOff" /><span class="adm-sr-only">masqué</span></span>}
                                             </span>

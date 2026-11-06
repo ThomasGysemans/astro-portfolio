@@ -56,8 +56,8 @@ const cache = new Map<string, { at: number, value: unknown }>();
 // Time of the last failed load of each key, for RETRY_MS.
 const failures = new Map<string, number>();
 // One in-flight load per key ("single flight"): several data functions derive
-// from the same list (e.g. the homepage needs featured/carousel/count, all from
-// the projects), so concurrent renders of a cold cache would otherwise each
+// from the same list (e.g. the homepage needs the featured projects, the
+// headline and the count, all from the projects), so concurrent renders of a cold cache would otherwise each
 // fire their own identical PocketBase query.
 const pending = new Map<string, Promise<unknown>>();
 // Bumped by invalidateCache() so a load started before a mutation cannot

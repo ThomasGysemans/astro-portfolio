@@ -1,5 +1,5 @@
 ---
-import { getAllProjects } from "@data/projects";
+import { getAllProjects, homepageWork } from "@data/projects";
 import { getReviews } from "@data/reviews";
 import { ifAvailable } from "@data/pb";
 import MainLayout from "@layouts/MainLayout.astro";
@@ -21,11 +21,9 @@ const lang = Astro.locals.lang;
 // stands on its own without them: if PocketBase is unreachable, the sections
 // that show projects and reviews are simply left out.
 const [projects = [], reviews = []] = await Promise.all([ifAvailable(getAllProjects()), ifAvailable(getReviews())]);
-const featured = projects.filter(p => p.featured);
-// The wide card is the project flagged in the back-office ("carousel"), the two
-// cards under it the next featured ones
-const headline = projects.find(p => p.carousel) ?? featured[0];
-const others = featured.filter(p => p !== headline).slice(0, 2);
+// The Work section: the wide card, then the cards checked "Sur l'accueil";
+// left out when the back-office flags none of them
+const { headline, others } = homepageWork(projects);
 // A review links to its project only while that project is public
 const reviewed = reviews.map(review => ({ review, project: projects.find(p => p.slug === review.project) }));
 
@@ -67,7 +65,7 @@ const faqData = {
         <Hero />
         <WhyMe />
         <Tagline />
-        {headline && <Work feature={headline} {others} reviews={reviewed} total={projects.length} />}
+        {(headline || others.length > 0) && <Work feature={headline} {others} reviews={reviewed} total={projects.length} />}
         <About {projects} {reviews} />
         <Method />
         <Compare />

@@ -57,8 +57,9 @@ export type ProjectPicture = {
 export type Project = {
     slug: string,
     name: Localized,
-    featured: boolean, // featured projects appear on the homepage and in the showcase
-    carousel: boolean, // the (single) project whose pictures fill the homepage carousel
+    featured: boolean, // the "À la une" filter of /projects and the showcase
+    headline: boolean, // the (single) project shown as the wide headline card of the homepage's Work section
+    onHomepage: boolean, // shown as a card of the homepage's Work section, under the headline
     categories: ProjectCategory[], // a project may belong to several categories
     year: number, // used for sorting
     date: string, // displayed date, e.g. "2023" or "2018 → 2025"
@@ -79,7 +80,7 @@ export type Project = {
     sub: Localized, // one-line subtitle shown on compact cards
     description: Localized, // short description shown on cards
     about: Localized, // long description shown on the detail page
-    tagline: Localized, // uppercase hook shown in the carousel and the showcase
+    tagline: Localized, // uppercase hook shown in the showcase
     caption: Localized, // caption of the presentation picture
     techs: ProjectTech[],
     updated: string, // record's last-modified timestamp (ISO), used for the sitemap's <lastmod>

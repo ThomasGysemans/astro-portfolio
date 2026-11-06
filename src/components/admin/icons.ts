@@ -4,7 +4,10 @@
 export const ADMIN_ICONS = {
     plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
     star: '<path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.6 1.1 6.45L12 17.35l-5.8 3.05 1.1-6.45-4.7-4.6 6.5-.95z"/>',
-    carousel: '<path d="M2 4v16"/><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M22 4v16"/>',
+    // One wide card over two small ones: the homepage's Work section
+    headline: '<rect x="3" y="3" width="18" height="10" rx="2"/><rect x="3" y="15" width="8" height="6" rx="2"/><rect x="13" y="15" width="8" height="6" rx="2"/>',
+    // A house: the project is on the homepage
+    home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/>',
     eyeOff: '<path d="M10.7 5.1A10.7 10.7 0 0 1 21.9 11.6a1 1 0 0 1 0 .7 10.7 10.7 0 0 1-1.4 2.5"/><path d="M14.1 14.2a3 3 0 0 1-4.3-4.3"/><path d="M17.5 17.5A10.7 10.7 0 0 1 2.1 12.3a1 1 0 0 1 0-.7 10.8 10.8 0 0 1 4.4-5.1"/><path d="m2 2 20 20"/>',
     external: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
