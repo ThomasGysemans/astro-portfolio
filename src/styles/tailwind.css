@@ -138,6 +138,18 @@
         --chart: #5E9BFF;
         --chart-light: #8DB4FF;
         --chart-pale: #B4CEFF;
+        /* Stars of the drawings (the hero's constellations, the launch pad's beacon) */
+        --star-white: #EAF1FF;
+        --star-warm: #FFC08A;
+        /* The inside of the drawn windows: browser frames, the little admin
+           screen, the devices, the floating chips */
+        --window: #060E22;
+        /* What sits on the accent: button text, the highlighted plan's text
+           and its light button */
+        --on-accent: #FFFFFF;
+        /* The highlighted plan's gradient end and the ink of its light button */
+        --plan-deep: #172F85;
+        --plan-ink: #1D3FAF;
         --nav-bg: rgb(6 12 28 / 0.66);
         --menu-bg: rgb(3 7 19 / 0.94);
         --word-dim: 0.36;
@@ -183,7 +195,7 @@
 
     ::selection {
         background: var(--accent);
-        color: #FFFFFF;
+        color: var(--on-accent);
     }
 
     /* RGAA: visible keyboard focus */
@@ -376,7 +388,7 @@
 
     .btn-primary {
         background: var(--accent);
-        color: #FFFFFF;
+        color: var(--on-accent);
         box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1) inset, 0 12px 32px -12px var(--accent-glow);
     }
 
@@ -399,8 +411,8 @@
     }
 
     .btn-light {
-        background: #FFFFFF;
-        color: #1D3FAF;
+        background: var(--on-accent);
+        color: var(--plan-ink);
     }
 
     .btn-light:hover { background: #E6EEFF; }
@@ -483,7 +495,7 @@
         padding: 8px 16px;
         border-radius: 9999px;
         background: var(--accent);
-        color: #FFFFFF;
+        color: var(--on-accent);
         transform: translateY(-160%);
         opacity: 0;
         transition: transform 500ms var(--ease-space), opacity 300ms var(--ease-space);

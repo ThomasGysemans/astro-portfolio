@@ -41,15 +41,15 @@ export const contact = {
     "idealabel": text("Votre idée, en quelques lignes", "Your idea, in a few lines"),
     "ideahint": text("Une idée approximative suffit.", "A rough idea is enough."),
     "ideaplaceholder": text(
-        "Par exemple : un site pour présenter mon restaurant, avec la carte et la réservation.",
+        "Par exemple : un site pour présenter mon restaurant, avec la carte et la réservation.",
         "For example: a site to present my restaurant, with the menu and table booking.",
     ),
     "emaillabel": text("Votre adresse e-mail", "Your email address"),
     "emailplaceholder": text("nom@exemple.fr", "name@example.com"),
     "deadlinelabel": text("Échéance souhaitée", "Ideal deadline"),
-    "deadlineplaceholder": text("Par exemple : mars 2027", "For example: March 2027"),
+    "deadlineplaceholder": text("Par exemple : mars 2027", "For example: March 2027"),
     "budgetlabel": text("Budget envisagé", "Budget in mind"),
-    "budgetplaceholder": text("Par exemple : 1 500 €", "For example: €1,500"),
+    "budgetplaceholder": text("Par exemple : 1 500 €", "For example: €1,500"),
     "optional": text("(facultatif)", "(optional)"),
     "submit": text("Demander un devis gratuit", "Get a free quote"),
     "sending": text("Envoi en cours…", "Sending…"),
@@ -62,7 +62,7 @@ export const contact = {
     "errideashort": text("Ajoutez quelques détails, 20 caractères au minimum.", "Add a few details, 20 characters minimum."),
     "erremail": text("Indiquez votre adresse e-mail.", "Enter your email address."),
     "erremailformat": text(
-        "Cette adresse semble incomplète, par exemple : nom@exemple.fr",
+        "Cette adresse semble incomplète, par exemple : nom@exemple.fr",
         "This address looks incomplete, for example: name@example.com",
     ),
     "errone": text("1 champ à corriger.", "1 field to fix."),
@@ -76,11 +76,11 @@ export const contact = {
     "padidea": text("idée", "idea"),
 
     // Once the request is sent
-    "donetitle": text("Demande envoyée !", "Request sent!"),
+    "donetitle": text("Demande envoyée !", "Request sent!"),
     "donetext": text(
-        "Merci ! Je vous réponds sous 48 h, à l'adresse {email}.",
+        "Merci ! Je vous réponds sous 48 h, à l'adresse {email}.",
         "Thank you! I will reply within 48 hours, at {email}.",
     ),
     "another": text("Envoyer une autre demande", "Send another request"),
-    "direct": text("Vous préférez écrire directement ?", "Prefer to write directly?"),
+    "direct": text("Vous préférez écrire directement ?", "Prefer to write directly?"),
 } satisfies Record<string, Localized>;

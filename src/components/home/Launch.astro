@@ -450,10 +450,10 @@ const [doneBefore, doneAfter] = split(c.donetext[lang]);
     .pad-ground { stroke: var(--line-strong); stroke-width: 1; }
     .pad-tower, .pad-arm path { stroke: rgb(150 180 255 / 0.5); stroke-width: 1.2; }
     .pad-deck { stroke: rgb(150 180 255 / 0.75); stroke-width: 1.4; fill: rgb(8 15 33 / 0.7); transition: stroke 600ms var(--ease-space); }
-    .pad:global(.firing) .pad-deck { stroke: #FFC98A; }
+    .pad:global(.firing) .pad-deck { stroke: var(--star-warm); }
     .pad-arm { transform-box: view-box; transform-origin: 40px 142px; transition: transform 900ms var(--ease-space); }
     .pad:global(.launched) .pad-arm { transform: rotate(-58deg); }
-    .pad-beacon { fill: #FFC08A; stroke: none; animation: beacon 1600ms var(--ease-space) infinite alternate; }
+    .pad-beacon { fill: var(--star-warm); stroke: none; animation: beacon 1600ms var(--ease-space) infinite alternate; }
 
     @keyframes beacon {
         from { opacity: 0.25; }
@@ -593,7 +593,10 @@ const [doneBefore, doneAfter] = split(c.donetext[lang]);
     function setSending(on: boolean): void {
         sending = on;
         if (!sendBtn) return;
-        sendBtn.disabled = on;
+        // aria-disabled, not disabled: a disabled button drops the keyboard
+        // focus to <body>, and after a failure the visitor would have to find
+        // the form again; the `sending` flag already blocks a second send
+        sendBtn.setAttribute("aria-disabled", String(on));
         sendBtn.setAttribute("aria-busy", String(on));
         const label = sendBtn.querySelector("span");
         if (label) {

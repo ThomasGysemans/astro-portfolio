@@ -6,6 +6,7 @@ colors:
   space-2: "#050B1A"
   panel: "rgb(8 15 33 / 0.86)"
   panel-solid: "#0A1328"
+  window: "#060E22"
   line: "rgb(140 170 255 / 0.13)"
   line-strong: "rgb(140 170 255 / 0.26)"
   line-hover: "rgb(140 170 255 / 0.4)"
@@ -16,6 +17,7 @@ colors:
   text: "#AEBBD6"
   muted: "#7F8DAD"
   accent: "#2563EB"
+  on-accent: "#FFFFFF"
   accent-hover: "#1D4ED8"
   accent-text: "#78A8FF"
   accent-text-hover: "#A9C7FF"
@@ -104,7 +106,7 @@ spacing:
 components:
   button-primary:
     backgroundColor: "{colors.accent}"
-    textColor: "#FFFFFF"
+    textColor: "{colors.on-accent}"
     rounded: "{rounded.full}"
     padding: "12px 24px"
   button-ghost:
@@ -113,7 +115,7 @@ components:
     rounded: "{rounded.full}"
     padding: "12px 24px"
   button-light:
-    backgroundColor: "#FFFFFF"
+    backgroundColor: "{colors.on-accent}"
     textColor: "{colors.plan-ink}"
     rounded: "{rounded.full}"
   card:
@@ -159,6 +161,7 @@ The register is calm and direct. A single person speaks in the first person, to 
 - **space** `#030713`: the page and the sky. **space-2** `#050B1A`: the cells of the hairline grids (bento, pricing).
 - **panel** `rgb(8 15 33 / 0.86)`: every card. Nearly opaque, so a planet drifting behind never costs the text its contrast.
 - **panel-solid** `#0A1328`: floating controls (the pause button, the lightbox buttons).
+- **window** `#060E22`: the inside of the drawn windows (a project's browser frame, the little admin screen, the devices, the floating chips).
 
 ### Lines and fills
 All borders and translucent fills are the same blue at different strengths: **line** (0.13) for hairlines, **line-strong** (0.26) for controls, **line-hover** (0.4) on hover; **fill** (0.06), **fill-hover** (0.12) and **fill-active** (0.14) behind pills, ghost buttons and inputs.
@@ -167,10 +170,11 @@ All borders and translucent fills are the same blue at different strengths: **li
 **heading** `#F4F7FF` for titles and anything important, **text** `#AEBBD6` for reading, **muted** `#7F8DAD` for secondary information.
 
 ### Accent
-- **accent** `#2563EB`: what you act on (primary buttons, the chosen column of the comparison, the highlighted plan). White on it is 5.2:1.
+- **accent** `#2563EB`: what you act on (primary buttons, the chosen column of the comparison, the highlighted plan). **on-accent** `#FFFFFF` is what sits on it (button text, the text selection, the skip link, the highlighted plan's text and its light button): 5.2:1.
 - **accent-hover** `#1D4ED8`: darker on hover, on purpose (6.7:1), so button text keeps its contrast.
 - **accent-text** `#78A8FF` and **accent-text-hover** `#A9C7FF`: links, eyebrows and highlighted labels on the dark ground.
 - **accent-soft**, **accent-line**, **accent-glow**: tinted backgrounds, seals and the glow under primary buttons.
+- **plan-deep** `#172F85` and **plan-ink** `#1D3FAF`: the end of the highlighted plan's gradient, and the ink of its light button.
 
 ### Star chart
 **chart** `#5E9BFF`, **chart-light** `#8DB4FF`, **chart-pale** `#B4CEFF` for the drawings (lit constellation lines, the trajectory, the orbit ring, the highlighted words of the hero). Stars use **star-white** `#EAF1FF`, **star** `#FFE3B0` and **star-warm** `#FFC08A`. These colours belong to illustrations only; never use them on controls.

@@ -41,7 +41,7 @@
         eyebrow: string,
         filters: string,
         searchPlaceholder: string,
-        sortLabel: string,
+        sortLabel: string, // contains {order}
         sortNewest: string,
         sortOldest: string,
         result: string,
@@ -165,7 +165,8 @@
     </div>
 
     <!-- search + sort; `flex-wrap` keeps the sort button reachable on small
-         screens: it drops to a second row instead of crushing the search -->
+         screens: it drops to a second row instead of crushing the search,
+         whose basis leaves room for its whole placeholder -->
     <div id="projects-toolbar" class="toolbar">
         <PhIcon name="magnifying-glass" class="size-5 shrink-0 text-muted" />
         <input
@@ -175,7 +176,7 @@
             placeholder={labels.searchPlaceholder}
             class="search body-3"
         />
-        <button type="button" class="sort caption-1" aria-label="{labels.sortLabel} : {sort === 'oldest' ? labels.sortOldest : labels.sortNewest}" onclick={() => sort = sort === "oldest" ? "recent" : "oldest"}>
+        <button type="button" class="sort caption-1" aria-label={labels.sortLabel.replace("{order}", sort === "oldest" ? labels.sortOldest : labels.sortNewest)} onclick={() => sort = sort === "oldest" ? "recent" : "oldest"}>
             {sort === "oldest" ? labels.sortOldest : labels.sortNewest}
             <PhIcon name="arrows-down-up" class="size-4" />
         </button>
@@ -274,10 +275,10 @@
                                     <span class="tech-count caption-5 font-mono">{item.countLabel}</span>
                                 </button>
                             {:else}
+                                <!-- A skill with no public project yet: listed, not counted -->
                                 <div class="tech body-5">
                                     <span class="dot" style="background:{item.c}"></span>
                                     {item.n}
-                                    <span class="tech-count caption-5 font-mono text-muted">0</span>
                                 </div>
                             {/if}
                         {/each}
@@ -372,8 +373,8 @@
     }
 
     .search {
-        flex: 1;
-        min-width: 8rem;
+        flex: 1 1 13rem;
+        min-width: 0;
         background: transparent;
         border: none;
         color: var(--heading);
@@ -389,8 +390,12 @@
         outline: none;
     }
 
-    .toolbar:focus-within {
+    /* The ring of the field is drawn by the bar around it (the sort button
+       has its own) */
+    .toolbar:has(.search:focus-visible) {
         border-color: var(--accent-text);
+        outline: 2px solid var(--accent-text);
+        outline-offset: 2px;
     }
 
     .sort {
@@ -462,7 +467,7 @@
     .explorer-card :global(.thumb) {
         border-radius: 16px;
         border: 1px solid var(--line);
-        background: #060E22;
+        background: var(--window);
     }
 
     .body {

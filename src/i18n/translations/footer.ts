@@ -20,7 +20,7 @@ export const error = {
     "eyebrow": text("Erreur 404", "Error 404"),
     "heading": text("Cette page s'est perdue dans l'espace.", "This page got lost in space."),
     "text": text(
-        "Le lien est peut-être ancien, ou l'adresse contient une faute de frappe. Pas de panique : la Terre n'est jamais loin.",
+        "Le lien est peut-être ancien, ou l'adresse contient une faute de frappe. Pas de panique : la Terre n'est jamais loin.",
         "The link may be old, or the address may contain a typo. Don't panic: Earth is never far away.",
     ),
     "backhome": text("Retour à l'accueil", "Back home"),

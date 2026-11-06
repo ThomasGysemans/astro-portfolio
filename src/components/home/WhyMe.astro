@@ -246,7 +246,7 @@ const scores = [
 
     /* Admin screen */
     .cms { position: relative; width: 264px; height: 184px; }
-    .cms-win { position: absolute; left: 0; right: 0; top: 0; height: 164px; border-radius: 12px; border: 1px solid var(--line-strong); background: #060E22; display: flex; flex-direction: column; overflow: hidden; }
+    .cms-win { position: absolute; left: 0; right: 0; top: 0; height: 164px; border-radius: 12px; border: 1px solid var(--line-strong); background: var(--window); display: flex; flex-direction: column; overflow: hidden; }
     .cms-bar { display: flex; align-items: center; gap: 4px; padding: 8px 12px; border-bottom: 1px solid var(--line); color: var(--muted); }
     .cms-bar i { width: 6px; height: 6px; border-radius: 9999px; background: var(--line-strong); }
     .cms-bar span { margin-left: 4px; font-family: var(--font-mono); }
@@ -262,7 +262,7 @@ const scores = [
     .cms-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
     .cms-img { width: 52px; height: 34px; border-radius: 6px; border: 1px dashed var(--line-strong); display: grid; place-items: center; }
     .cms-img svg { width: 26px; height: 18px; fill: none; stroke: var(--accent-text); stroke-width: 1.5; stroke-linejoin: round; }
-    .cms-pub { margin-left: auto; padding: 2px 12px; border-radius: 9999px; background: var(--accent); color: #FFFFFF; }
+    .cms-pub { margin-left: auto; padding: 2px 12px; border-radius: 9999px; background: var(--accent); color: var(--on-accent); }
     .chip-float.cms-toast { right: -6px; bottom: 0; color: var(--color-pass); border-color: rgb(95 211 148 / 0.45); transition: opacity 500ms var(--ease-space) 1800ms, transform 500ms var(--ease-space) 1800ms; }
     :global(.reveal.pending) .cms-toast { opacity: 0; transform: translateY(8px); }
 
@@ -273,7 +273,7 @@ const scores = [
     /* Speed gauge */
     .gauge { width: 200px; height: 200px; overflow: visible; }
     .gauge .track { fill: none; stroke: rgb(140 170 255 / 0.14); stroke-width: 6; }
-    .gauge .fill { fill: none; stroke: #4C86FF; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 100 100; transition: stroke-dasharray 1400ms var(--ease-space) 200ms; filter: drop-shadow(0 0 6px rgb(76 134 255 / 0.7)); }
+    .gauge .fill { fill: none; stroke: var(--chart); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 100 100; transition: stroke-dasharray 1400ms var(--ease-space) 200ms; filter: drop-shadow(0 0 6px rgb(94 155 255 / 0.7)); }
     :global(.reveal.pending) .gauge .fill { stroke-dasharray: 0 100; }
     .gauge .moon { fill: var(--color-star); filter: drop-shadow(0 0 6px rgb(255 227 176 / 0.9)); transition: opacity 600ms var(--ease-space) 1300ms; }
     :global(.reveal.pending) .gauge .moon { opacity: 0; }
@@ -284,7 +284,7 @@ const scores = [
 
     /* Devices */
     .devices { position: relative; width: 260px; height: 150px; }
-    .dev { position: absolute; border: 1px solid var(--line-strong); background: #060E22; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .dev { position: absolute; border: 1px solid var(--line-strong); background: var(--window); padding: 8px; display: flex; flex-direction: column; gap: 4px; }
     .dev .blk { height: 24px; border-radius: 6px; background: var(--accent-soft); border: 1px solid rgb(94 155 255 / 0.4); }
     .dev .blk-sm { height: 16px; }
     .dev-desk { left: 0; top: 0; width: 200px; height: 128px; border-radius: 8px; }
@@ -296,7 +296,7 @@ const scores = [
     .shield { width: 96px; height: 112px; overflow: visible; }
     .shield path { fill: rgb(37 99 235 / 0.16); stroke: var(--chart); stroke-width: 1.5; }
     .shield path.ok { fill: none; stroke: var(--heading); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
-    .chip-float { position: absolute; padding: 2px 8px; border-radius: 9999px; border: 1px solid var(--line-strong); background: #060E22; color: var(--heading); font-family: var(--font-mono); white-space: nowrap; }
+    .chip-float { position: absolute; padding: 2px 8px; border-radius: 9999px; border: 1px solid var(--line-strong); background: var(--window); color: var(--heading); font-family: var(--font-mono); white-space: nowrap; }
     .chip-a { left: 4px; top: 24px; }
     .chip-b { right: 0; top: 40px; }
     .chip-c { left: 16px; bottom: 16px; }

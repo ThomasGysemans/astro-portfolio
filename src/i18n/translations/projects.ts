@@ -19,7 +19,8 @@ export const projects = {
     "searchplaceholder": text("Rechercher un projet…", "Search a project…"),
     "sortnewest": text("Récents d'abord", "Newest first"),
     "sortoldest": text("Anciens d'abord", "Oldest first"),
-    "sortlabel": text("Trier par année", "Sort by year"),
+    // {order}: the current order (the punctuation differs by language)
+    "sortlabel": text("Trier par année : {order}", "Sort by year: {order}"),
     "result": text("résultat", "result"),
     "results": text("résultats", "results"),
     "builtwith": text("Projets réalisés avec", "Showing projects built with"),

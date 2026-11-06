@@ -109,7 +109,7 @@ const planets: PlanetPlacement[] = [
                                 <a
                                     href={media.url}
                                     data-lightbox-index={media.lightboxIndex}
-                                    aria-label={`${t.enlarge[lang]} : ${media.caption}`}
+                                    aria-label={t.enlarge[lang].replace("{caption}", media.caption)}
                                     class="zoomable frame-media"
                                 >
                                     <img src={media.url} alt="" aria-hidden="true" loading="lazy" decoding="async" class="backdrop" />
@@ -287,7 +287,7 @@ const planets: PlanetPlacement[] = [
         border: 1px solid var(--line);
         border-radius: 16px;
         overflow: hidden;
-        background: #060E22;
+        background: var(--window);
     }
 
     video.frame-media {

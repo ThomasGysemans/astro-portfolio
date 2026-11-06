@@ -6,7 +6,7 @@ export const home = {
         "Thomas Gysemans · Websites and apps that put your project into orbit",
     ),
     "description": text(
-        "Développeur et designer freelance : site vitrine, application mobile ou logiciel, conçus de A à Z, rapides, accessibles (RGAA) et conformes au RGPD. Devis gratuit sous 48 h.",
+        "Développeur et designer freelance : site vitrine, application mobile ou logiciel, conçus de A à Z, rapides, accessibles (RGAA) et conformes au RGPD. Devis gratuit sous 48 h.",
         "Freelance developer and designer: showcase website, mobile app or software, built from A to Z, fast, accessible and GDPR-compliant. Free quote within 48 hours.",
     ),
 
