@@ -35,12 +35,18 @@ const astronomy = featured.find(p => p.categories.includes("games") && p !== hea
 // then Uranus, Saturn, Jupiter and Mars, down to the Earth and its Moon next to
 // the launch pad. Mercury and Venus are not on the way.
 const planets: PlanetPlacement[] = [
-    { name: "neptune", anchor: "#top", at: 0.66, x: 0.86, mAt: 1.38, mx: 0.12 },
-    { name: "uranus", anchor: "#tagline", at: 0.5, x: 0.11, mAt: 0.05, mx: 0.1 },
-    { name: "saturn", anchor: "#apropos", at: 0, x: 0.88, mAt: 0.02, mx: 0.86 },
-    { name: "jupiter", anchor: "#comparatif", at: 0.3, x: -0.045, mAt: 0.02, mx: 0.04 },
-    { name: "mars", anchor: "#tarifs", at: 0.08, x: 0.9, mAt: 0.02, mx: 0.88 },
-    { name: "earth", anchor: "#devis", at: 0.34, x: 0.13, mAt: -0.01, mx: 0.8 },
+    // On phones each one sits in a gap between two blocks of text, near an
+    // edge of the screen (measured at 360 to 430px wide, with the reduced
+    // phone parallax of planets.ts)
+    { name: "neptune", anchor: "#top", at: 0.66, x: 0.86, mAt: 0.9, mx: 0.03 },
+    { name: "uranus", anchor: "#tagline", at: 0.5, x: 0.11, mAt: 0.025, mx: 0.94 },
+    { name: "saturn", anchor: "#apropos", at: 0, x: 0.88, mAt: -0.03, mx: 0.06 },
+    { name: "jupiter", anchor: "#comparatif", at: 0.3, x: -0.045, mAt: -0.005, mx: 1 },
+    { name: "mars", anchor: "#tarifs", at: 0.08, x: 0.9, mAt: 0.02, mx: 0.92 },
+    // The Earth stays clear of the quote form: beside it from 1024px, near the
+    // edge so it fits as soon as the form leaves a margin; beside the heading on
+    // tablets, where the form takes the whole width
+    { name: "earth", anchor: "#devis", at: 0.34, x: 0.05, tAt: 0.04, tx: 0.04, mAt: -0.01, mx: 0.12 },
 ];
 
 // The visible questions, also published as structured data so both always match

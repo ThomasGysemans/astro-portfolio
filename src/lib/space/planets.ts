@@ -15,6 +15,12 @@ import { afterLoad, camera, chain, CORNERS, fetchModel, fitCanvas, glProgram, mu
 import { motionOK, onMotionChange, systemReducesMotion } from "@lib/motion";
 import { wake } from "./loop";
 
+// On a phone the text fills the width, and a body drifting at its full parallax
+// (±(1 - f)·vh/2 against the page, ~170px) would cross the text around its
+// gap. A third of the drift keeps each one in the gap it is placed in, and
+// still reads as depth.
+const PHONE_F = (f: number) => 1 - (1 - f) * 0.35;
+
 export type PlanetName = "neptune" | "uranus" | "saturn" | "jupiter" | "mars" | "earth" | "moon";
 
 // Where a body sits, decided by each page.
@@ -23,8 +29,10 @@ export type PlanetPlacement = {
     anchor: string, // CSS selector of the element the body is pinned to
     at: number, // fraction of that element's height
     x: number, // fraction of the screen width
-    mAt?: number, // the same two on phones (under 640px)
+    mAt?: number, // the same two on phones (under 640px), placed in a gap between texts
     mx?: number,
+    tAt?: number, // the same two on tablets (640 to 1023px), for a body whose desktop
+    tx?: number, // spot has no room there; it then drifts as little as on phones
     f?: number, // parallax factor: 1 scrolls with the page, lower looks farther
 };
 
@@ -274,7 +282,7 @@ export function mountPlanets(canvas: HTMLCanvasElement, placements: PlanetPlacem
         drawnAt = now;
         if (moving) clock += dt;
 
-        const vw = scene.w, vh = scene.h, narrow = vw < 640;
+        const vw = scene.w, vh = scene.h, narrow = vw < 640, tablet = !narrow && vw < 1024;
         const unit = Math.min(92, Math.max(40, vw * 0.06)), dim = narrow ? 0.7 : 1;
         const parallax = !systemReducesMotion();
         const items: DrawItem[] = [];
@@ -283,11 +291,14 @@ export function mountPlanets(canvas: HTMLCanvasElement, placements: PlanetPlacem
         for (const b of bodies) {
             if (!b.node) continue;
             const box = b.node.getBoundingClientRect();
-            const anchor = box.top + box.height * (narrow ? b.mAt ?? b.at : b.at);
+            // Phones and tablets have their own spot when the page gives one
+            const compact = narrow || (tablet && b.tAt !== undefined);
+            const at = narrow ? b.mAt ?? b.at : tablet ? b.tAt ?? b.at : b.at;
+            const anchor = box.top + box.height * at;
             // Pinned to its anchor when that point crosses the middle of the
             // screen, slower than the page everywhere else
-            const y = vh / 2 + (anchor - vh / 2) * (parallax ? b.f : 1);
-            const x = vw * (narrow ? b.mx ?? b.x : b.x), R = unit * b.size, ext = R * b.ext;
+            const y = vh / 2 + (anchor - vh / 2) * (parallax ? (compact ? PHONE_F(b.f) : b.f) : 1);
+            const x = vw * (narrow ? b.mx ?? b.x : tablet ? b.tx ?? b.x : b.x), R = unit * b.size, ext = R * b.ext;
             const visible = y + ext > 0 && y - ext < vh && x + ext > 0 && x - ext < vw;
             // The next model to fetch: the first one within about a screen of being seen
             if (b.state === "idle" && !next && y + ext > -vh && y - ext < vh * 2) next = b;

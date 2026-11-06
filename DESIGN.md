@@ -203,7 +203,7 @@ The fixed navigation bar is a centred pill; on phones it becomes a full-screen m
 
 ## Elevation & Depth
 
-Depth comes from the sky, not from shadows: the fixed starfield, the drifting planets (parallax, slower than the page), translucent panels. Shadows are rare: the glow under primary buttons, the drop shadow of the floating pause button, the glow of chart lines.
+Depth comes from the sky, not from shadows: the fixed starfield, the drifting planets (parallax, slower than the page), translucent panels. On phones, where text fills the width, a planet keeps only a third of its drift and each one is placed in a gap between two blocks of text, near an edge, so none passes under a heading or a paragraph. A body whose desktop spot has no room on a tablet (640 to 1023px) gets a tablet spot too, with the same reduced drift: the Earth, which would otherwise sit behind the quote form. Shadows are rare: the glow under primary buttons, the drop shadow of the floating pause button, the glow of chart lines.
 
 ## Shapes
 
