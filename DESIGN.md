@@ -229,6 +229,9 @@ A blurred pill: logo and name, four links (Work, Process, Pricing, FAQ), the FR 
 ### Signature: the planets
 One WebGL canvas fixed behind the content. Each page places its bodies (`PlanetPlacement`): Neptune, Uranus, Saturn, Jupiter, Mars, the Earth and its Moon on the homepage, two planets on /projects, one on a project page, a lone Moon on the 404. Models are fetched lazily, one at a time, after the page has loaded.
 
+### Signature: the portrait in orbit
+"Behind the screen" opens on Thomas's portrait: a round crop of the face (128px, 144px from 1024px), with a hairline orbit ring around it, its far half behind the photo and its near half over the shoulders, a small moon on it, drawn like the hero's ring when the section comes into view. The photo is pre-cropped and served in three sizes and three formats from `public/images/` (`moi-{144,288,432}.{avif,webp,jpg}`), never resized at request time.
+
 ### Signature: the launch pad
 The quote form stands next to a line-art launch pad; its lights follow the required fields, and sending the form launches the 3D rocket.
 
