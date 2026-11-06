@@ -135,23 +135,23 @@ const price = new Intl.NumberFormat(lang === "fr" ? "fr-FR" : "en-GB", {
     /* The highlighted plan: its lightest stop is the accent blue, so white text
        stays at 5.2:1 or more */
     .plan.hot {
-        background: linear-gradient(165deg, var(--accent) 0%, var(--accent-hover) 45%, #172F85 100%);
-        color: #FFFFFF;
+        background: linear-gradient(165deg, var(--accent) 0%, var(--accent-hover) 45%, var(--plan-deep) 100%);
+        color: var(--on-accent);
     }
 
     .plan.hot :is(.plan-title, .price, .checks li, .for, .price span) {
-        color: #FFFFFF;
+        color: var(--on-accent);
     }
 
     .plan.hot .checks :global(svg) {
-        color: #FFFFFF;
+        color: var(--on-accent);
     }
 
     .hot-badge {
         padding: 2px 8px;
         border-radius: 9999px;
-        background: #FFFFFF;
-        color: #1D3FAF;
+        background: var(--on-accent);
+        color: var(--plan-ink);
         white-space: nowrap;
     }
 

@@ -14,7 +14,8 @@ export const detail = {
     "languages": text("Langues", "Languages"),
     "moreprojects": text("Autres projets", "More projects"),
     "gallery": text("Galerie du projet", "Project gallery"),
-    "enlarge": text("Agrandir l'image", "Enlarge the picture"),
+    // {caption}: the picture's caption (the punctuation differs by language)
+    "enlarge": text("Agrandir l'image : {caption}", "Enlarge the picture: {caption}"),
     "closepicture": text("Fermer l'image", "Close the picture"),
     "previouspicture": text("Image précédente", "Previous picture"),
     "nextpicture": text("Image suivante", "Next picture"),
