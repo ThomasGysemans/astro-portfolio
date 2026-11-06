@@ -8,9 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` — runs `astro check` (type-checking, must stay at 0 errors) then builds for the Vercel serverless adapter
 - `npx astro check` — type-check only
 - `docker compose up -d` — local PocketBase at http://127.0.0.1:8090 (dashboard at `/_/`, superuser `thomas@gysemans.dev` / `thomasgysemans`). Schema migrations are versioned in `db/pb_migrations/` (excluded from tsconfig).
-- `node scripts/seed-pocketbase.mjs` — wipes and re-seeds the content collections (target/credentials via `POCKETBASE_URL`, `PB_SUPERUSER_EMAIL`, `PB_SUPERUSER_PASSWORD`). The seed content itself lives in `scripts/seed-data.mjs`.
 - `npm run test` / `npm run test:unit` — Vitest unit tests (`tests/unit/`), configured via `getViteConfig` in `vitest.config.ts` so the `@i18n`/`@data` aliases and the `astro:i18n` virtual module resolve. Pure logic only (no DB).
-- `npm run test:e2e` — Playwright e2e tests (`tests/e2e/`). **Requires the local PocketBase running with seeded content.** Playwright's `webServer` starts the dev server via `dev:e2e` (`astro dev` daemonises when stdout is not a TTY, so it starts the daemon then tails its logs to stay foreground).
+- `npm run test:e2e` — Playwright e2e tests (`tests/e2e/`). **Requires the local PocketBase running with content** (a copy of the production data; no test depends on a particular project). Playwright's `webServer` starts the dev server via `dev:e2e` (`astro dev` daemonises when stdout is not a TTY, so it starts the daemon then tails its logs to stay foreground).
 
 Running a subset:
 - `npx vitest run tests/unit/projects.test.ts` — one unit file; `-t "pattern"` narrows to matching test names; `npm run test:unit:watch` for watch mode.

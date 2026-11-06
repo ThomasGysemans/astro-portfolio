@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // End-to-end tests hit a real dev server, which in turn needs the local
-// PocketBase running (`docker compose up -d`) with seeded content.
+// PocketBase running (`docker compose up -d`) with content in it.
 const PORT = 4321;
 const BASE_URL = `http://localhost:${PORT}`;
 
