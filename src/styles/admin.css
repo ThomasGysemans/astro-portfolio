@@ -431,7 +431,7 @@ body:has(#adm-status[data-state="error"]) .adm-tree-item[aria-current="page"] .a
     color: var(--a-faint);
 }
 
-/* Decorations at the end of an explorer entry (vitrine, carrousel, masqué). */
+/* Decorations at the end of an explorer entry (vitrine, grande carte, accueil, masqué). */
 .adm-decos {
     display: inline-flex;
     gap: 4px;
@@ -447,7 +447,8 @@ body:has(#adm-status[data-state="error"]) .adm-tree-item[aria-current="page"] .a
     color: var(--a-mod);
 }
 
-.adm-deco-carousel {
+.adm-deco-headline,
+.adm-deco-home {
     color: var(--a-accent);
 }
 
@@ -1221,7 +1222,8 @@ form[aria-busy="true"] {
     border-color: color-mix(in srgb, var(--a-mod) 45%, transparent);
 }
 
-.adm-badge-carousel {
+.adm-badge-headline,
+.adm-badge-home {
     color: var(--a-accent);
     border-color: color-mix(in srgb, var(--a-accent) 45%, transparent);
 }

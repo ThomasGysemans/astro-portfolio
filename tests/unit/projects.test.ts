@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { countProjectsUsing, projectsYearRange } from "@data/projects";
+import { countProjectsUsing, homepageWork, projectsYearRange } from "@data/projects";
 import type { Project, ProjectTech } from "@data/models";
 
 // Minimal Project builder — only the fields the functions under test read.
@@ -9,7 +9,8 @@ function makeProject(overrides: Partial<Project> = {}): Project {
         slug: "demo",
         name: empty,
         featured: false,
-        carousel: false,
+        headline: false,
+        onHomepage: false,
         categories: ["web"],
         year: 2024,
         date: "2024",
@@ -82,5 +83,46 @@ describe("projectsYearRange", () => {
 
     it("returns undefined without projects", () => {
         expect(projectsYearRange([])).toBeUndefined();
+    });
+});
+
+// The owner picks the homepage cards in the back-office; the section must
+// follow those flags exactly, with nothing standing in for a missing one.
+describe("homepageWork", () => {
+    const slugs = (list: Project[]) => list.map(p => p.slug);
+
+    it("puts the headline first and the projects checked for the homepage under it", () => {
+        const projects = [
+            makeProject({ slug: "a", featured: true }),
+            makeProject({ slug: "b", onHomepage: true }),
+            makeProject({ slug: "c", headline: true }),
+            makeProject({ slug: "d", onHomepage: true }),
+        ];
+        const { headline, others } = homepageWork(projects);
+        expect(headline?.slug).toBe("c");
+        expect(slugs(others)).toEqual(["b", "d"]);
+    });
+
+    it("keeps every project checked for the homepage, not just two", () => {
+        const projects = ["a", "b", "c", "d"].map(slug => makeProject({ slug, onHomepage: true }));
+        expect(slugs(homepageWork(projects).others)).toEqual(["a", "b", "c", "d"]);
+    });
+
+    it("does not show the headline twice when it is also checked for the homepage", () => {
+        const projects = [makeProject({ slug: "a", headline: true, onHomepage: true }), makeProject({ slug: "b", onHomepage: true })];
+        const { headline, others } = homepageWork(projects);
+        expect(headline?.slug).toBe("a");
+        expect(slugs(others)).toEqual(["b"]);
+    });
+
+    it("promotes no card to the headline when none is flagged", () => {
+        const { headline, others } = homepageWork([makeProject({ slug: "a", onHomepage: true })]);
+        expect(headline).toBeUndefined();
+        expect(slugs(others)).toEqual(["a"]);
+    });
+
+    it("shows nothing when nothing is flagged, featured projects included", () => {
+        const projects = ["a", "b", "c"].map(slug => makeProject({ slug, featured: true }));
+        expect(homepageWork(projects)).toEqual({ headline: undefined, others: [] });
     });
 });

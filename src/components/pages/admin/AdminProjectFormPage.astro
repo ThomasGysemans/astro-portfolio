@@ -42,7 +42,7 @@ const sections = [
 const texts = [
     { name: "name", label: "Nom", hint: "", fr: values.name, en: values.nameEn, required: true, maxlength: 150 },
     { name: "sub", label: "Sous-titre", hint: "cartes compactes", fr: values.sub, en: values.subEn, required: true, maxlength: 200 },
-    { name: "tagline", label: "Tagline", hint: "carrousel et showcase", fr: values.tagline, en: values.taglineEn },
+    { name: "tagline", label: "Tagline", hint: "showcase", fr: values.tagline, en: values.taglineEn },
     { name: "caption", label: "Légende de la vignette", hint: "", fr: values.caption, en: values.captionEn },
     { name: "description", label: "Description", hint: "cartes", fr: values.description, en: values.descriptionEn, required: true, area: 4 },
     { name: "about", label: "À propos", hint: "page du projet", fr: values.about, en: values.aboutEn, area: 9 },
@@ -53,7 +53,8 @@ const texts = [
     <EditorHeader title={heading} crumbs={[{ label: "Projets", href: "/admin/projects" }]} {sections}>
         <Fragment slot="badges">
             {!isNew && values.featured && <span class="adm-badge adm-badge-featured"><AdminIcon name="star" />Vitrine</span>}
-            {!isNew && values.carousel && <span class="adm-badge adm-badge-carousel"><AdminIcon name="carousel" />Carrousel</span>}
+            {!isNew && values.headline && <span class="adm-badge adm-badge-headline"><AdminIcon name="headline" />Grande carte</span>}
+            {!isNew && values.onHomepage && <span class="adm-badge adm-badge-home"><AdminIcon name="home" />Accueil</span>}
             {!isNew && values.hidden && <span class="adm-badge adm-badge-hidden"><AdminIcon name="eyeOff" />Masqué</span>}
         </Fragment>
         <Fragment slot="actions">
@@ -90,17 +91,22 @@ const texts = [
                         <label class="adm-switch">
                             <input type="checkbox" name="featured" checked={values.featured}>
                             <strong>Projet vitrine</strong>
-                            <span>Mis en avant sur l'accueil et dans le showcase.</span>
+                            <span>Dans le filtre « À la une » de /projects et dans le showcase.</span>
                         </label>
                         <label class="adm-switch">
-                            <input type="checkbox" name="carousel" checked={values.carousel}>
-                            <strong>Carrousel d'accueil</strong>
-                            <span>Un seul projet à la fois : cocher celui-ci décoche les autres.</span>
+                            <input type="checkbox" name="headline" checked={values.headline}>
+                            <strong>Grande carte de l'accueil</strong>
+                            <span>La carte en tête des réalisations de l'accueil. Un seul projet à la fois : cocher celui-ci décoche les autres.</span>
+                        </label>
+                        <label class="adm-switch">
+                            <input type="checkbox" name="on_homepage" checked={values.onHomepage}>
+                            <strong>Sur l'accueil</strong>
+                            <span>Une carte sous la grande carte des réalisations de l'accueil ; elles vont par deux. Sans grande carte ni projet coché ici, l'accueil n'a plus de section Réalisations.</span>
                         </label>
                         <label class="adm-switch">
                             <input type="checkbox" name="hidden" checked={values.hidden}>
                             <strong>Masquer le projet</strong>
-                            <span>Invisible partout (accueil, /projects, showcase, /freelance, sitemap) ; sa page renvoie une 404. Il reste modifiable ici.</span>
+                            <span>Invisible partout (accueil, /projects, showcase, sitemap) ; sa page renvoie une 404. Il reste modifiable ici.</span>
                         </label>
                     </div>
                 </div>

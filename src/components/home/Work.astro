@@ -6,8 +6,8 @@ import WorkCard from "./WorkCard.astro";
 import trans from "@i18n";
 
 interface Props {
-    feature?: Project; // the wide card
-    others: Project[]; // the two cards below it
+    feature?: Project; // the wide card, when a project is flagged for it
+    others: Project[]; // the cards below it, two per row
     reviews: { review: Review, project?: Project }[]; // project: the public project the review is about
     total: number; // number of public projects
 }

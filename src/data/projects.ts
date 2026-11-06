@@ -49,7 +49,8 @@ function mapProject(record: RecordModel): Project {
         slug: record.slug,
         name: text("name"),
         featured: !!record.featured,
-        carousel: !!record.carousel,
+        headline: !!record.headline,
+        onHomepage: !!record.on_homepage,
         categories: record.categories ?? [],
         year: record.year,
         date: record.date,
@@ -76,7 +77,7 @@ function mapProject(record: RecordModel): Project {
 // All projects, newest first (`created` keeps a stable order within a year).
 // Every public read derives from this list, so the `hidden` projects are
 // filtered out here once and for all: they vanish from the cards, the
-// showcase, the carousel, the sitemap and their own detail page (404).
+// showcase, the homepage, the sitemap and their own detail page (404).
 export async function getAllProjects(): Promise<Project[]> {
     return cached("projects", async () => {
         const records = await pb.collection("projects").getFullList({
@@ -134,4 +135,15 @@ export function projectsYearRange(projects: Project[]): { from: number, to: numb
         .filter(y => Number.isFinite(y));
     if (years.length === 0) return undefined;
     return { from: Math.min(...years), to: Math.max(...years) };
+}
+
+// The projects of the homepage's Work section, exactly as flagged in the
+// back-office: the wide card is the project flagged `headline` ("Grande carte
+// de l'accueil"), the cards under it the ones flagged `onHomepage` ("Sur
+// l'accueil"), in the list's order. Nothing stands in for a missing flag: with
+// neither, the homepage leaves the whole section out.
+export function homepageWork(projects: Project[]): { headline?: Project, others: Project[] } {
+    const headline = projects.find(p => p.headline);
+    const others = projects.filter(p => p.onHomepage && p !== headline);
+    return { headline, others };
 }

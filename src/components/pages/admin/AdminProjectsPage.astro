@@ -18,11 +18,12 @@ const categoryLabel = (id: string) => CATEGORIES[id as ProjectCategory]?.label.f
 const categoryDot = (id: string) => CATEGORIES[id as ProjectCategory]?.dot ?? "currentColor";
 const contextLabel = (id: string) => CONTEXTS[id as ProjectContext]?.fr ?? id;
 
-const flagsOf = (p: AdminProjectRow) => [p.featured && "featured", p.carousel && "carousel", p.hidden && "hidden", !p.hidden && "visible"].filter(Boolean).join(" ");
+const flagsOf = (p: AdminProjectRow) => [p.featured && "featured", p.headline && "headline", p.onHomepage && "home", p.hidden && "hidden", !p.hidden && "visible"].filter(Boolean).join(" ");
 const filters = [
     { flag: "", label: "Tous", count: projects.length },
     { flag: "visible", label: "En ligne", count: projects.filter(p => !p.hidden).length },
     { flag: "featured", label: "Vitrine", count: projects.filter(p => p.featured).length },
+    { flag: "home", label: "Accueil", count: projects.filter(p => p.onHomepage).length },
     { flag: "hidden", label: "Masqués", count: projects.filter(p => p.hidden).length },
 ];
 ---
@@ -84,7 +85,8 @@ const filters = [
                             <td class="adm-cell-wide">
                                 <span class="adm-tags">
                                     {project.featured && <span class="adm-badge adm-badge-featured"><AdminIcon name="star" />Vitrine</span>}
-                                    {project.carousel && <span class="adm-badge adm-badge-carousel"><AdminIcon name="carousel" />Carrousel</span>}
+                                    {project.headline && <span class="adm-badge adm-badge-headline"><AdminIcon name="headline" />Grande carte</span>}
+                                    {project.onHomepage && <span class="adm-badge adm-badge-home"><AdminIcon name="home" />Accueil</span>}
                                     {project.hidden && <span class="adm-badge adm-badge-hidden"><AdminIcon name="eyeOff" />Masqué</span>}
                                 </span>
                             </td>

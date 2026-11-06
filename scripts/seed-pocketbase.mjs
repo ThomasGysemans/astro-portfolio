@@ -48,6 +48,8 @@ for (const [name, color] of Object.entries(TECH_COLORS)) {
 console.log(`created ${Object.keys(techIds).length} technologies`);
 
 // --- projects, translations and tech junctions
+// The slugs of the homepage's Work section: the wide card, then the two cards
+const HOME_WORK = PROJECTS.filter(p => p.featured).slice(0, 3).map(p => p.slug);
 for (const project of PROJECTS) {
     const thumbPath = path.join(PUBLIC_DIR, project.thumb);
     const file = new File([fs.readFileSync(thumbPath)], path.basename(thumbPath));
@@ -55,9 +57,11 @@ for (const project of PROJECTS) {
     const record = await pb.collection("projects").create({
         slug: project.slug,
         featured: project.featured,
-        // The homepage carousel shows the pictures of a single project;
-        // default to the first featured one (re-pickable in the back-office).
-        carousel: project.slug === PROJECTS.find(p => p.featured)?.slug,
+        // The homepage's Work section only shows what is flagged: the first
+        // featured project as its wide card, the next two under it
+        // (all re-pickable in the back-office).
+        headline: project.slug === HOME_WORK[0],
+        on_homepage: HOME_WORK.slice(1).includes(project.slug),
         categories: project.categories,
         context: project.context,
         year: project.year,
