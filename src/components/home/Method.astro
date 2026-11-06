@@ -5,7 +5,7 @@ import trans, { steps } from "@i18n";
 const lang = Astro.locals.lang;
 const t = trans.home;
 // A countdown: 3... 2... 1... then the rocket for the launch
-const numbers = ["3...", "2...", "1..."];
+const numbers = ["3", "2", "1"];
 ---
 
 <section class="section" id="methode" aria-labelledby="method-title">
@@ -33,7 +33,7 @@ const numbers = ["3...", "2...", "1..."];
             {steps.map((step, i) => (
                 <li class="cd-step reveal" style={i ? `--d:${i * 80}ms` : undefined}>
                     <span class="cd-num heading-3 font-mono" aria-hidden="true">
-                        {numbers[i] ?? <Icon name="rocket" class="size-6" />}
+                        {numbers[i] ? <>{numbers[i]}<span class="cd-dots">...</span></> : <Icon name="rocket" class="size-6" />}
                     </span>
                     <h3 class="heading-6"><span class="sr-only">{t.step[lang].replace("{n}", `${i + 1}`)}</span>{step.title[lang]}</h3>
                     <p class="body-6">{step.text[lang]}</p>
@@ -135,6 +135,13 @@ const numbers = ["3...", "2...", "1..."];
 
     .cd-step:global(.done) .cd-num {
         color: var(--accent-text);
+    }
+
+    /* A monospace face gives each dot a digit-wide cell: pulled together,
+       they read as an ellipsis rather than three spaced-out marks */
+    .cd-dots {
+        letter-spacing: -0.3em;
+        margin-left: -0.12em;
     }
 
     /* "Liftoff" ends the countdown: its title lights up like the numbers */
