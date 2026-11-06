@@ -241,6 +241,15 @@ const locales = LOCALES.map(locale => ({
     .menu-btn[aria-expanded="true"] .bars i:first-child { transform: translateY(4px) rotate(45deg); }
     .menu-btn[aria-expanded="true"] .bars i:last-child { transform: translateY(-4px) rotate(-45deg); }
 
+    /* The bar needs ~298px: under 360px its gaps and the quote button tighten
+       so the menu button keeps its full size instead of being squeezed */
+    .menu-btn { flex-shrink: 0; }
+
+    @media (max-width: 359.98px) {
+        .nav { gap: 2px; }
+        .nav-cta { margin-left: 0; padding-inline: 12px; }
+    }
+
     @media (min-width: 960px) {
         .nav-links { display: flex; }
         .menu-btn { display: none; }
