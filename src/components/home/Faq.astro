@@ -8,19 +8,11 @@ const t = trans.home;
 ---
 
 <section class="section" id="faq" aria-labelledby="faq-title">
+    <!-- Source order = reading order: the title, the questions, then "Still
+         have a question?". From 1024px the grid moves the box under the title,
+         in the left column, where it stays in view beside the questions. -->
     <div class="wrap faq-grid">
-        <div class="faq-head reveal">
-            <h2 id="faq-title" class="heading-2">{t.faqtitle[lang]}</h2>
-            <div class="card ask-box">
-                <p class="title-3 text-heading">{t.askbox[lang]}</p>
-                <p class="body-6">{t.askboxtext[lang]}</p>
-                <p class="direct">
-                    <a class="mail body-5" id="mail-faq" href={`mailto:${EMAIL}`}>{EMAIL}</a>
-                    <button type="button" class="icon-btn" data-copy="mail-faq" data-status="copy-faq" data-copied={trans.common.copied[lang]} data-failed={trans.common.copyfailed[lang]} aria-label={trans.common.copyaddress[lang]}><Icon name="copy" class="size-4" /></button>
-                    <span class="copy-status caption-3" id="copy-faq" role="status" aria-live="polite"></span>
-                </p>
-            </div>
-        </div>
+        <h2 id="faq-title" class="faq-title heading-2 reveal">{t.faqtitle[lang]}</h2>
         <div class="faq-list">
             {faq.map(item => (
                 <details class="qa">
@@ -29,34 +21,46 @@ const t = trans.home;
                 </details>
             ))}
         </div>
+        <div class="card ask-box reveal">
+            <p class="title-3 text-heading">{t.askbox[lang]}</p>
+            <p class="body-6">{t.askboxtext[lang]}</p>
+            <p class="direct">
+                <a class="mail body-5" id="mail-faq" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                <button type="button" class="icon-btn" data-copy="mail-faq" data-status="copy-faq" data-copied={trans.common.copied[lang]} data-failed={trans.common.copyfailed[lang]} aria-label={trans.common.copyaddress[lang]}><Icon name="copy" class="size-4" /></button>
+                <span class="copy-status caption-3" id="copy-faq" role="status" aria-live="polite"></span>
+            </p>
+        </div>
     </div>
 </section>
 
 <style>
     .faq-grid {
         display: grid;
-        gap: 48px;
+        gap: 32px;
         grid-template-columns: minmax(0, 1fr);
         align-items: start;
     }
 
+    /* Two columns: the title, then the box under it, on the left; the
+       questions on the right, across both rows. The second row takes the
+       rest of the list's height, so the box can stay in view while the
+       questions scroll by. */
     @media (min-width: 1024px) {
         .faq-grid {
             grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-            gap: 64px;
+            grid-template-rows: auto 1fr;
+            gap: 24px 64px;
         }
 
-        .faq-head {
+        .faq-title { grid-column: 1; grid-row: 1; }
+        .faq-list { grid-column: 2; grid-row: 1 / span 2; }
+
+        .ask-box {
+            grid-column: 1;
+            grid-row: 2;
             position: sticky;
             top: 112px;
         }
-    }
-
-    .faq-head {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        align-items: flex-start;
     }
 
     .ask-box {
