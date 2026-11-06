@@ -12,6 +12,16 @@ const STATUS: Record<Availability, { icon: string, label: string }> = {
     no: { icon: "x-circle", label: t.no[lang] },
 };
 const order: Availability[] = ["yes", "opt", "var", "no"];
+// The three columns. Phones show shorter names, and pair the agency and the
+// builder under one name ("Agency / Site builder"), their two answers side by
+// side; screen readers always get each column's full name.
+const columns = [
+    { long: t.withme[lang], short: [t.withme[lang]] },
+    { long: t.agency[lang], short: [`${t.agencyshort[lang]} /`, t.buildershort[lang]] },
+    { long: t.builder[lang], short: [] },
+];
+// Classes of the paired columns, on their head and on their cells
+const PAIR = ["", "pair-a", "pair-b"];
 ---
 
 <section class="section" id="comparatif" aria-labelledby="compare-title">
@@ -25,37 +35,37 @@ const order: Availability[] = ["yes", "opt", "var", "no"];
         </div>
 
         <div class="card compare-card reveal">
-            <!-- Scrolls sideways on phones; focusable so the keyboard can scroll it too -->
-            <div class="table-wrap" role="region" aria-labelledby="compare-title" tabindex="0">
-                <table class="compare body-6">
-                    <caption class="sr-only">{t.comparecaption[lang]}</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col"><span class="sr-only">{t.criterion[lang]}</span></th>
-                            <th scope="col" class="me title-3">{t.withme[lang]}</th>
-                            <th scope="col" class="title-3">{t.agency[lang]}</th>
-                            <th scope="col" class="title-3">{t.builder[lang]}</th>
-                        </tr>
-                    </thead>
+            <table class="compare body-6">
+                <caption class="sr-only">{t.comparecaption[lang]}</caption>
+                <thead>
+                    <tr>
+                        <th scope="col"><span class="sr-only">{t.criterion[lang]}</span></th>
+                        {columns.map((column, i) => (
+                            <th scope="col" class:list={[PAIR[i], { me: i === 0 }]}>
+                                <span class="col-long title-3">{column.long}</span>
+                                {column.short.length > 0 && (
+                                    <span class="col-short caption-1" aria-hidden="true">{column.short.map(part => <span>{part}</span>)}</span>
+                                )}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                {comparison.map(group => (
                     <tbody>
-                        {comparison.map(group => (
-                            <>
-                                <tr class="group"><th scope="colgroup" colspan="4" class="caption-3">{group.group[lang]}</th></tr>
-                                {group.rows.map(row => (
-                                    <tr>
-                                        <th scope="row">{row.label[lang]}</th>
-                                        {row.cells.map((cell, i) => (
-                                            <td class:list={{ me: i === 0 }}>
-                                                <span class:list={["st", cell]}><Icon name={STATUS[cell].icon} class="size-5" /><span class="sr-only">{STATUS[cell].label}</span></span>
-                                            </td>
-                                        ))}
-                                    </tr>
+                        <tr class="group"><th scope="rowgroup" colspan="4" class="caption-3"><span>{group.group[lang]}</span></th></tr>
+                        {group.rows.map(row => (
+                            <tr>
+                                <th scope="row">{row.label[lang]}</th>
+                                {row.cells.map((cell, i) => (
+                                    <td class:list={[PAIR[i], { me: i === 0 }]}>
+                                        <span class:list={["st", cell]}><Icon name={STATUS[cell].icon} class="size-5" /><span class="sr-only">{STATUS[cell].label}</span></span>
+                                    </td>
                                 ))}
-                            </>
+                            </tr>
                         ))}
                     </tbody>
-                </table>
-            </div>
+                ))}
+            </table>
         </div>
 
         <div class="split-head legend-row reveal">
@@ -74,16 +84,8 @@ const order: Availability[] = ["yes", "opt", "var", "no"];
         overflow: hidden;
     }
 
-    /* relative: the visually hidden labels of the cells (absolute) stay inside
-       the scroll box instead of widening the page */
-    .table-wrap {
-        position: relative;
-        overflow-x: auto;
-    }
-
     .compare {
         width: 100%;
-        min-width: 680px;
         border-collapse: separate;
         border-spacing: 0;
     }
@@ -137,6 +139,96 @@ const order: Availability[] = ["yes", "opt", "var", "no"];
     .st.opt { color: var(--color-warn); }
     .st.var { color: var(--muted); }
     .st.no { color: rgb(127 141 173 / 0.75); }
+
+    .col-short {
+        display: none;
+    }
+
+    /* Phones: the same table, made compact. The criteria take more than half
+       the width; "with me" keeps its column, a continuous band from its name to
+       the last row; the agency and the builder share one name, their two answers
+       pressed together on either side of the line between their columns. */
+    @media (max-width: 767.98px) {
+        .compare {
+            table-layout: fixed;
+            background: linear-gradient(to right, transparent 54%, var(--accent-soft) 54% 72%, transparent 72%);
+        }
+
+        .compare thead th.me {
+            width: 18%;
+        }
+
+        .compare thead .pair-a,
+        .compare thead .pair-b {
+            width: 14%;
+        }
+
+        .compare .me {
+            background: none;
+        }
+
+        .col-long {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+
+        .col-short {
+            display: block;
+            text-wrap: balance;
+        }
+
+        /* The shared name starts a line per part: "Agency /" over "Site
+           builder" (which itself wraps on the narrowest phones) */
+        .pair-a .col-short span {
+            display: block;
+        }
+
+        .compare thead th {
+            padding: 20px 2px 14px;
+        }
+
+        /* The shared name sits over both columns */
+        .compare thead .pair-a,
+        .compare thead .pair-b {
+            padding-inline: 0;
+        }
+
+        .compare thead .pair-a .col-short {
+            width: 200%;
+        }
+
+        .compare tbody td.pair-a {
+            text-align: right;
+            padding-right: 6px;
+        }
+
+        .compare tbody td.pair-b {
+            text-align: left;
+            padding-left: 6px;
+        }
+
+        .compare tbody th[scope="row"] {
+            padding: 12px 8px 12px 16px;
+        }
+
+        .compare tbody td {
+            padding: 12px 0;
+        }
+
+        .compare .group th {
+            padding: 24px 16px 8px;
+        }
+
+        /* A group name stays within the criteria column, off the band */
+        .compare .group th span {
+            display: block;
+            max-width: calc(54% - 24px);
+        }
+    }
 
     .legend-row {
         align-items: start;
