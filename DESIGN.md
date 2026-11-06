@@ -199,7 +199,7 @@ Named text styles, never raw sizes in the markup: `heading-1` to `heading-6` (60
 
 A 1248px container with a 16px gutter (24px from 640px), honouring the phones' safe areas. Sections are 64px apart (96px from 1024px). The spacing scale is 2, 4, 8, 12, 16, 24, 32, 40, 48, 64, 80, 96px. Grids are intrinsic (`auto-fill` with `minmax(min(320px, 100%), 1fr)`) or switch columns at 640, 768, 900, 1024 and 1280px.
 
-The fixed navigation bar is a centred pill; on phones it becomes a full-screen menu. Anchored headings are offset by `scroll-padding-top: 96px`.
+The fixed navigation bar is a centred pill; on phones it becomes a full-screen menu. Below 768px the comparison stays a table, made compact: the criteria take more than half the width, the "with me" column is one continuous band from its name to the last row, and the agency and the builder share one short name ("Agence / Outil en ligne"), their two answers pressed together side by side (each column keeps its full name for screen readers). Anchored headings are offset by `scroll-padding-top: 96px`.
 
 ## Elevation & Depth
 

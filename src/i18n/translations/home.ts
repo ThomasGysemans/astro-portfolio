@@ -149,6 +149,9 @@ export const home = {
     "withme": text("Avec moi", "With me"),
     "agency": text("Agence classique", "Traditional agency"),
     "builder": text("Constructeur de site", "Website builder"),
+    // Shorter names for the narrow columns of the phone table
+    "agencyshort": text("Agence", "Agency"),
+    "buildershort": text("Outil en ligne", "Site builder"),
     "yes": text("Inclus", "Included"),
     "opt": text("Souvent en option", "Often an extra"),
     "var": text("Selon le prestataire", "Depends on the provider"),
