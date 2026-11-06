@@ -28,8 +28,6 @@ const headline = projects.find(p => p.carousel) ?? featured[0];
 const others = featured.filter(p => p !== headline).slice(0, 2);
 // A review links to its project only while that project is public
 const reviewed = reviews.map(review => ({ review, project: projects.find(p => p.slug === review.project) }));
-// Next to "Behind the screen": the featured astronomy game
-const astronomy = featured.find(p => p.categories.includes("games") && p !== headline && !others.includes(p));
 
 // A trip home through the solar system as the page scrolls: Neptune at the top,
 // then Uranus, Saturn, Jupiter and Mars, down to the Earth and its Moon next to
@@ -40,7 +38,9 @@ const planets: PlanetPlacement[] = [
     // phone parallax of planets.ts)
     { name: "neptune", anchor: "#top", at: 0.66, x: 0.86, mAt: 0.9, mx: 0.03 },
     { name: "uranus", anchor: "#tagline", at: 0.5, x: 0.11, mAt: 0.025, mx: 0.94 },
-    { name: "saturn", anchor: "#apropos", at: 0, x: 0.88, mAt: -0.03, mx: 0.06 },
+    // Saturn fills the right of "Behind the screen", which only has one column
+    // of copy from 1024px; on tablets it sits beside the portrait
+    { name: "saturn", anchor: "#apropos", at: 0.45, x: 0.78, tAt: 0.12, tx: 0.84, mAt: -0.03, mx: 0.06 },
     { name: "jupiter", anchor: "#comparatif", at: 0.3, x: -0.045, mAt: -0.005, mx: 1 },
     { name: "mars", anchor: "#tarifs", at: 0.08, x: 0.9, mAt: 0.02, mx: 0.92 },
     // The Earth stays clear of the quote form: beside it from 1024px, near the
@@ -68,7 +68,7 @@ const faqData = {
         <WhyMe />
         <Tagline />
         {headline && <Work feature={headline} {others} reviews={reviewed} total={projects.length} />}
-        <About project={astronomy} total={projects.length} />
+        <About {projects} {reviews} />
         <Method />
         <Compare />
         <Pricing />

@@ -110,17 +110,20 @@ export const home = {
     "abouteyebrow": text("Derrière l'écran", "Behind the screen"),
     "abouttitle": text("Développeur et designer, la tête dans les étoiles.", "Developer and designer, head in the stars."),
     "about1": text(
-        "Je code depuis mes 13 ans, d'abord en autodidacte, puis à l'IUT A de Lille. Stages chez Kimple et Tabuléo, un an d'alternance sur Quizéo, puis mes premiers clients freelance, venus par recommandation.",
-        "I have been coding since I was 13, self-taught at first, then at the IUT A in Lille. Internships at Kimple and Tabuléo, a year-long apprenticeship on Quizéo, then my first freelance clients, who came through word of mouth.",
+        "Je code depuis mes 13 ans, d'abord en autodidacte, puis à l'IUT A de Villeneuve-d'Ascq où j'ai obtenu mon BUT (BAC+3). J'ai fait des stages chez Kimple et Tabuléo, un an d'alternance sur Quizéo, puis mes premiers clients freelance, venus par recommandation.",
+        "I have been coding since I was 13, self-taught at first, then at the IUT A in Villeneuve-d'Ascq, where I earned my BUT, a three-year Bachelor of Technology. I did internships at Kimple and Tabuléo and a year-long apprenticeship on Quizéo, then came my first freelance clients, through word of mouth.",
     ),
+    // [Name](slug) links to the project's page while it is public
     "about2": text(
-        "L'astronomie est mon autre passion, et elle se glisse souvent dans mon code. Avec Space Visitor et ScienceSky, j'ai appris à garder la 3D fluide et à expliquer simplement des sujets difficiles.",
-        "Astronomy is my other passion, and it often finds its way into my code. With Space Visitor and ScienceSky, I learned to keep 3D smooth and to explain hard topics simply.",
+        "L'astronomie est mon autre passion, et elle se glisse souvent dans mon code. Avec [Space Visitor](space-visitor) et [ScienceSky](sciencesky), j'ai appris à garder la 3D fluide et à expliquer simplement des sujets difficiles.",
+        "Astronomy is my other passion, and it often finds its way into my code. With [Space Visitor](space-visitor) and [ScienceSky](sciencesky), I learned to keep 3D smooth and to explain hard topics simply.",
     ),
     "portraitalt": text("Portrait de Thomas Gysemans", "Portrait of Thomas Gysemans"),
     "statyears": text("ans de code", "years of code"),
     "statprojects": text("projets menés", "projects shipped"),
-    "play": text("Jouer", "Play"),
+    "statratingone": text("note sur 1 avis", "rating from 1 review"),
+    "statratingmany": text("moyenne sur {count} avis", "average of {count} reviews"),
+    "statrating": text("{n} sur 5", "{n} out of 5"),
 
     // Method
     "methodtitle": text("Vous validez, puis je code.", "You approve, then I code."),
