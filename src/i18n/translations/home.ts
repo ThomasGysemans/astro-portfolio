@@ -117,6 +117,7 @@ export const home = {
         "L'astronomie est mon autre passion, et elle se glisse souvent dans mon code. Avec Space Visitor et ScienceSky, j'ai appris à garder la 3D fluide et à expliquer simplement des sujets difficiles.",
         "Astronomy is my other passion, and it often finds its way into my code. With Space Visitor and ScienceSky, I learned to keep 3D smooth and to explain hard topics simply.",
     ),
+    "portraitalt": text("Portrait de Thomas Gysemans", "Portrait of Thomas Gysemans"),
     "statyears": text("ans de code", "years of code"),
     "statprojects": text("projets menés", "projects shipped"),
     "play": text("Jouer", "Play"),

@@ -17,6 +17,11 @@ const { project, total } = Astro.props;
 const lang = Astro.locals.lang;
 const t = trans.home;
 const newWindow = ` (${trans.common.newwindow[lang]})`;
+// The portrait, pre-cropped around the face in three sizes and three formats
+// (public/images): the browser picks the lightest one its screen needs
+const PORTRAIT = [144, 288, 432];
+const portraitSet = (ext: string) => PORTRAIT.map(w => `/images/moi-${w}.${ext} ${w}w`).join(", ");
+const PORTRAIT_SIZES = "(min-width: 1024px) 144px, 128px";
 const links = [
     { href: GITHUB_URL, label: "GitHub", icon: "github" },
     { href: LINKEDIN_URL, label: "LinkedIn", icon: "linkedin" },
@@ -27,6 +32,17 @@ const links = [
 <section class="section" id="apropos" aria-labelledby="about-title">
     <div class="wrap about-grid">
         <div class="about-copy reveal">
+            <!-- "Head in the stars": an orbit ring around the portrait, its far
+                 half behind the photo, its near half over it, a small moon on it -->
+            <div class="portrait">
+                <svg class="portrait-orbit back" viewBox="0 0 212 60" aria-hidden="true"><g transform="rotate(-10 106 30)"><path pathLength="1" d="M 2 30 A 104 22 0 0 1 210 30"></path></g></svg>
+                <picture>
+                    <source type="image/avif" srcset={portraitSet("avif")} sizes={PORTRAIT_SIZES} />
+                    <source type="image/webp" srcset={portraitSet("webp")} sizes={PORTRAIT_SIZES} />
+                    <img src="/images/moi-288.jpg" srcset={portraitSet("jpg")} sizes={PORTRAIT_SIZES} width="144" height="144" alt={t.portraitalt[lang]} loading="lazy" decoding="async" />
+                </picture>
+                <svg class="portrait-orbit front" viewBox="0 0 212 60" aria-hidden="true"><g transform="rotate(-10 106 30)"><path pathLength="1" d="M 210 30 A 104 22 0 0 1 2 30"></path><circle class="moon" cx="197.8" cy="40.3" r="4"></circle></g></svg>
+            </div>
             <p class="eyebrow caption-3">{t.abouteyebrow[lang]}</p>
             <h2 id="about-title" class="heading-2">{t.abouttitle[lang]}</h2>
             <p class="body-7">{t.about1[lang]}</p>
@@ -95,6 +111,76 @@ const links = [
         flex-direction: column;
         gap: 24px;
         align-items: flex-start;
+    }
+
+    /* The portrait: 128px (144px from 1024px). The ring reaches past it on
+       both sides, but never past the page gutter on the left. */
+    .portrait {
+        position: relative;
+        isolation: isolate;
+        width: 128px;
+        height: 128px;
+        margin-bottom: 8px;
+        flex-shrink: 0;
+    }
+
+    .portrait img {
+        position: relative;
+        z-index: 1;
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 9999px;
+        border: 1px solid var(--line-strong);
+        object-fit: cover;
+    }
+
+    .portrait-orbit {
+        position: absolute;
+        left: -9%;
+        top: 49%;
+        width: 147%;
+        height: 42%;
+        overflow: visible;
+        pointer-events: none;
+    }
+
+    .portrait-orbit.back { z-index: 0; }
+    .portrait-orbit.front { z-index: 2; }
+
+    .portrait-orbit path {
+        fill: none;
+        stroke: var(--chart-light);
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 0;
+        transition: stroke-dashoffset 1400ms var(--ease-space) 300ms;
+    }
+
+    .portrait-orbit.back path { opacity: 0.35; }
+    .portrait-orbit.front path { opacity: 0.9; transition-delay: 700ms; }
+
+    .portrait-orbit .moon {
+        fill: var(--heading);
+        filter: drop-shadow(0 0 4px rgb(141 180 255 / 0.9));
+        transition: opacity 600ms var(--ease-space) 1600ms;
+    }
+
+    /* Drawn when the section comes into view */
+    :global(.reveal.pending) .portrait-orbit path { stroke-dashoffset: 1; }
+    :global(.reveal.pending) .portrait-orbit .moon { opacity: 0; }
+
+    :global(:root[data-motion="reduce"]) .portrait-orbit path,
+    :global(:root[data-motion="reduce"]) .portrait-orbit .moon {
+        transition: none;
+    }
+
+    @media (min-width: 1024px) {
+        .portrait {
+            width: 144px;
+            height: 144px;
+        }
     }
 
     .stats {
