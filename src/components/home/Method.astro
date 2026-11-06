@@ -4,8 +4,8 @@ import trans, { steps } from "@i18n";
 
 const lang = Astro.locals.lang;
 const t = trans.home;
-// A countdown: 3, 2, 1, then the rocket for the launch
-const numbers = ["3", "2", "1"];
+// A countdown: 3... 2... 1... then the rocket for the launch
+const numbers = ["3...", "2...", "1..."];
 ---
 
 <section class="section" id="methode" aria-labelledby="method-title">
@@ -134,6 +134,16 @@ const numbers = ["3", "2", "1"];
     }
 
     .cd-step:global(.done) .cd-num {
+        color: var(--accent-text);
+    }
+
+    /* "Liftoff" ends the countdown: its title lights up like the numbers */
+    .cd-step:last-child h3 {
+        color: var(--muted);
+        transition: color 500ms var(--ease-space);
+    }
+
+    .cd-step:last-child:global(.done) h3 {
         color: var(--accent-text);
     }
 
