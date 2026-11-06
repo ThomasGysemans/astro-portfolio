@@ -1,19 +1,18 @@
 ---
-import type { Project } from "@data/models";
+import type { Project, Review } from "@data/models";
 import { Icon } from "astro-icon/components";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { categoryIcon } from "@data/categories";
-import ProjectThumb from "@components/ProjectThumb.astro";
 import { GITHUB_URL, LINKEDIN_URL, MALT_URL } from "@lib/contact";
-import { yearsOfCode } from "@lib/profile";
+import { averageRating, yearsOfCode } from "@lib/profile";
+import { inlineLinks } from "@lib/inline-links";
 import trans from "@i18n";
 
 interface Props {
-    project?: Project; // the astronomy project shown next to the text
-    total: number; // number of public projects
+    projects: Project[]; // the public projects: counted, and linked from the text
+    reviews: Review[]; // the clients' reviews, for their average rating
 }
 
-const { project, total } = Astro.props;
+const { projects, reviews } = Astro.props;
 const lang = Astro.locals.lang;
 const t = trans.home;
 const newWindow = ` (${trans.common.newwindow[lang]})`;
@@ -22,6 +21,13 @@ const newWindow = ` (${trans.common.newwindow[lang]})`;
 const PORTRAIT = [144, 288, 432];
 const portraitSet = (ext: string) => PORTRAIT.map(w => `/images/moi-${w}.${ext} ${w}w`).join(", ");
 const PORTRAIT_SIZES = "(min-width: 1024px) 144px, 128px";
+// The projects the second paragraph names link to their pages while public
+// The clients' average mark, written the local way ("4,7" in French)
+const rating = averageRating(reviews.map(r => r.rating));
+const ratingText = rating === undefined ? "" : new Intl.NumberFormat(lang, { maximumFractionDigits: 1 }).format(rating);
+const ratingLabel = reviews.length === 1 ? t.statratingone[lang] : t.statratingmany[lang].replace("{count}", `${reviews.length}`);
+const about2 = inlineLinks(t.about2[lang], slug =>
+    projects.some(p => p.slug === slug) ? getRelativeLocaleUrl(lang, `/projects/${slug}`) : undefined);
 const links = [
     { href: GITHUB_URL, label: "GitHub", icon: "github" },
     { href: LINKEDIN_URL, label: "LinkedIn", icon: "linkedin" },
@@ -30,7 +36,7 @@ const links = [
 ---
 
 <section class="section" id="apropos" aria-labelledby="about-title">
-    <div class="wrap about-grid">
+    <div class="wrap">
         <div class="about-copy reveal">
             <!-- "Head in the stars": an orbit ring around the portrait, its far
                  half behind the photo, its near half over it, a small moon on it -->
@@ -46,10 +52,16 @@ const links = [
             <p class="eyebrow caption-3">{t.abouteyebrow[lang]}</p>
             <h2 id="about-title" class="heading-2">{t.abouttitle[lang]}</h2>
             <p class="body-7">{t.about1[lang]}</p>
-            <p class="body-3">{t.about2[lang]}</p>
+            <p class="body-3">{about2.map(run => run.href ? <a class="inline-link" href={run.href}>{run.text}</a> : run.text)}</p>
             <dl class="stats">
                 <div class="stat"><dt class="caption-2 text-muted">{t.statyears[lang]}</dt><dd class="heading-4 font-mono">{yearsOfCode()}</dd></div>
-                {total > 0 && <div class="stat"><dt class="caption-2 text-muted">{t.statprojects[lang]}</dt><dd class="heading-4 font-mono">{total}</dd></div>}
+                {projects.length > 0 && <div class="stat"><dt class="caption-2 text-muted">{t.statprojects[lang]}</dt><dd class="heading-4 font-mono">{projects.length}</dd></div>}
+                {rating !== undefined && (
+                    <div class="stat">
+                        <dt class="caption-2 text-muted">{ratingLabel}</dt>
+                        <dd class="heading-4 font-mono"><span aria-hidden="true">{ratingText}<span class="out-of">/5</span></span><span class="sr-only">{t.statrating[lang].replace("{n}", ratingText)}</span></dd>
+                    </div>
+                )}
             </dl>
             <div class="about-links">
                 {links.map(link => (
@@ -57,60 +69,41 @@ const links = [
                 ))}
             </div>
         </div>
-
-        {project && (
-            <article class="card astro-card reveal">
-                <ProjectThumb
-                    thumb={project.thumb}
-                    large={project.thumbLarge}
-                    sizes="(min-width: 1280px) 645px, (min-width: 1024px) 50vw, calc(100vw - 50px)"
-                    video={project.thumbVideo}
-                    alt={project.caption[lang] || project.name[lang]}
-                    class="astro-shot"
-                />
-                <div class="astro-body">
-                    <p class="work-meta caption-3">
-                        <span><Icon name={categoryIcon(project.categories[0])} class="size-4" />{project.sub[lang]}</span>
-                        <span class="font-mono text-muted caption-5">{project.date}</span>
-                    </p>
-                    <h3 class="heading-6"><a class="stretched" href={getRelativeLocaleUrl(lang, `/projects/${project.slug}`)}>{project.name[lang]}</a></h3>
-                    <p class="body-6">{project.description[lang]}</p>
-                    {project.link && (
-                        <p class="caption-1 links">
-                            <a class="text-link" href={project.link} target="_blank" rel="noopener">{t.play[lang]}<span class="sr-only"> {project.name[lang]}{newWindow}</span> <Icon name="arrow-up-right" class="size-4" /></a>
-                        </p>
-                    )}
-                </div>
-            </article>
-        )}
     </div>
 </section>
 
 <style>
-    .about-grid {
-        display: grid;
-        gap: 48px;
-        grid-template-columns: minmax(0, 1fr);
-        align-items: start;
-    }
-
-    @media (min-width: 1024px) {
-        .about-grid {
-            grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-            gap: 64px;
-        }
-
-        .about-copy {
-            position: sticky;
-            top: 112px;
-        }
-    }
-
+    /* One column of copy. From 1024px it keeps to the left and leaves the
+       right of the section to Saturn (placed in Homepage.astro). */
     .about-copy {
         display: flex;
         flex-direction: column;
         gap: 24px;
         align-items: flex-start;
+    }
+
+    .about-copy h2 { text-wrap: balance; }
+    .about-copy p { max-width: 640px; }
+
+    @media (min-width: 1024px) {
+        .about-copy { max-width: 560px; }
+    }
+
+    /* A link inside running text: underlined, so it does not rely on its
+       colour alone (RGAA 10.6) */
+    .inline-link {
+        color: var(--accent-text);
+        text-decoration: underline;
+        text-decoration-color: var(--accent-line);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+        border-radius: 6px;
+        transition: color 300ms var(--ease-space), text-decoration-color 300ms var(--ease-space);
+    }
+
+    .inline-link:hover {
+        color: var(--accent-text-hover);
+        text-decoration-color: currentColor;
     }
 
     /* The portrait: 128px (144px from 1024px). The ring reaches past it on
@@ -183,13 +176,16 @@ const links = [
         }
     }
 
+    /* As many equal columns as there are stats (the project count and the
+       rating are left out when PocketBase has nothing to give) */
     .stats {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
         gap: 16px;
         padding-block: 16px;
         width: 100%;
-        max-width: 360px;
+        max-width: 520px;
     }
 
     .stat {
@@ -202,65 +198,16 @@ const links = [
         order: -1;
     }
 
+    /* The smaller "/5" must not make its line taller than the plain numbers */
+    .stat .out-of {
+        color: var(--muted);
+        font-size: 0.6em;
+        line-height: 0;
+    }
+
     .about-links {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-    }
-
-    .astro-card {
-        position: relative;
-        padding: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        min-width: 0;
-        transition: border-color 300ms var(--ease-space), transform 500ms var(--ease-space), opacity 700ms var(--ease-space);
-    }
-
-    .astro-card:hover {
-        border-color: var(--line-strong);
-        transform: translateY(-4px);
-    }
-
-    .astro-card:has(.stretched:focus-visible) {
-        outline: 2px solid var(--accent-text);
-        outline-offset: 2px;
-    }
-
-    .astro-card :global(.astro-shot) {
-        border-radius: 16px;
-        border: 1px solid var(--line);
-    }
-
-    .astro-body {
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        flex: 1;
-    }
-
-    .work-meta {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        color: var(--accent-text);
-    }
-
-    .work-meta span:first-child {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .links a {
-        position: relative;
-        z-index: 1;
-    }
-
-    :global(:root[data-motion="reduce"]) .astro-card:hover {
-        transform: none;
     }
 </style>
