@@ -103,6 +103,12 @@ const structuredData = {
         <link rel="icon" type="image/png" href="/logo.png">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
         <meta name="theme-color" content="#030713">
+        <!-- The page is dark by design. "color-scheme" lets the browser paint a
+             dark canvas before the CSS arrives; "darkreader-lock" keeps the Dark
+             Reader extension off, which would otherwise recolour the text a
+             yellowish grey and darken the heading gradients into grey -->
+        <meta name="color-scheme" content="dark">
+        <meta name="darkreader-lock">
         <meta name="generator" content={Astro.generator}>
         <!-- A @font-face is only fetched once the CSS is parsed and a node using
              it is laid out; preloading starts the download with the HTML, which
